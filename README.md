@@ -30,7 +30,7 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">(TEMP) SOME OPEN SOURCE PROJECT TITLE</h3>
+<h3 align="center">(TEMP) RESUME BUILDER</h3>
 
   <p align="center">
     project_description
