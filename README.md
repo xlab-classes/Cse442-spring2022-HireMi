@@ -193,7 +193,7 @@ Distributed under the APACHE License, VERSION 2.0. See `LICENSE.md` for more inf
 
 Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/xlab-classes/Cse442-spring2022-HireMi](https://github.com/xlab-classes/Cse442-spring2022-HireMi)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -212,6 +212,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+<!-- Shield will be updated once the repo changed to public -->
 [contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
 [contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
