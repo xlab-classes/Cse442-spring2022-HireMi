@@ -30,10 +30,10 @@
     <img src="images/logo.png" alt="Logo" width="auto" height="80">
   </a>
 
-<h3 align="center">(TEMP) RESUME BUILDER</h3>
+<h3 align="center">RESUME BUILDER</h3>
 
   <p align="center">
-    project_description
+    Interactive Resume Building Tool for people around the world!
     <br />
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
     <br />
