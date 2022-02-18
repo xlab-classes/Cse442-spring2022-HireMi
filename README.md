@@ -213,7 +213,7 @@ Project Link: [https://github.com/xlab-classes/Cse442-spring2022-HireMi](https:/
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 <!-- Shield will be updated once the repo changed to public -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
 [contributors-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
 [forks-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/network/members
