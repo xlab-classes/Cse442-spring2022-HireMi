@@ -215,13 +215,13 @@ Project Link: [https://github.com/xlab-classes/Cse442-spring2022-HireMi](https:/
 <!-- Shield will be updated once the repo changed to public -->
 [contributors-shield]: https://img.shields.io/github/contributors/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
 [contributors-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
 [forks-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
 [stars-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
 [issues-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
 [license-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
