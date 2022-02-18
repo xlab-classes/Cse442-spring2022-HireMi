@@ -109,3 +109,29 @@ Thumbs.db
 !.gitignore
 !.nvmrc
 !.phpcs.xml.dist
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# --------------
+# Frontend Part
+
+# dependencies
+/hire-mi/node_modules
+/hire-mi/.pnp
+/hire-mi/.pnp.js
+# testing
+/hire-mi/coverage
+
+# production
+/hire-mi/build
+
+# misc
+/hire-mi/.DS_Store
+/hire-mi/.env.local
+/hire-mi/.env.development.local
+/hire-mi/.env.test.local
+/hire-mi/.env.production.local
+
+/hire-mi/npm-debug.log*
+/hire-mi/yarn-debug.log*
+/hire-mi/yarn-error.log*
