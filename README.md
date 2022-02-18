@@ -216,7 +216,8 @@ Project Link: [https://github.com/xlab-classes/Cse442-spring2022-HireMi](https:/
 [contributors-shield]: https://img.shields.io/github/contributors/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
 [contributors-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
-[forks-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/network/members
+[forks-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/network/membersls
+
 [stars-shield]: https://img.shields.io/github/stars/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
 [stars-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/stargazers
 [issues-shield]: https://img.shields.io/github/issues/xlab-classes/Cse442-spring2022-HireMi.svg?style=for-the-badge
