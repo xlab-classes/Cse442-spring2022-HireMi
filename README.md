@@ -1,7 +1,7 @@
 <div id="top"></div>
 <!--
 *** TEMPLATE SOURCE - https://github.com/othneildrew/Best-README-Template
-*** ALL CREDIT GOES TO THE - https://github.com/othneildrew
+*** ALL CREDIT GOES TO - https://github.com/othneildrew
 -->
 
 
@@ -33,7 +33,7 @@
 <h3 align="center">RESUME BUILDER</h3>
 
   <p align="center">
-    Interactive Resume Building Tool for people around the world!
+    Interactive Resume Building Tool
     <br />
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
     <br />
@@ -214,15 +214,15 @@ Project Link: [https://github.com/xlab-classes/Cse442-spring2022-HireMi](https:/
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 <!-- Shield will be updated once the repo changed to public -->
 [contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
+[contributors-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
+[forks-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/network/members
 [stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
+[stars-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/stargazers
 [issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
+[issues-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/issues
 [license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
+[license-url]: https://github.com/xlab-classes/Cse442-spring2022-HireMi/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: images/FANNG.png
