@@ -91,6 +91,7 @@ Will be updated: `github_username`, `repo_name`, `twitter_handle`, `linkedin_use
 ### Built With
 
 * [React.js](https://reactjs.org/)
+* [Create-React-App](https://create-react-app.dev/docs/getting-started/)
 * [Redux](https://redux.js.org/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
