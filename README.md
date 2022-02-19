@@ -107,7 +107,7 @@ You need to install a npm on your system.
 
 Node Package Manager: [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm/)
   
-*  [brew npm package](https://formulae.brew.sh/formula/node/)
+* [brew npm package](https://formulae.brew.sh/formula/node/)
   ```sh
   brew install node
   ```
@@ -121,6 +121,14 @@ Node Package Manager: [npm](https://docs.npmjs.com/downloading-and-installing-no
 2. Install NPM packages
    ```sh
    npm install
+   ```
+
+### Frontend
+
+* Start the frontend app
+
+   ```sh
+   npm start 
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
