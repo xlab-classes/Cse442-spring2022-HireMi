@@ -104,7 +104,7 @@ The program needs node packages as its library.
 
 ### Prerequisites
 
-You need to install a npm on your system.
+You need to install npm on your system.
 
 Node Package Manager: [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm/)
   
