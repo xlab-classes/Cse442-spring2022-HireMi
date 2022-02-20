@@ -159,10 +159,26 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+### Frontend
+
+- [ ] Login Page
+- [ ] Dashboard
+  - [ ] Template Selection
+- [ ] Resume Builder Tool
+  - [ ] Nested Placeholder
+- [ ] Settings Page
+  - [ ] Account Settings
+  - [ ] UI Settings
+
+### Backend
+
+- [ ] Placeholder
+  - [ ] Nested Placeholder
+
+### Database
+
+- [ ] Placeholder
+  - [ ] Nested Placeholder
 
 See the [open issues](https://github.com/xlab-classes/Cse442-spring2022-HireMi/issues) for a full list of proposed features (and known issues).
 
