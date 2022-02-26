@@ -1,16 +1,27 @@
+<?php
+if (isset($_COOKIE["name"]) and 
+    isset($_COOKIE["id"]) and 
+    isset($_COOKIE["pic"]) and
+    isset($_COOKIE["email"]))
+{
+  echo $_COOKIE["name"];
+  echo $_COOKIE["id"];
+  echo $_COOKIE["pic"];
+  echo $_COOKIE["email"];
+
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="Hire-Mi Frontend Application"
       content="Web site created using create-react-app"
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>HireMi</title>
   </head>
   <body>
@@ -20,5 +31,6 @@
     <a href="../login/index.phtml">Login</a>
     <a href="../others/index.html">Other Templates</a>
     <a href="../settings/index.phtml">Settings</a>
+    
   </body>
 </html>

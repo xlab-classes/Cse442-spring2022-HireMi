@@ -1,0 +1,81 @@
+<?php
+if (isset($_COOKIE["name"]) and 
+    isset($_COOKIE["id"]) and 
+    isset($_COOKIE["pic"]) and
+    isset($_COOKIE["email"]))
+{
+  echo $_COOKIE["name"];
+  // TODO: Asif can query to database to check for user and either
+  // create a user or retrieve their information.
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="Hire-Mi Frontend Application"
+      content="Web site created using create-react-app"
+    />
+    <title>HireMi</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <a href="../index.html">Resume Builder</a>
+    <a href="../dashboard/index.html">Dashboard</a>
+    <a href="../login/index.phtml">Login</a>
+    <a href="../others/index.html">Other Templates</a>
+    <a href="../settings/index.phtml">Settings</a>
+
+    <div id="g_id_onload"
+     data-client_id="515535950425-qkoa6f2on1o99chdj02nqqqu5e4kln8c.apps.googleusercontent.com"
+     data-context="signup"
+     data-ux_mode="popup"
+     data-callback="handleCredentialResponse"
+     data-auto_prompt="false">
+    </div>
+
+    <script>
+
+        function handleCredentialResponse(response) {
+           // decodeJwtResponse() is a custom function defined by you
+           // to decode the credential response.
+
+           const payloadBase64 = response.credential.split('.')[1];
+           const payload = atob(payloadBase64);
+
+           const responsePayload = JSON.parse(payload)
+           const expirationDate = new Date(new Date().getTime()+(14*24*60*60*1000));
+
+           document.cookie = `name=${responsePayload.name}; path=/; expires=${expirationDate}`;
+           document.cookie = `id=${responsePayload.sub}; path=/; expires=${expirationDate}`;
+           document.cookie = `pic=${responsePayload.picture}; path=/; expires=${expirationDate}`;
+           document.cookie = `email=${responsePayload.email}; path=/; expires=${expirationDate}`;
+
+           window.location.reload()
+        }
+      </script>
+
+    <!-- <div id="g_id_onload"
+     data-client_id="515535950425-qkoa6f2on1o99chdj02nqqqu5e4kln8c.apps.googleusercontent.com"
+     data-context="signup"
+     data-ux_mode="popup"
+     data-login_uri="https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/login/index.html"
+     data-auto_prompt="false">
+    </div> -->
+
+    <div class="g_id_signin"
+        data-type="standard"
+        data-shape="pill"
+        data-theme="outline"
+        data-text="signin_with"
+        data-size="large"
+        data-logo_alignment="left">
+    </div>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+  </body>
+</html>
