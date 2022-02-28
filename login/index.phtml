@@ -22,7 +22,7 @@ if (isset($_COOKIE["name"]) and
 
   // prepare and bind statement checking existence of user
   $stmt1 = $conn->prepare("SELECT COUNT(id) FROM Users WHERE id = ?");
-  $stmt1->bind_param("i", $_COOKIE["id"]);
+  $stmt1->bind_param("s", $_COOKIE["id"]);
   $stmt1->execute();
 
   $result = $stmt1->get_result();
