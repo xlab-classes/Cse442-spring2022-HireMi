@@ -5,12 +5,15 @@ if (isset($_COOKIE["name"]) and
     isset($_COOKIE["email"]))
 {
   echo $_COOKIE["name"];
+
   // query to database to check for user and either
   // create a user or retrieve their information.
 
-  $servername = "oceanus.cse.buffalo.edu:3306";
+  $servername = "oceanus.cse.buffalo.edu";
   $username = "********";
   $password = "********";
+  $database = "cse442_2022_spring_team_r_db";
+  $port = 3306;
 
   // Create db connection
   $conn = new mysqli($servername, $username, $password);
