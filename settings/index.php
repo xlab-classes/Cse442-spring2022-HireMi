@@ -25,12 +25,10 @@ if (isset($_COOKIE["name"]) and
     <title>HireMi</title>
   </head>
   <body>
+    <header>
+      <?php include '../frontend/public/nav.php'; ?>
+    </header>
     <div id="root"></div>
-    <a href="../index.html">Resume Builder</a>
-    <a href="../dashboard/index.html">Dashboard</a>
-    <a href="../login/index.phtml">Login</a>
-    <a href="../others/index.html">Other Templates</a>
-    <a href="../settings/index.phtml">Settings</a>
     
   </body>
 </html>

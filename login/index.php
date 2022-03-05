@@ -58,12 +58,10 @@ if (isset($_COOKIE["name"]) and
     <title>HireMi</title>
   </head>
   <body>
+    <header>
+      <?php include '../frontend/public/nav.php'; ?>
+    </header>
     <div id="root"></div>
-    <a href="../index.html">Resume Builder</a>
-    <a href="../dashboard/index.html">Dashboard</a>
-    <a href="../login/index.phtml">Login</a>
-    <a href="../others/index.html">Other Templates</a>
-    <a href="../settings/index.phtml">Settings</a>
 
     <div id="g_id_onload"
      data-client_id="515535950425-qkoa6f2on1o99chdj02nqqqu5e4kln8c.apps.googleusercontent.com"
