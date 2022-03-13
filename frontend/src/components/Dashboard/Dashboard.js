@@ -1,9 +1,19 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+
+import './Dashboard.module.scss';
 
 const Dashboard = (props) => {
 
+    const [isDrawer, setDrawer] = useState(false);
+
+    useEffect(()=>{
+
+    }, []);
+
     return (
-        <div style={{color: "blue", fontSize: "5rem"}}>Dashboard</div>
+        <section>
+
+        </section>
     )
 }
 
