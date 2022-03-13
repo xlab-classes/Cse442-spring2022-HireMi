@@ -19,10 +19,10 @@ function App() {
 
     useEffect(() => {
         setAuth({
-            username: (Cookies.get("username") == undefined) ? "Anonymous" : Cookies.get("username"),
-            id: (Cookies.get("id") == undefined) ? "-1" : Cookies.get("id"),
-            pic: (Cookies.get("pic") == undefined) ? "https://lh3.googleusercontent.com/a/AATXAJxOjQQoJshWIHJ0t67X0-fqBJzgTDMnMcCaHvqy=s96-c" : Cookies.get("pic"),
-            email: (Cookies.get("email") == undefined) ? "hiremi.ub@gmail.com" : Cookies.get("email"),
+            username: (Cookies.get("username") === undefined) ? "Anonymous" : Cookies.get("username"),
+            id: (Cookies.get("id") === undefined) ? "-1" : Cookies.get("id"),
+            pic: (Cookies.get("pic") === undefined) ? "https://lh3.googleusercontent.com/a/AATXAJxOjQQoJshWIHJ0t67X0-fqBJzgTDMnMcCaHvqy=s96-c" : Cookies.get("pic"),
+            email: (Cookies.get("email") === undefined) ? "hiremi.ub@gmail.com" : Cookies.get("email"),
         })
 
     }, []);
@@ -30,6 +30,7 @@ function App() {
     return (
         <div className="App">
             <Navbar auth={auth} />
+            {/* Need to create HOC route component to let only users with authentication can access certain views */}
             <Routes>
                 <Route path={ROUTE_LOGIN} element={<Login/>}/>
                 <Route index path={ROUTE_DASHBOARD} element={<Dashboard/>}/>

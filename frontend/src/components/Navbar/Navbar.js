@@ -24,8 +24,8 @@ const Navbar = ({auth}) => {
     // }, [isActive])
 
     return (
-        <React.Fragment>
-            <div className="nav-bar padding"/>
+        <div className="nav-bar padding">
+            {/*<div className="nav-bar padding"/>*/}
             <nav className={isActive ? "nav-bar active" : "nav-bar"}>
                 <button onClick={() => {
                     setActive(prevState => !prevState)
@@ -36,7 +36,7 @@ const Navbar = ({auth}) => {
                 <NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>
                 <NavLink to={ROUTE_SETTINGS}>Settings</NavLink>
             </nav>
-        </React.Fragment>
+        </div>
     )
 }
 
