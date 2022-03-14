@@ -94,3 +94,7 @@ function LoginButton() {
     </div>
   )
 } //end of LoginButton
+
+
+export default Login;
+
