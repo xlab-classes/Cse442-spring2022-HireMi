@@ -1,3 +1,4 @@
+@use '../../constants/theme';
 .nav-bar {
   display: flex;
   width: 100%;
@@ -5,7 +6,13 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 20;
+
+  background-color: theme.$default-bg;
+
+  &.active {
+    background-color: theme.$test-color;
+  }
 }
 
 .nav-bar.padding {
@@ -15,3 +22,4 @@
 .nav-bar.active {
 
 }
+

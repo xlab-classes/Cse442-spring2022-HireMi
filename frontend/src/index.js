@@ -5,13 +5,16 @@ import './normalize.css';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faPlus, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faPlus, faAngleRight, faAngleLeft);
 
 ReactDOM.render(
   <React.StrictMode>
       <BrowserRouter>
           <App/>
       </BrowserRouter>
-
   </React.StrictMode>,
   document.getElementById('root-hire-mi')
 );

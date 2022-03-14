@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import {NavLink} from "react-router-dom";
 import {ROUTE_DASHBOARD, ROUTE_LOGIN, ROUTE_BUILDER, ROUTE_SETTINGS} from "../../constants/routes";
 
-import './Navbar.scss'
+import styles from './Navbar.module.scss'
 
 const Navbar = ({auth}) => {
 
@@ -25,8 +25,8 @@ const Navbar = ({auth}) => {
 
     return (
         <React.Fragment>
-            <div className="nav-bar padding"/>
-            <nav className={isActive ? "nav-bar active" : "nav-bar"}>
+            {/*<div className="nav-bar padding"/>*/}
+            <nav className={isActive ? `${styles['nav-bar']} ${styles.active}` : styles["nav-bar"]}>
                 <button onClick={() => {
                     setActive(prevState => !prevState)
                 }}>Test

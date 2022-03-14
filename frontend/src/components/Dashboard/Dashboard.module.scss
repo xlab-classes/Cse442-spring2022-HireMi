@@ -1,0 +1,131 @@
+// Dashboard
+.page-root {
+  position: relative;
+  padding-top: 3rem;
+  width: 100%;
+  height: 100%;
+}
+
+// Side Teampltes
+.templates, .templates-btn-wrap {
+  width: 20rem;
+}
+.templates {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  //width: 20rem;
+  position: absolute;
+  padding-top: 3rem;
+  top: 0;
+  left: 0;
+  //transform: translate(-75%, 0);
+  //background: linear-gradient(180deg, rgba(246, 236, 245, 0) 80.73%, #F6ECF5 93.75%);
+  background: linear-gradient(180deg, #D5D6EA 0%, #F6ECF5 100%);
+  transition: .3s ease-in-out;
+  z-index: 10;
+
+  &.active {
+    //transform: translate(0, 0);
+    width: 100%;
+  }
+}
+
+.templates-options {
+  overflow-y: scroll;
+  height: 100%;
+  width: 100%;
+}
+
+.templates-fade {
+  position: absolute;
+  left: 0;
+  bottom: 4rem;
+  width: 100%;
+  height: 10rem;
+  background: linear-gradient(180deg, rgba(246, 236, 245, 0) 80.73%, #F6ECF5 93.75%);
+  z-index: 14;
+}
+
+.templates-btn-div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  height: 5rem;
+  background-color: transparent;
+  z-index: 15;
+}
+.templates-btn-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  float: right;
+}
+
+.templates-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+// Single Template
+
+.single-template {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15rem;
+  height: 22.5rem;
+  background-color: #fff;
+  border: .15rem solid #ccc;
+  margin: 2rem 2rem;
+  float: left;
+
+  transition: float .3s ease;
+
+
+  &.active {
+    //margin: 3rem auto 3rem 3rem;
+  }
+}
+
+// Workspace area
+
+.workspace {
+  position: relative;
+  padding-left: 20rem;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.documents-space {
+  width: 100%;
+  height: 100%;
+  padding: 5rem;
+  overflow-y: scroll;
+}
+
+// Single doc
+.new-doc, .single-doc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  float: left;
+  width: 9rem;
+  height: 13.5rem;
+  border-radius: .3rem;
+  margin: 0 0 60px 40px;
+}
+.new-doc {
+  border: .15rem dashed #ccc;
+}
+
+.single-doc {
+  border: .15rem solid #ccc;
+}
