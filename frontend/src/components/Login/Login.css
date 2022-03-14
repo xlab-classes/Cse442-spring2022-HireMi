@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Montserrat&display=swap');
+
 .r4{
     position: absolute;
     top: 50%;
@@ -6,8 +8,18 @@
     margin-left: -50px;
 }
 
+#container{
+    font-family: 'Lato', sans-serif;
+    color: rgb(170, 167, 196);
+    margin: 30px auto;
+    text-align: center;
+    font-size: 30px;
+    max-width: 600px;
+    position: relative;
+}
+
 .borders{
-	  text-align: center;
+    text-align: center;
     position: absolute;
     left: 50%;
     top: 50%;
