@@ -24,19 +24,20 @@ const Navbar = ({auth}) => {
     // }, [isActive])
 
     return (
-        <React.Fragment>
-            {/*<div className="nav-bar padding"/>*/}
             <nav className={isActive ? `${styles['nav-bar']} ${styles.active}` : styles["nav-bar"]}>
+                {/*The actual navbar won't have Link*/}
+                <div>
+                    <NavLink to={ROUTE_LOGIN}>Login</NavLink>
+                    <NavLink to={ROUTE_DASHBOARD}>Dashboard</NavLink>
+                    <NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>
+                    <NavLink to={ROUTE_SETTINGS}>Settings</NavLink>
+                </div>
+
                 <button onClick={() => {
                     setActive(prevState => !prevState)
-                }}>Test
+                }}>Temp
                 </button>
-                <NavLink to={ROUTE_LOGIN}>Login</NavLink>
-                <NavLink to={ROUTE_DASHBOARD}>Dashboard</NavLink>
-                <NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>
-                <NavLink to={ROUTE_SETTINGS}>Settings</NavLink>
             </nav>
-        </React.Fragment>
     )
 }
 
