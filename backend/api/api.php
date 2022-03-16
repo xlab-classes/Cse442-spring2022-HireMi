@@ -70,6 +70,9 @@ function saveResume($id, $resume_id, $thumbnail, $elements, $share = 1){
         $stmt3->execute();
         $stmt3->close();
     }
+
+    $stmt1->close();
+    $conn->close();
 }
 
 function loadResume($id, $resume_id){
@@ -105,6 +108,7 @@ function loadResume($id, $resume_id){
     }
 
     $stmt1->close();
+    $conn->close();
     return $data;
 }
 
@@ -184,6 +188,7 @@ function getThumbnail($id, $others, $resume_id, $n){
         $stmt1->close();
     }
     
+    $conn->close();
     return $data;
 }
 
@@ -337,11 +342,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
         }
 
         $resume_id = $json_body["resume_id"];
-        $data = loadResume($id, $resume_id);
+        // $data = loadResume($id, $resume_id);
 
+        //TODO: ASIF load resume needs to be implemented.
         //Should be inverse of saveResume. Dummy data example below.
         
-        /* $data = array(
+        $data = array(
             "resume_id" => "25",
             "elements" => array(
                 "type" => "text",
@@ -356,8 +362,6 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
                 )
             )
         );
-        */
-        
         header("HTTP/1.1 200 OK");
         header("Content-Type: application/json; charset=utf-8");
         echo json_encode($data);
@@ -386,6 +390,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
         $resume_id = $json_body["resume_id"];
         $n = $json_body["n"];
 
+        //TODO: ASIF getThumbnail() needs to be implemented.
         $data = getThumbnail($id, $others, $resume_id, $n);
 
         header("HTTP/1.1 200 OK");
