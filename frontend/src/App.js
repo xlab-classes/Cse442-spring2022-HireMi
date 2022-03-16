@@ -1,4 +1,4 @@
-import './App.scss';
+import styles from './App.module.scss';
 import Cookies from "js-cookie";
 
 import React, {useState, useEffect} from "react";
@@ -28,7 +28,7 @@ function App() {
     }, []);
 
     return (
-        <div className="App">
+        <div className={styles['app-root']}>
             <Navbar auth={auth} />
             {/* Need to create HOC route component to let only users with authentication can access certain views */}
             <Routes>
