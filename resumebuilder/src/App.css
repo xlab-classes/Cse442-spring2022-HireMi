@@ -53,11 +53,6 @@ h2:after {
 /**************************************/
 /*box for yourname*/
 /**************************************/
-h3 {
-    text-Align: "center";
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1rem;
-}
 .yourname {
     display: flex;
     justify-content: center;
@@ -66,10 +61,6 @@ h3 {
 /**************************************/
 /*box for education*/
 /**************************************/
-h4 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1rem;
-}
 .education {
     display: flex;
     justify-content: center;
@@ -78,10 +69,6 @@ h4 {
 /**************************************/
 /*box for experience*/
 /**************************************/
-h5 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1rem;
-}
 .experience {
     display: flex;
     justify-content: center;
