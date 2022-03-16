@@ -11,7 +11,7 @@ function login($id, $name, $email, $pic){
     $database = "cse442_2022_spring_team_r_db";
     $port = 3306;
 
-    $conn = new mysqli($servername, $username, $password, $database);
+    $conn = new mysqli($servername, $username, $password, $database, $port);
     if (mysqli_connect_error()) {
         die("Connection failed: " . mysqli_connect_error());
     }
@@ -34,47 +34,94 @@ function login($id, $name, $email, $pic){
     $conn->close();
 }
 
-function saveResume($id, $resume_name, $thumbnail, $elements){
+function saveResume($id, $resume_id, $thumbnail, $elements, $share = 1){
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
     $password = "50266948";
     $database = "cse442_2022_spring_team_r_db";
     $port = 3306;
 
-    $conn = new mysqli($servername, $username, $password, $database);
+    # Turn the array into a json list string for storing in database
+    $elements = json_encode($elements);
+
+    $conn = new mysqli($servername, $username, $password, $database, $port);
     if (mysqli_connect_error()) {
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    //TODO: ASIF HELP IDK WHAT I'M DOING
-    //I'm not really certain if the resumes are saved in the same table as user accounts or what
-    //Also, I haven't implemented a "share: bool" value, but you can store a dummy true if you want.
+    $stmt1 = $conn->prepare("SELECT COUNT(ResumeID) FROM Resumes WHERE ResumeID = ?");
+    $stmt1->bind_param("i", $resume_id);
+    $stmt1->execute();
+  
+    $result = $stmt1->get_result();
+    $row = $result->fetch_assoc();
+  
+    // Resume does not already exist, create new resume in table
+    if ($row["COUNT(ResumeID)"] == 0) {
+        $stmt2 = $conn->prepare("INSERT INTO Resumes(id, Thumbnail, Elements, Share) VALUES (?, ?, ?, ?)");
+        $stmt2->bind_param("sbsi", $id, $thumbnail, $elements);
+        $stmt2->execute();
+        $stmt2->close();
+    }
+    // Resume exists, update it
+    else {
+        $stmt3 = $conn->prepare("UPDATE Resumes SET Thumbnail = ?, Elements = ?, Share = ? WHERE ResumeID = ?");
+        $stmt3->bind_param("bsii", $thumbnail, $elements, $share, $resume_id);
+        $stmt3->execute();
+        $stmt3->close();
+    }
+
+    $stmt1->close();
+    $conn->close();
 }
 
-function loadResume($id, $resume_name){
+function loadResume($id, $resume_id){
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
     $password = "50266948";
     $database = "cse442_2022_spring_team_r_db";
     $port = 3306;
 
-    $conn = new mysqli($servername, $username, $password, $database);
+    $conn = new mysqli($servername, $username, $password, $database, $port);
     if (mysqli_connect_error()) {
         die("Connection failed: " . mysqli_connect_error());
     }
-    //TODO: ASIF HELP
+    
+    $stmt1 = $conn->prepare("SELECT Elements, Share FROM Resumes WHERE ResumeID = ? AND id = ?");
+    $stmt1->bind_param("is", $resume_id, $id);
+    $stmt1->execute();
+  
+    $result = $stmt1->get_result();
+    $data = array();
+
+    // The resume exists in the database
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $data = array(
+            "resume_id" => $resume_id,
+            "elements" => json_decode($row["Elements"]), // Turn elements back into array before returning
+            "share" => $row["Share"]
+        );
+    }
+    else {
+        echo "The resume does not exist";
+    }
+
+    $stmt1->close();
+    $conn->close();
+    return $data;
 }
 
 /**
  * $id - user's id to query
  * $others - boolean;
  * if true, get some random resume thumbnail.
- * if false, get $resume_name under user's account
+ * if false, get $resume_id under user's account
  * $n is getting a random resume. We can get the nth resume in
  * some ordering to ensure that the same resume doesn't get pulled twice.
  * (e.g. when n=0, we could get the 0th most popular template, indexed by 0)
  */
-function getThumbnail($id, $others, $resume_name, $n){
+function getThumbnail($id, $others, $resume_id, $n){
     
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
@@ -82,35 +129,66 @@ function getThumbnail($id, $others, $resume_name, $n){
     $database = "cse442_2022_spring_team_r_db";
     $port = 3306;
 
-    $conn = new mysqli($servername, $username, $password, $database);
+    $conn = new mysqli($servername, $username, $password, $database, $port);
     if (mysqli_connect_error()) {
         die("Connection failed: " . mysqli_connect_error());
     }
-
-    //TODO: ASIF HELP
 
     //This proved helpful to me
     //https://stackoverflow.com/questions/7793009/how-to-retrieve-images-from-mysql-database-and-display-in-an-html-tag
 
     if($others === false){
-        //Query for resume associate with resume_name
-        //$owner_id = $id;
-        //$owner_resume_name = $resume_name;
-        //$image_data = 
+        //Query for resume associated with resume_id
+
+        $stmt1 = $conn->prepare("SELECT Thumbnail FROM Resumes WHERE ResumeID = ? AND id = ?");
+        $stmt1->bind_param("is", $resume_id, $id);
+        $stmt1->execute();
+
+        $result = $stmt1->get_result();
+        $data = array();
+
+        // The resume exists in the database
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $data = array(
+                "id" => $id,
+                "resume_id" => $resume_id,
+                "thumbnail" => $row["Thumbnail"]
+                // Image should already be encoded when retrieved from database - 
+                // need to decode after getting. Change here if impl. changes.
+
+                // $base64_image = base64_encode( $row["Thumbnail"] );
+            );
+        }
+        $stmt1->close();
+
+    } else {
+        //Otherwise query for a random other image query
+
+        $stmt1 = $conn->prepare("SELECT ResumeID, id, Thumbnail FROM Resumes WHERE Share = ?");
+        $stmt1->bind_param("i", 1); // Share = 1 is default and will always return a result if it exists
+        $stmt1->execute();
+
+        $result = $stmt1->get_result();
+        $data = array();
+
+        // A resume was found
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $data = array(
+                "id" => $id,
+                "resume_id" => $resume_id,
+                "thumbnail" => $row["Thumbnail"]
+                // Image should already be encoded when retrieved from database - 
+                // need to decode after getting. Decode here if needed.
+
+                // $base64_image = base64_decode( $row["Thumbnail"] );
+            );
+        }
+        $stmt1->close();
     }
-    //Otherwise query for a random other image query 
-    //For now maybe do nth oldest thumbnail?
-    //$owner_id = 
-    //$owner_resume_name =
-    //$image_data = 
-
-    $base64_image = base64_encode( $image_data );
-    $data = array(
-        "id" => $owner_id,
-        "name" => $owner_resume_name,
-        "image" => $base64_image,
-    );
-
+    
+    $conn->close();
     return $data;
 }
 
@@ -234,11 +312,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             $data = $json_body["data"];
     
             //This is necessary to save multiple resumes
-            $resume_name = $data["name"];
+            $resume_id = $data["resume_id"];
             $elements = $data["elements"];
             
             //Save to database
-            saveResume($id, $resume_name, $thumbnail, $elements);
+            saveResume($id, $resume_id, $thumbnail, $elements);
             
             echo "Successfully saved Resume";
             return;
@@ -263,14 +341,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             return;
         }
 
-        $resume_name = $json_body["name"];
-        // $data = loadResume($id, $resume_name);
+        $resume_id = $json_body["resume_id"];
+        // $data = loadResume($id, $resume_id);
 
         //TODO: ASIF load resume needs to be implemented.
         //Should be inverse of saveResume. Dummy data example below.
         
         $data = array(
-            "name" => "dummyData",
+            "resume_id" => "25",
             "elements" => array(
                 "type" => "text",
                 "offset-x" => 100,
@@ -309,11 +387,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
         }
 
         $others = $json_body["others"];
-        $resume_name = $json_body["name"];
+        $resume_id = $json_body["resume_id"];
         $n = $json_body["n"];
 
         //TODO: ASIF getThumbnail() needs to be implemented.
-        $data = getThumbnail($id, $others, $resume_name, $n);
+        $data = getThumbnail($id, $others, $resume_id, $n);
 
         header("HTTP/1.1 200 OK");
         header("Content-Type: application/json; charset=utf-8");
