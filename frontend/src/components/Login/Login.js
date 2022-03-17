@@ -1,7 +1,7 @@
 import React from 'react';
 import { GoogleLogin } from "react-google-login"
 import './Login.css';
-import Logo from './hiremi.jpg';
+import Logo from './hiremi.png';
 
 
 function Login() {
