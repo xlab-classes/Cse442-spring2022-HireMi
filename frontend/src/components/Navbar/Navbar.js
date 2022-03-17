@@ -6,7 +6,24 @@ import {ROUTE_DASHBOARD, ROUTE_LOGIN, ROUTE_SETTINGS} from "../../constants/rout
 
 import styles from './Navbar.module.scss'
 
-const Navbar = ({auth}) => {
+const ProtectedLinks = () => {
+    return (
+        <>
+            <NavLink to={ROUTE_DASHBOARD}>Dashboard</NavLink>
+            <NavLink to={ROUTE_SETTINGS}>Settings</NavLink>
+        </>
+    )
+}
+
+const UnprotectedLinks = () => {
+    return (
+        <>
+            <NavLink to={ROUTE_LOGIN}>Login</NavLink>
+        </>
+    )
+}
+
+const Navbar = ({id}) => {
 
 
     const [isActive, setActive] = useState(false)
@@ -24,17 +41,13 @@ const Navbar = ({auth}) => {
 
     return (
         <nav className={isActive ? `${styles['nav-bar']} ${styles.active}` : styles["nav-bar"]}>
-            {/*The actual navbar won't have Link*/}
             <div>
-                <NavLink to={ROUTE_LOGIN}>Login</NavLink>
-                <NavLink to={ROUTE_DASHBOARD}>Dashboard</NavLink>
-                {/*<NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>*/}
-                <NavLink to={ROUTE_SETTINGS}>Settings</NavLink>
+                {id ? <ProtectedLinks /> : <UnprotectedLinks />}
             </div>
-            <button onClick={() => {
-                setActive(prevState => !prevState)
-            }}>Temp
-            </button>
+            {/*<button onClick={() => {*/}
+            {/*    setActive(prevState => !prevState)*/}
+            {/*}}>Temp*/}
+            {/*</button>*/}
         </nav>
     )
 }
