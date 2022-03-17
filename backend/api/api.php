@@ -192,6 +192,98 @@ function getThumbnail($id, $others, $resume_id, $n){
     return $data;
 }
 
+function changeName($id, $new_name) {
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $stmt1 = $conn->prepare("SELECT COUNT(id) FROM Users WHERE id = ?");
+    $stmt1->bind_param("s", $id);
+    $stmt1->execute();
+  
+    $result = $stmt1->get_result();
+    $row = $result->fetch_assoc();
+
+    // Make sure user exists
+    if ($row["COUNT(id)"] > 0) {
+        $stmt2 = $conn->prepare("UPDATE Users SET Name = ? WHERE id = ?");
+        $stmt2->bind_param("ss", $new_name, $id);
+        $stmt2->execute();
+        $stmt2->close();
+      }
+
+    else {
+        echo "Invalid user ID, user does not exist in the database";
+    }
+
+    $stmt1->close();
+    $conn->close();
+}
+
+function deleteAccount($id) {
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $stmt1 = $conn->prepare("DELETE FROM Users WHERE id = ?");
+    $stmt1->bind_param("s", $id);
+    $stmt1->execute();
+    $stmt1->close();
+
+    $stmt2 = $conn->prepare("DELETE FROM Resumes WHERE id = ?");
+    $stmt2->bind_param("s", $id);
+    $stmt2->execute();
+    $stmt2->close();
+
+    $conn->close();
+}
+
+function saveProfilePic($id, $file_path) {
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $stmt1 = $conn->prepare("SELECT COUNT(id) FROM Users WHERE id = ?");
+    $stmt1->bind_param("s", $id);
+    $stmt1->execute();
+  
+    $result = $stmt1->get_result();
+    $row = $result->fetch_assoc();
+
+    // Make sure user exists
+    if ($row["COUNT(id)"] > 0) {
+        $stmt2 = $conn->prepare("UPDATE Users SET ProfilePic = ? WHERE id = ?");
+        $stmt2->bind_param("ss", $file_path, $id);
+        $stmt2->execute();
+        $stmt2->close();
+      }
+    
+      $stmt1->close();
+      $conn->close();
+
+}
+
 /**
  * This function is specifically only for login authentication with jwt token from google.
  */
@@ -328,6 +420,65 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
         }
     }
 
+    if($verb === 'POST' && $info === '/change_name'){
+        try {
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+
+            $id = $json_body["id"];
+            $new_name = $json_body["new_name"];
+            
+            // Change name in database
+            changeName($id, $new_name);
+            
+            echo "Successfully changed name";
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
+    if($verb === 'POST' && $info === '/del_acc'){
+        try {
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+
+            $id = $json_body["id"];
+            
+            // Delete account and associated data from database
+            deleteAccount($id);
+            
+            echo "Successfully deleted the account and all user data";
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
     if($verb === 'GET' && $info === '/resume'){
         $headers = (array)apache_request_headers();
         $authorization = $headers["Authorization"];
@@ -408,6 +559,51 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
 } else{
     header("HTTP/1.1 400 Bad Request");
     echo "Could not properly parse request";
+}
+
+// Handle uploading of profile picture images
+// TODO: Send user id in the post request and verify token
+if(($_FILES["image"]) and (isset($_COOKIE["id"]))){
+
+    $target_dir = "../profile_pics/";
+    $target_file = $target_dir . $_COOKIE["id"] . basename($_FILES["image"]["name"]);
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+
+    // Check if image file is a actual image or fake image
+    $check = getimagesize($_FILES["image"]["tmp_name"]);
+    if($check !== false) {
+        echo "File is an image - " . $check["mime"] . ".";
+        $uploadOk = 1;
+    } else {
+        echo "File is not an image.";
+        $uploadOk = 0;
+    }
+
+    // Check file size - max 4 MB
+    if ($_FILES["image"]["size"] > 4,194,304) {
+        echo "Sorry, your file is too large.";
+        $uploadOk = 0;
+    }
+
+    // Allow certain file formats
+    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
+        echo "Sorry, only JPG, JPEG, PNG files are allowed.";
+        $uploadOk = 0;
+    }
+
+    // Check if $uploadOk is set to 0 by an error
+    if ($uploadOk == 0) {
+        echo "Sorry, your file was not uploaded.";
+    // if everything is ok, try to upload file
+    } else {
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+            saveProfilePic($_COOKIE["id"], $target_file);
+            echo "The file has been uploaded.";
+        } else {
+            echo "Sorry, there was an error uploading your file.";
+        }
+    }
 }
 
 ?>
