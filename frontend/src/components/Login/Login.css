@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Montserrat&display=swap');
+
+.buttonClass{
+    height: 40px;
+    width: 240px;
+    font-family: 'Lato', sans-serif;
+    background-color: #b6b9e9;
+    border: none;
+    border-radius: 25px;
+}
+.buttonClass:hover{
+    background: #c0c3e8;
+    cursor: pointer;
+}
+.base_text__2aTiN{
+    position:relative;
+    top:-7px;
+    right: 21px;
+    
+}
+#container{
+    font-family: 'Lato', sans-serif;
+    color: rgb(170, 167, 196);
+    margin: 30px auto;
+    text-align: center;
+    font-size: 30px;
+    max-width: 600px;
+    position: relative;
+}
+
+
+.borders{
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 200px;
+    border: 3px solid;
+    border-radius: 25px;
+    box-shadow: 
+       inset 0 -3em 3em rgba(0,0,0,0.1),
+             0 0  0 2px rgb(161, 144, 143),
+             0.3em 0.3em 1em rgba(0,0,0,0.3);
+
+    border-color: rgb(189, 171, 194);
+    background: linear-gradient(180deg, #D5D6EA 18.87%, #F6ECF5 39.45%);
+}
+
+.backgrounds{
+    background: linear-gradient(180deg, #D5D6EA 18.87%, #F6ECF5 39.45%);
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+}
