@@ -5,12 +5,13 @@ import React, {useState, useEffect} from "react";
 import {Routes, Route} from 'react-router-dom';
 
 import {ROUTE_LOGIN, ROUTE_DASHBOARD, ROUTE_BUILDER, ROUTE_SETTINGS} from "./constants/routes";
+import {ProtectedRoute, LoginRoute} from "./components/Routes/CustomRoutes";
 
 import Navbar from "./components/Navbar/Navbar";
 
 import Login from "./components/Login/Login";
 import Dashboard from "./components/Dashboard/Dashboard";
-import Builder from "./components/Builder/Builder";
+// import Builder from "./components/Builder/Builder";
 import Settings from "./components/Settings/Settings";
 import NotFound from "./components/NotFound/NotFound";
 
@@ -33,8 +34,8 @@ function App() {
             {/* Need to create HOC route component to let only users with authentication can access certain views */}
             <Routes>
                 <Route path={ROUTE_LOGIN} element={<Login/>}/>
-                <Route index path={ROUTE_DASHBOARD} element={<Dashboard/>}/>
-                <Route path={ROUTE_BUILDER} element={<Builder/>}/>
+                <Route path={ROUTE_DASHBOARD} element={<Dashboard/>}/>
+                {/*<Route path={ROUTE_BUILDER} element={<Builder/>}/>*/}
                 <Route path={ROUTE_SETTINGS} element={<Settings/>}/>
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
