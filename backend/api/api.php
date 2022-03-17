@@ -59,7 +59,7 @@ function saveResume($id, $resume_id, $thumbnail, $elements, $share = 1){
     // Resume does not already exist, create new resume in table
     if ($row["COUNT(ResumeID)"] == 0) {
         $stmt2 = $conn->prepare("INSERT INTO Resumes(id, Thumbnail, Elements, Share) VALUES (?, ?, ?, ?)");
-        $stmt2->bind_param("sbsi", $id, $thumbnail, $elements);
+        $stmt2->bind_param("sbsi", $id, $thumbnail, $elements, $share);
         $stmt2->execute();
         $stmt2->close();
     }
