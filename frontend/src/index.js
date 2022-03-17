@@ -11,7 +11,7 @@ library.add(faPlus, faAngleRight, faAngleLeft);
 
 ReactDOM.render(
   <React.StrictMode>
-      <BrowserRouter>
+      <BrowserRouter basename='/CSE442-542/2022-Spring/cse-442r'>
           <App/>
       </BrowserRouter>
   </React.StrictMode>,
