@@ -13,7 +13,7 @@ const routes = (auth, setAuth) => [
     },
     {
         path: ROUTE_SETTINGS,
-        element: auth?.id ? <Settings auth={auth}/> : <Navigate to={ROUTE_LOGIN} />,
+        element: auth?.id ? <Settings setAuth={setAuth} auth={auth}/> : <Navigate to={ROUTE_LOGIN} />,
     },
     {
         path: ROUTE_LOGIN,
