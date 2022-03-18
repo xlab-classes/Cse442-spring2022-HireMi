@@ -84,7 +84,8 @@ const Dashboard = ({auth}) => {
                     'id': auth?.id,
                     'n': i
                 })
-            }).then((result) => result.json())
+            })
+                .then((result) => result.json())
                 .then((resultJson) => {
                     let id = resultJson.id;
                     let resume_id = resultJson.resume_id;
@@ -93,10 +94,10 @@ const Dashboard = ({auth}) => {
                     // resumeArray.push({'title': resume_id, 'thumbnail':image});
                     resumeArray.push({'id': resume_id, 'thumbnail': 'data:image/png;base64,' + resultJson.thumbnail});
                     setDocuments(resumeArray);
-                });
+                    setLoaded(true);
+                })
         }
 
-        setLoaded(true);
 
     }
 
