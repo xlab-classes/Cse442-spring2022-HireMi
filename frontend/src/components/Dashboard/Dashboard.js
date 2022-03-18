@@ -74,7 +74,7 @@ const Dashboard = ({auth}) => {
 
         let resumeArray = [];
         for (let i = 0; i < countJSON.count; i++) {
-            fetch('./backend/api/api.php/get_dashboard', {
+            await fetch('./backend/api/api.php/get_dashboard', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,6 +97,7 @@ const Dashboard = ({auth}) => {
                     setLoaded(true);
                 })
         }
+
 
 
     }
