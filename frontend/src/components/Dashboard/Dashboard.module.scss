@@ -75,12 +75,17 @@
 
 // Single Template
 
+.images {
+  max-height: 100%;
+  max-width: 100%;
+}
+
 .single-template {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 15rem;
-  height: 22.5rem;
+  width: 17rem;
+  height: 22rem;
   background-color: #fff;
   border: .15rem solid #ccc;
   margin: 2rem 2rem;
@@ -128,4 +133,13 @@
 
 .single-doc {
   border: .15rem solid #ccc;
+}
+
+.new-doc, .single-doc, .single-template {
+  cursor: pointer;
+  transition: .3s ease;
+}
+
+.new-doc:hover, .single-doc:hover, .single-template:hover {
+  opacity: .9;
 }
