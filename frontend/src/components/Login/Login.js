@@ -72,12 +72,6 @@ function LoginButton({setAuth, auth}) {
             .then((resultJson) => {
 
                 const expirationDate = new Date(new Date().getTime() + (14 * 24 * 60 * 60 * 1000));
-                // console.log(resultJson);
-                // console.log(resultJson["name"]);
-                // console.log(resultJson["id"]);
-                // console.log(resultJson["pic"]);
-                // console.log(resultJson["email"]);
-                // console.log(resultJson["verified_token"]);
 
                 document.cookie = `name=${resultJson.name}; path=/; expires=${expirationDate}`;
                 document.cookie = `id=${resultJson.id}; path=/; expires=${expirationDate}`;
