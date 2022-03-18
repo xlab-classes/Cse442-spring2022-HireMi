@@ -1,0 +1,50 @@
+// Settings
+.page-root {
+    position: relative;
+    padding-top: 3rem;
+    width: 100%;
+    height: 100%;
+}
+
+.profile-sect {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    & > h6 {
+        font-size: 2rem;
+        margin: 0;
+    }
+
+    & > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.profile-pic {
+    position: relative;
+
+    & > img,
+    & > input {
+        width: 10rem;
+        height: 10rem;
+        border-radius: 50%;
+    }
+    & > img {
+        border: .2rem solid #000;
+        z-index: 1;
+    }
+
+    & > input {
+        cursor: pointer;
+        z-index: 2;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        lefT: 0;
+    }
+}
+
+
