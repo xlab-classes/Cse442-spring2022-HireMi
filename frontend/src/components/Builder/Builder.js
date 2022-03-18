@@ -14,7 +14,7 @@ const styling = makeStyles({
     }
 });
 
-const Builder = ({resume, setEditor, setResume}) => {
+const Builder = ({auth, resume, setEditor, setResume}) => {
     const columns = styling();
 
     useEffect(() => {
