@@ -19,7 +19,7 @@ import styles from './Dashboard.module.scss';
 //     {title: 'template8', thumbnail: 'none'},
 // ]
 
-const Dashboard = (props) => {
+const Dashboard = ({auth}) => {
 
     const [isDrawer, setDrawer] = useState(false);
     const [isLoaded, setLoaded] = useState(false);
@@ -31,17 +31,82 @@ const Dashboard = (props) => {
         loadData();
     }, []);
 
-    function loadData() {
-        fetch('url').then((response) => {
-            setTemplates([])
-            setDocuments([])
-        }).then((response) => {
-                setLoaded(true);
-            }
-        ).catch((err) => {
-            console.error(err)
-            setLoaded(false);
-        })
+    async function loadData() {
+
+        let templateArray = [];
+        for(var i = 0; i < 4; i++){
+            fetch('./backend/api/api.php/get_template', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + auth?.access_token
+                },
+                body: JSON.stringify({
+                    'id': auth?.id,
+                    'n': 1
+                })
+            }).then((result) => result.json())
+                .then((resultJson) => {
+                    let id = resultJson.id;
+                    let resume_id = resultJson.resume_id;
+                    // let image = new Image();
+                    // image.src = 'data:image/png;base64,'+resultJson.thumbnail;
+                    // templateArray.push({'title': resume_id, 'thumbnail': image});
+                    templateArray.push({'title': resume_id, 'thumbnail': 'data:image/png;base64,'+resultJson.thumbnail});
+                    setTemplates(templateArray);
+                });
+        }
+
+        const numResumes = await fetch('./backend/api/api.php/get_dashboard_count', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + auth?.access_token
+            },
+            body: JSON.stringify({
+                'id': auth?.id
+            })
+        });
+
+        const countJSON = await numResumes.json();
+
+        let resumeArray = [];
+        for(var i=0; i < countJSON.count; i++){
+            fetch('./backend/api/api.php/get_dashboard',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + auth?.access_token
+                },
+                body: JSON.stringify({
+                    'id': auth?.id,
+                    'n': i
+                })
+            }).then((result) => result.json())
+            .then((resultJson) => {
+                let id = resultJson.id;
+                let resume_id = resultJson.resume_id;
+                // let image = new Image();
+                // image.src = 'data:image/png;base64,'+resultJson.thumbnail;
+                // resumeArray.push({'title': resume_id, 'thumbnail':image});
+                resumeArray.push({'title': resume_id, 'thumbnail': 'data:image/png;base64,'+resultJson.thumbnail});
+                setDocuments(resumeArray);
+            });
+        }
+        
+        setLoaded(true);
+
+
+        // fetch('url').then((response) => {
+        //     setTemplates([])
+        //     setDocuments([])
+        // }).then((response) => {
+        //         setLoaded(true);
+        //     }
+        // ).catch((err) => {
+        //     console.error(err)
+        //     setLoaded(false);
+        // })
     }
 
     return (
@@ -49,12 +114,12 @@ const Dashboard = (props) => {
             <section className={styles['workspace']}>
                 <div className={styles['documents-space']}>
                     <NewDocument/>
-                    {documents.map((el) => <Document key={el.title} title={el.title}/>)}
+                    {documents.map((el) => <Document key={el.title} title={el.title} image={el.thumbnail}/>)}
                 </div>
             </section>
             <section className={isDrawer ? `${styles.templates} ${styles.active}` : styles['templates']}>
                 <div className={`${styles['templates-options']}`}>
-                    {templates.map(el => <Template key={el.title} title={el.title} isDrawer={isDrawer}/>)}
+                    {templates.map(el => <Template key={el.title} title={el.title} isDrawer={isDrawer} image={el.thumbnail}/>)}
                 </div>
                 <span className={`${styles['templates-fade']}`}/>
                 <div className={`${styles['templates-btn-div']}`}>
@@ -81,21 +146,21 @@ const NewDocument = () => {
     )
 }
 
-const Document = props => {
+const Document = ({image}) => {
 
 
     return (
         <div className={`${styles['single-doc']}`}>
-
+            <img className={`${styles.images}`} src={image} />
         </div>
     )
 }
 
-const Template = ({isDrawer}) => {
+const Template = ({isDrawer, image}) => {
 
     return (
         <div className={isDrawer ? `${styles['single-template']} ${styles.active}` : `${styles['single-template']}`}>
-
+            <img className={`${styles.images}`} src={image} />
         </div>
     )
 }

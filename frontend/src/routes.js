@@ -9,7 +9,7 @@ import NotFound from "./components/NotFound/NotFound";
 const routes = (auth, setAuth) => [
     {
         path: ROUTE_DASHBOARD,
-        element: auth?.id ? <Dashboard token={auth.access_token} /> : <Navigate to={ROUTE_LOGIN} />,
+        element: auth?.id ? <Dashboard auth={auth} /> : <Navigate to={ROUTE_LOGIN} />,
     },
     {
         path: ROUTE_SETTINGS,
