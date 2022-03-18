@@ -15,8 +15,8 @@ A guide to the current available api calls:
 <br>
 
 - [Load Resume](#load-resume)
-    - GET
-    - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/resume/
+    - POST
+    - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_resume/
     - Header:
         - "Authorization": "Bearer ABCDEFGHIJ=="
     - Body:
@@ -43,15 +43,40 @@ A guide to the current available api calls:
 
 <br>
 
-- [Load Dashboard/Thumbnails](#load-dashboard-thumbnails)
-    - GET
-    - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/dashboard/
+- [Get Dashboard Count](#get-dashboard-count)
+    - POST
+    - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_dashboard_count/
     - Header:
         - "Authorization": "Bearer ABCDEFGHIJ=="
     - Body:
         - "id": string
-        - "others": boolean
+    - Returns:
+        - "count": int
+
+<br>
+
+- [Get Dashboard Thumbnail](#get-dashboard-thumbnail)
+    - POST
+    - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_dashboard/
+    - Header:
+        - "Authorization": "Bearer ABCDEFGHIJ=="
+    - Body:
+        - "id": string
+        - "n": int
+    - Returns:
+        - "id": string
         - "resume_id": int
+        - "thumbnail": Base64 string
+
+<br>
+
+- [Get Template Thumbnail](#get-template-thumbnail)
+    - POST
+    - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_template/
+    - Header:
+        - "Authorization": "Bearer ABCDEFGHIJ=="
+    - Body:
+        - "id": string
         - "n": int
     - Returns:
         - "id": string
@@ -142,36 +167,17 @@ Then, the resume and its elements must be saved in the following format:
 }
 ```
 
-# Load Dashboard Thumbnails
+# Get Dashboard Count
 
-The dashboard must load multiple thumbnails of different resumes from both the user and from templates.
+First, we have to know how many resumes a user has. This allows the front end to generate as many thumbnail slots as resumes. This will then be used to query for each image.
 
-To accomplish this, we include the "others" and "n" variable.
+# Get Dashboard Thumbnail
 
-The API will only respond with 1 image at a time for each API call. This means that every resume "slot" that must show a thumbnail in the dashboard page must make a separate GET request.
+We retrieve the user's $n^{th}$ resume thumbnail (indexed by 0). The reason we do one at a time is to not make an overly large JSON string for the encodings of each thumbnail.
 
-"others" is a boolean: \
-When "others" is true, get a thumbnail from templates i.e. another user's resume. \
-When "others" is false, get the thumbnail that is specified by resume_id.
+# Get Template Thumbnail
 
-This means that if "others" = true, resume_id is not used to query and you can just place any integer like 1 as the value.
-
-"n" is used as an index. As mentioned previously, the API can only retrieve one image at a time. So to prevent the API from sending the same resume twice, we use "n" as an index.
-
-For example:
-Imagine there is room to display 4 resumes on the dashboard.
-```
-[ 0 ]   [ 1 ]   [ 2 ]   [ 3 ]
-```
-To prevent overlap, \
-slot 0 would send "n":0, \
-slot 1 would send "n":1, \
-slot 2 would send "n":2, \
-slot 3 would send "n":3
-
-And so on until every slot has requested a thumbnail. The API will query the database for shareable resumes, then use a TBD sort method (for now it's just whatever the default sort is when we query Share=1). For example, if we sort by resume_id. Slot 0 would get resume_id=1, Slot 1 would get resume_id=2, and so on.
-
-Since we don't have many resumes yet, there is a possibility of less shareable thumbnails than slots in dashboard. In this case, the rest are filled by a dummy thumbnail value.
+We retrieve the $n^{th}$ shareable resume thumbnail (indexed by 0). For now, this uses the default ordering of MySQL, but we can reorder by date, popularity, etc. in the future.
 
 # Change Name
 
