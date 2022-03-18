@@ -115,95 +115,124 @@ function loadResume($id, $resume_id){
     return $data;
 }
 
-/**
- * $id - user's id to query
- * $others - boolean;
- * if true, get some random resume thumbnail.
- * if false, get $resume_id under user's account
- * $n is getting a random resume. We can get the nth resume in
- * some ordering to ensure that the same resume doesn't get pulled twice.
- * (e.g. when n=0, we could get the 0th most popular template, indexed by 0)
- */
-function getThumbnail($id, $others, $resume_id, $n){
+function getOtherThumbnail($id, $n){
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
     $password = "50266948";
     $database = "cse442_2022_spring_team_r_db";
     $port = 3306;
-
     $conn = new mysqli($servername, $username, $password, $database, $port);
     if (mysqli_connect_error()) {
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    //This proved helpful to me
-    //https://stackoverflow.com/questions/7793009/how-to-retrieve-images-from-mysql-database-and-display-in-an-html-tag
+    $stmt1 = $conn->prepare("SELECT ResumeID, id, Thumbnail FROM Resumes WHERE Share = 1");
+    $stmt1->execute();
 
-    if($others === false){
-        //Query for resume associated with resume_id
+    $result = $stmt1->get_result();
+    $data = array();
 
-        $stmt1 = $conn->prepare("SELECT Thumbnail FROM Resumes WHERE ResumeID = ? AND id = ?");
-        $stmt1->bind_param("is", $resume_id, $id);
-        $stmt1->execute();
-
-        $result = $stmt1->get_result();
-        $data = array();
-
-        // The resume exists in the database
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $data = array(
-                "id" => $id,
-                "resume_id" => $resume_id,
-                "thumbnail" => $row["Thumbnail"]
-                // Image should already be encoded when retrieved from database - 
-                // need to decode after getting. Change here if impl. changes.
-
-                // $base64_image = base64_encode( $row["Thumbnail"] );
-            );
-        }
-        $stmt1->close();
-
-    } else {
-        //Otherwise query for a random other image query
-
-        $stmt1 = $conn->prepare("SELECT ResumeID, id, Thumbnail FROM Resumes WHERE Share = 1");
-        $stmt1->execute();
-
-        $result = $stmt1->get_result();
-        $data = array();
-
-        $counter = 0;
-        //$n index by 0. If num_rows > index position, that means there is an nth row
-        if ($result->num_rows > $n){
-            while( $row = $result->fetch_assoc()){
-                if($counter === $n){
-                    $data = array(
-                        "id" => $row["id"],
-                        "resume_id" => $row["ResumeID"],
-                        "thumbnail" => $row["Thumbnail"],
-                    );
-                    break;
-                }
-                $counter++;
+    $counter = 0;
+    //$n index by 0. If num_rows > index position, that means there is an nth row
+    if ($result->num_rows > $n){
+        while( $row = $result->fetch_assoc()){
+            if($counter === $n){
+                $data = array(
+                    "id" => $row["id"],
+                    "resume_id" => $row["ResumeID"],
+                    "thumbnail" => $row["Thumbnail"],
+                );
+                break;
             }
+            $counter++;
         }
-        else{
-            //resume_id = 1 is specifically set by me for a dummy thumbnail
-            $stmt2 = $conn->prepare("SELECT Thumbnail FROM Resumes Where ResumeID = 1");
-            $stmt2->execute();
-            $result2 = $stmt2->get_result();
-            $row = $result2->fetch_assoc();
-            $data = array(
-                "id" => "113776533273259442553",
-                "resume_id" => 1,
-                "thumbnail" => $row["Thumbnail"],
-            );
-            $stmt2->close();
-        }
-
-        $stmt1->close();
     }
+    else{
+        //resume_id = 1 is specifically set by me for a dummy thumbnail
+        $stmt2 = $conn->prepare("SELECT Thumbnail FROM Resumes Where ResumeID = 1");
+        $stmt2->execute();
+        $result2 = $stmt2->get_result();
+        $row = $result2->fetch_assoc();
+        $data = array(
+            "id" => "113776533273259442553",
+            "resume_id" => 1,
+            "thumbnail" => $row["Thumbnail"],
+        );
+        $stmt2->close();
+    }
+    $stmt1->close();
+
+    $conn->close();
+    return $data;
+}
+
+function getResumeCount($id){
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $stmt1 = $conn->prepare("SELECT Thumbnail FROM Resumes WHERE id = ?");
+    $stmt1->bind_param("s", $id);
+    $stmt1->execute();
+
+    $result = $stmt1->get_result();
+    $count = $result->num_rows;
+
+    $data = array("count" => $count);
+
+    return $data;
+}
+
+/**
+ * $id - user's id to query
+ * $n is getting a random resume. We can get the nth resume in
+ * some ordering to ensure that the same resume doesn't get pulled twice.
+ * (e.g. when n=0, we could get the 0th most popular template, indexed by 0)
+ */
+function getMyThumbnail($id, $n){
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $stmt1 = $conn->prepare("SELECT ResumeID, id, Thumbnail FROM Resumes WHERE id = ?");
+    $stmt1->bind_param("s", $id);
+    $stmt1->execute();
+
+    $result = $stmt1->get_result();
+    $data = array();
+
+    // The resume exists in the database
+    if ($result->num_rows > $n){
+        $counter = 0;
+        while( $row = $result->fetch_assoc()){
+            if($counter === $n){
+                $data = array(
+                    "id" => $row["id"],
+                    "resume_id" => $row["ResumeID"],
+                    "thumbnail" => $row["Thumbnail"],
+                );
+                break;
+            }
+            $counter++;
+        }
+    }
+    else {
+        echo "Queried for a resume that doesn't exist.";
+    }
+    $stmt1->close();
+
     
     $conn->close();
     return $data;
@@ -519,17 +548,17 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
      * Used to load a resume for resume builder.
      * Expected query example:
      * 
-     * verb: GET
-     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/resume/
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_resume/
      * headers: {
      * "Authorization": "Bearer 4FR039z4c9MzOQ=="
      * }
      * body: {
      * "id": "113776533273259442553",
-     * "resume_id": 1234
+     * "resume_id": 3
      * }
      */
-    if($verb === 'GET' && $info === '/resume'){
+    if($verb === 'POST' && $info === '/get_resume'){
 
         try {
             $headers = (array)apache_request_headers();
@@ -569,26 +598,19 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
     }
 
     /**
-     * Used to load a single thumbnail from dashboard.
-     * This one is a bit different. Capable of returning two things:
-     * 1. current user's resume thumbnails
-     * 2. other people's resumes
-     * 
+     * Used to discover how many resumes a user has.
      * Expected query example:
      * 
-     * verb: GET
-     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/dashboard/
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_dashboard_count/
      * headers: {
      * "Authorization": "Bearer 4FR039z4c9MzOQ=="
      * }
      * body: {
      * "id": "113776533273259442553",
-     * "others": true,
-     * "resume_id": 1234,
-     * "n": 0
      * }
      */
-    if($verb === 'GET' && $info === '/dashboard'){
+    if($verb === 'POST' && $info === '/get_dashboard_count'){
         try{
             $headers = (array)apache_request_headers();
             $authorization = $headers["Authorization"];
@@ -602,12 +624,99 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
                 echo "Invalid or expired bearer token. Please log in again.";
                 return;
             }
+            $data = getResumeCount($id);
     
-            $others = $json_body["others"];
-            $resume_id = $json_body["resume_id"];
+            header("HTTP/1.1 200 OK");
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode($data);
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
+    /**
+     * Used to load a single thumbnail for dashboard.
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_dashboard/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553",
+     * "n": 0
+     * }
+     */
+    if($verb === 'POST' && $info === '/get_dashboard'){
+        try{
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+
             $n = $json_body["n"];
     
-            $data = getThumbnail($id, $others, $resume_id, $n);
+            $data = getMyThumbnail($id, $n);
+    
+            header("HTTP/1.1 200 OK");
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode($data);
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
+
+    /**
+     * Used to load a single thumbnail for templates.
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_template/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553",
+     * "n": 0
+     * }
+     */
+    if($verb === 'POST' && $info === '/get_template'){
+        try{
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+            $n = $json_body["n"];
+    
+            $data = getOtherThumbnail($id, $n);
     
             header("HTTP/1.1 200 OK");
             header("Content-Type: application/json; charset=utf-8");
