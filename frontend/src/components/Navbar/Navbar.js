@@ -1,7 +1,7 @@
 import React from "react";
 import {useEffect, useState} from "react";
 
-import {NavLink} from "react-router-dom";
+import {NavLink, useLocation} from "react-router-dom";
 import {ROUTE_DASHBOARD, ROUTE_LOGIN, ROUTE_SETTINGS} from "../../constants/routes";
 
 import styles from './Navbar.module.scss'
@@ -17,6 +17,8 @@ const ProtectedLinks = () => {
 
 const Navbar = ({auth}) => {
     const [isActive, setActive] = useState(false)
+
+    const {pathname} = useLocation();
 
     return (
         <>
@@ -36,9 +38,8 @@ const Navbar = ({auth}) => {
                         </button>
                         {isActive ?
                             <ul className={styles['nav-drop']}>
-                                <NavLink to={ROUTE_SETTINGS}>
-                                    Settings
-                                </NavLink>
+                                {pathname === ROUTE_DASHBOARD ? <NavLink to={ROUTE_SETTINGS}>Settings</NavLink> : null}
+                                {pathname === ROUTE_SETTINGS ? <NavLink to={ROUTE_DASHBOARD}>Dashboard</NavLink> : null}
                             </ul>
                             :
                             null

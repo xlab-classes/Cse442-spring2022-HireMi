@@ -135,3 +135,5 @@ Thumbs.db
 /hire-mi/npm-debug.log*
 /hire-mi/yarn-debug.log*
 /hire-mi/yarn-error.log*
+
+build/

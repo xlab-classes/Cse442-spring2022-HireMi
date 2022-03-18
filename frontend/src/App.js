@@ -14,7 +14,7 @@ function App() {
         // id: true,
         pic: (Cookies.get("pic") === undefined) ? "https://lh3.googleusercontent.com/a/AATXAJxOjQQoJshWIHJ0t67X0-fqBJzgTDMnMcCaHvqy=s96-c" : Cookies.get("pic"),
         email: (Cookies.get("email") === undefined) ? "hiremi.ub@gmail.com" : Cookies.get("email"),
-        access_token: null,
+        access_token: (Cookies.get("token") === undefined) ? null : Cookies.get("token")
     });
 
     const routing = useRoutes(routes(auth, setAuth));
