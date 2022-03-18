@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 
 import Builder from "../Builder/Builder";
+import RequestSpinner from "../RequestSpinner/RequestSpinner";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import styles from './Dashboard.module.scss';
 
@@ -102,35 +103,38 @@ const Dashboard = ({auth}) => {
     return (
         <div className={styles['page-root']}>
             {isEditor ? <Builder resume={resume} setEditor={setEditor} setResume={setResume}/>
-                :
-                <>
-                    <section className={styles['workspace']}>
-                        <div className={styles['documents-space']}>
-                            <NewDocument setEditor={setEditor} setResume={setResume}/>
-                            {documents.map((el) => <Document setEditor={setEditor} setResume={setResume}
-                                                             key={el.id + '-doc'} image={el.thumbnail}/>)}
-                        </div>
-                    </section>
-                    <section className={isDrawer ? `${styles.templates} ${styles.active}` : styles['templates']}>
-                        <div className={`${styles['templates-options']}`}>
-                            {templates.map(el => <Template setEditor={setEditor} setResume={setResume}
-                                                           key={el.id + '-template'} isDrawer={isDrawer}
-                                                           image={el.thumbnail}/>)}
-                        </div>
-                        <span className={`${styles['templates-fade']}`}/>
-                        <div className={`${styles['templates-btn-div']}`}>
-                            <div className={`${styles['templates-btn-wrap']}`}>
-                                {isDrawer ? <FontAwesomeIcon icon="fa-solid fa-angle-left"/> : null}
-                                <button className={`${styles['templates-btn']}`} onClick={() => {
-                                    setDrawer(!isDrawer)
-                                }}>
-                                    {isDrawer ? ('Collapse the templates view') : 'Look around more templates'}
-                                </button>
-                                {isDrawer ? null : <FontAwesomeIcon icon="fa-solid fa-angle-right"/>}
+                : isLoaded ?
+                    <>
+                        <section className={styles['workspace']}>
+                            <div className={styles['documents-space']}>
+                                <NewDocument setEditor={setEditor} setResume={setResume}/>
+                                {documents.map((el) => <Document setEditor={setEditor} setResume={setResume}
+                                                                 key={el.id + '-doc'} image={el.thumbnail}/>)}
                             </div>
-                        </div>
-                    </section>
-                </>}
+                        </section>
+                        <section className={isDrawer ? `${styles.templates} ${styles.active}` : styles['templates']}>
+                            <div className={`${styles['templates-options']}`}>
+                                {templates.map(el => <Template setEditor={setEditor} setResume={setResume}
+                                                               key={el.id + '-template'} isDrawer={isDrawer}
+                                                               image={el.thumbnail}/>)}
+                            </div>
+                            <span className={`${styles['templates-fade']}`}/>
+                            <div className={`${styles['templates-btn-div']}`}>
+                                <div className={`${styles['templates-btn-wrap']}`}>
+                                    {isDrawer ? <FontAwesomeIcon icon="fa-solid fa-angle-left"/> : null}
+                                    <button className={`${styles['templates-btn']}`} onClick={() => {
+                                        setDrawer(!isDrawer)
+                                    }}>
+                                        {isDrawer ? ('Collapse the templates view') : 'Look around more templates'}
+                                    </button>
+                                    {isDrawer ? null : <FontAwesomeIcon icon="fa-solid fa-angle-right"/>}
+                                </div>
+                            </div>
+                        </section>
+                    </>
+                    :
+                    <RequestSpinner/>
+            }
         </div>
     )
 }
