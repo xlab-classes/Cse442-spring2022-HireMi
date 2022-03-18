@@ -1,23 +1,8 @@
 import React, {useState, useEffect} from 'react';
+
+import Builder from "../Builder/Builder";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import styles from './Dashboard.module.scss';
-
-// const sampleData = [
-//     {title: 'sample0', thumbnail: 'none'},
-//     {title: 'sample1', thumbnail: 'none'},
-//
-// ]
-//
-// const sampleTemplates = [
-//     {title: 'template1', thumbnail: 'none'},
-//     {title: 'template2', thumbnail: 'none'},
-//     {title: 'template3', thumbnail: 'none'},
-//     {title: 'template4', thumbnail: 'none'},
-//     {title: 'template5', thumbnail: 'none'},
-//     {title: 'template6', thumbnail: 'none'},
-//     {title: 'template7', thumbnail: 'none'},
-//     {title: 'template8', thumbnail: 'none'},
-// ]
 
 const Dashboard = ({auth}) => {
 
@@ -25,16 +10,32 @@ const Dashboard = ({auth}) => {
     const [isLoaded, setLoaded] = useState(false);
     const [templates, setTemplates] = useState([]);
     const [documents, setDocuments] = useState([]);
+    const [isEditor, setEditor] = useState(false);
+    const [resume, setResume] = useState(null);
     // this may mount the builder component
 
     useEffect(() => {
-        loadData();
+        loadData().then(() => {
+            setLoaded(true);
+        }).catch(err => {
+            console.error(err)
+        });
     }, []);
+
+    useEffect(() => {
+        setLoaded(false);
+        loadData().then(() => {
+            setLoaded(true);
+        }).catch(err => {
+            console.error(err)
+        });
+    }, [isEditor])
+
 
     async function loadData() {
 
         let templateArray = [];
-        for(var i = 0; i < 4; i++){
+        for (let i = 0; i < 4; i++) {
             fetch('./backend/api/api.php/get_template', {
                 method: 'POST',
                 headers: {
@@ -52,7 +53,7 @@ const Dashboard = ({auth}) => {
                     // let image = new Image();
                     // image.src = 'data:image/png;base64,'+resultJson.thumbnail;
                     // templateArray.push({'title': resume_id, 'thumbnail': image});
-                    templateArray.push({'title': resume_id, 'thumbnail': 'data:image/png;base64,'+resultJson.thumbnail});
+                    templateArray.push({'id': resume_id, 'thumbnail': 'data:image/png;base64,' + resultJson.thumbnail});
                     setTemplates(templateArray);
                 });
         }
@@ -71,8 +72,8 @@ const Dashboard = ({auth}) => {
         const countJSON = await numResumes.json();
 
         let resumeArray = [];
-        for(var i=0; i < countJSON.count; i++){
-            fetch('./backend/api/api.php/get_dashboard',{
+        for (let i = 0; i < countJSON.count; i++) {
+            fetch('./backend/api/api.php/get_dashboard', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,84 +84,94 @@ const Dashboard = ({auth}) => {
                     'n': i
                 })
             }).then((result) => result.json())
-            .then((resultJson) => {
-                let id = resultJson.id;
-                let resume_id = resultJson.resume_id;
-                // let image = new Image();
-                // image.src = 'data:image/png;base64,'+resultJson.thumbnail;
-                // resumeArray.push({'title': resume_id, 'thumbnail':image});
-                resumeArray.push({'title': resume_id, 'thumbnail': 'data:image/png;base64,'+resultJson.thumbnail});
-                setDocuments(resumeArray);
-            });
+                .then((resultJson) => {
+                    let id = resultJson.id;
+                    let resume_id = resultJson.resume_id;
+                    // let image = new Image();
+                    // image.src = 'data:image/png;base64,'+resultJson.thumbnail;
+                    // resumeArray.push({'title': resume_id, 'thumbnail':image});
+                    resumeArray.push({'id': resume_id, 'thumbnail': 'data:image/png;base64,' + resultJson.thumbnail});
+                    setDocuments(resumeArray);
+                });
         }
-        
+
         setLoaded(true);
 
-
-        // fetch('url').then((response) => {
-        //     setTemplates([])
-        //     setDocuments([])
-        // }).then((response) => {
-        //         setLoaded(true);
-        //     }
-        // ).catch((err) => {
-        //     console.error(err)
-        //     setLoaded(false);
-        // })
     }
 
     return (
         <div className={styles['page-root']}>
-            <section className={styles['workspace']}>
-                <div className={styles['documents-space']}>
-                    <NewDocument/>
-                    {documents.map((el) => <Document key={el.title} title={el.title} image={el.thumbnail}/>)}
-                </div>
-            </section>
-            <section className={isDrawer ? `${styles.templates} ${styles.active}` : styles['templates']}>
-                <div className={`${styles['templates-options']}`}>
-                    {templates.map(el => <Template key={el.title} title={el.title} isDrawer={isDrawer} image={el.thumbnail}/>)}
-                </div>
-                <span className={`${styles['templates-fade']}`}/>
-                <div className={`${styles['templates-btn-div']}`}>
-                    <div className={`${styles['templates-btn-wrap']}`}>
-                        {isDrawer ? <FontAwesomeIcon icon="fa-solid fa-angle-left"/> : null}
-                        <button className={`${styles['templates-btn']}`} onClick={() => {
-                            setDrawer(!isDrawer)
-                        }}>
-                            {isDrawer ? ('Collapse the templates view') : 'Look around more templates'}
-                        </button>
-                        {isDrawer ? null : <FontAwesomeIcon icon="fa-solid fa-angle-right"/>}
-                    </div>
-                </div>
-            </section>
+            {isEditor ? <Builder resume={resume} setEditor={setEditor} setResume={setResume}/>
+                :
+                <>
+                    <section className={styles['workspace']}>
+                        <div className={styles['documents-space']}>
+                            <NewDocument setEditor={setEditor} setResume={setResume}/>
+                            {documents.map((el) => <Document setEditor={setEditor} setResume={setResume}
+                                                             key={el.id + '-doc'} image={el.thumbnail}/>)}
+                        </div>
+                    </section>
+                    <section className={isDrawer ? `${styles.templates} ${styles.active}` : styles['templates']}>
+                        <div className={`${styles['templates-options']}`}>
+                            {templates.map(el => <Template setEditor={setEditor} setResume={setResume}
+                                                           key={el.id + '-template'} isDrawer={isDrawer}
+                                                           image={el.thumbnail}/>)}
+                        </div>
+                        <span className={`${styles['templates-fade']}`}/>
+                        <div className={`${styles['templates-btn-div']}`}>
+                            <div className={`${styles['templates-btn-wrap']}`}>
+                                {isDrawer ? <FontAwesomeIcon icon="fa-solid fa-angle-left"/> : null}
+                                <button className={`${styles['templates-btn']}`} onClick={() => {
+                                    setDrawer(!isDrawer)
+                                }}>
+                                    {isDrawer ? ('Collapse the templates view') : 'Look around more templates'}
+                                </button>
+                                {isDrawer ? null : <FontAwesomeIcon icon="fa-solid fa-angle-right"/>}
+                            </div>
+                        </div>
+                    </section>
+                </>}
         </div>
     )
 }
 
-const NewDocument = () => {
+const NewDocument = ({setEditor, setResume}) => {
     return (
-        <div className={`${styles['new-doc']}`}>
+        <div
+            onClick={() => {
+                setResume('new');
+                setEditor(true);
+            }} className={`${styles['new-doc']}`}>
             <FontAwesomeIcon icon="fa-solid fa-plus"/>
         </div>
     )
 }
 
-const Document = ({image}) => {
+const Document = ({setEditor, setResume, image, key}) => {
 
 
     return (
-        <div className={`${styles['single-doc']}`}>
-            <img className={`${styles.images}`} src={image} />
+        <div
+            onClick={() => {
+                setResume(key);
+                setEditor(true);
+            }}
+            className={`${styles['single-doc']}`}>
+            <img className={`${styles.images}`} src={image}/>
         </div>
     )
 }
 
-const Template = ({isDrawer, image}) => {
+const Template = ({setEditor, setResume, isDrawer, image, key}) => {
 
     return (
-        <div className={isDrawer ? `${styles['single-template']} ${styles.active}` : `${styles['single-template']}`}>
-            <img className={`${styles.images}`} src={image} />
+        <div
+            onClick={() => {
+                setResume(key);
+                setEditor(true);
+            }}
+            className={isDrawer ? `${styles['single-template']} ${styles.active}` : `${styles['single-template']}`}>
+            <img className={`${styles.images}`} src={image}/>
         </div>
     )
 }
