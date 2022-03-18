@@ -43,11 +43,11 @@ const Settings = ({auth, setAuth}) => {
     function deleteAccount() {
         // Add API that does it
 
-        Cookies.remove('username')
+        Cookies.remove('name')
         Cookies.remove('id')
         Cookies.remove('pic')
         Cookies.remove('email')
-        Cookies.remove('access_token')
+        Cookies.remove('token')
 
         setAuth({
             username: "Anonymous",
