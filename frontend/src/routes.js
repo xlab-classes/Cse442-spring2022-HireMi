@@ -6,18 +6,18 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import Settings from "./components/Settings/Settings";
 import NotFound from "./components/NotFound/NotFound";
 
-const routes = isAuth => [
+const routes = (auth, setAuth) => [
     {
         path: ROUTE_DASHBOARD,
-        element: isAuth.id ? <Dashboard /> : <Navigate to={ROUTE_LOGIN} />,
+        element: auth?.id ? <Dashboard token={auth.access_token} /> : <Navigate to={ROUTE_LOGIN} />,
     },
     {
         path: ROUTE_SETTINGS,
-        element: isAuth.id ? <Settings /> : <Navigate to={ROUTE_LOGIN} />,
+        element: auth?.id ? <Settings token={auth.access_token}/> : <Navigate to={ROUTE_LOGIN} />,
     },
     {
         path: ROUTE_LOGIN,
-        element: !isAuth.id ? <Login /> : <Navigate to={ROUTE_DASHBOARD} />,
+        element: !auth?.id ? <Login setAuth={setAuth} auth={auth} /> : <Navigate to={ROUTE_DASHBOARD} />,
     },
     {
         path: '*',

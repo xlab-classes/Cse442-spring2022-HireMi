@@ -8,24 +8,20 @@ import Navbar from "./components/Navbar/Navbar";
 import routes from "./routes";
 
 function App() {
-    const [auth, setAuth] = useState({});
+    const [auth, setAuth] = useState({
+        username: (Cookies.get("username") === undefined) ? "Anonymous" : Cookies.get("username"),
+        id: (Cookies.get("id") === undefined) ? false : Cookies.get("id"),
+        // id: true,
+        pic: (Cookies.get("pic") === undefined) ? "https://lh3.googleusercontent.com/a/AATXAJxOjQQoJshWIHJ0t67X0-fqBJzgTDMnMcCaHvqy=s96-c" : Cookies.get("pic"),
+        email: (Cookies.get("email") === undefined) ? "hiremi.ub@gmail.com" : Cookies.get("email"),
+        access_token: null,
+    });
 
-    const routing = useRoutes(routes(auth));
-
-    useEffect(() => {
-        setAuth({
-            username: (Cookies.get("username") === undefined) ? "Anonymous" : Cookies.get("username"),
-            // id: (Cookies.get("id") === undefined) ? "-1" : Cookies.get("id"),
-            id: (Cookies.get("id") === undefined) ? false : Cookies.get("id"),
-            pic: (Cookies.get("pic") === undefined) ? "https://lh3.googleusercontent.com/a/AATXAJxOjQQoJshWIHJ0t67X0-fqBJzgTDMnMcCaHvqy=s96-c" : Cookies.get("pic"),
-            email: (Cookies.get("email") === undefined) ? "hiremi.ub@gmail.com" : Cookies.get("email"),
-        })
-
-    }, []);
+    const routing = useRoutes(routes(auth, setAuth));
 
     return (
         <div className={styles['app-root']}>
-            <Navbar auth={auth} />
+            <Navbar auth={auth}/>
             {routing}
         </div>
 

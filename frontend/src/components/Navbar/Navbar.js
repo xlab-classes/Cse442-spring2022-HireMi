@@ -15,40 +15,41 @@ const ProtectedLinks = () => {
     )
 }
 
-const UnprotectedLinks = () => {
-    return (
-        <>
-            <NavLink to={ROUTE_LOGIN}>Login</NavLink>
-        </>
-    )
-}
-
-const Navbar = ({id}) => {
-
-
+const Navbar = ({auth}) => {
     const [isActive, setActive] = useState(false)
 
-    useEffect(() => {
-
-        return function cleanup() {
-
-        }
-    }, []);
-
-    // useEffect(() => {
-    //
-    // }, [isActive])
-
     return (
-        <nav className={isActive ? `${styles['nav-bar']} ${styles.active}` : styles["nav-bar"]}>
-            <div>
-                {id ? <ProtectedLinks /> : <UnprotectedLinks />}
-            </div>
-            {/*<button onClick={() => {*/}
-            {/*    setActive(prevState => !prevState)*/}
-            {/*}}>Temp*/}
-            {/*</button>*/}
-        </nav>
+        <>
+            {auth?.id ?
+                <nav className={isActive ? `${styles['nav-bar']} ${styles.active}` : styles["nav-bar"]}>
+                    <div className={styles['nav-contents']}>
+                        <div className={styles['user-info']}>
+                            <NavLink className={styles['nav-link']} to={ROUTE_SETTINGS}>
+                                <img src={auth?.pic}/>
+                            </NavLink>
+                            <span>{auth?.username}</span>
+                        </div>
+                        <button className={styles['toggle-btn']} onClick={() => setActive(prevState => !prevState)}>
+                            <span />
+                            <span />
+                            <span />
+                        </button>
+                        {isActive ?
+                            <ul className={styles['nav-drop']}>
+                                <NavLink to={ROUTE_SETTINGS}>
+                                    Settings
+                                </NavLink>
+                            </ul>
+                            :
+                            null
+                        }
+                    </div>
+                </nav>
+                :
+                null
+            }
+        </>
+
     )
 }
 
