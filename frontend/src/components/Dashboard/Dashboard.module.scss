@@ -134,3 +134,12 @@
 .single-doc {
   border: .15rem solid #ccc;
 }
+
+.new-doc, .single-doc, .single-template {
+  cursor: pointer;
+  transition: .3s ease;
+}
+
+.new-doc:hover, .single-doc:hover, .single-template:hover {
+  opacity: .9;
+}
