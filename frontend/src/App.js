@@ -11,7 +11,7 @@ function App() {
     const [auth, setAuth] = useState({
         username: (Cookies.get("username") === undefined) ? "Anonymous" : Cookies.get("username"),
         id: (Cookies.get("id") === undefined) ? false : Cookies.get("id"),
-        // id: true,
+        // id: true, // test build
         pic: (Cookies.get("pic") === undefined) ? "https://lh3.googleusercontent.com/a/AATXAJxOjQQoJshWIHJ0t67X0-fqBJzgTDMnMcCaHvqy=s96-c" : Cookies.get("pic"),
         email: (Cookies.get("email") === undefined) ? "hiremi.ub@gmail.com" : Cookies.get("email"),
         access_token: (Cookies.get("token") === undefined) ? null : Cookies.get("token")
