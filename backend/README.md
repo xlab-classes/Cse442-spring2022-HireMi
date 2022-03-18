@@ -110,6 +110,19 @@ A guide to the current available api calls:
 
 <br>
 
+- [Get Profile Info](#get-profile-info)
+    - POST
+    - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/profile_pic/
+    - Header:
+        - "Authorization": "Bearer ABCDEFGHIJ=="
+    - Body:
+        - "id": string
+    - Returns:
+        - "profile_picture": Base64 string
+        - "profile_name": string
+
+<br>
+
 - [Change Profile Picture](#change-profile-picture)
     - POST
     - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/profile_pic/
@@ -186,6 +199,10 @@ Self explanatory I think.
 # Delete Account
 
 Self explanatory I think.
+
+# Get Profile Info
+
+Returns a json with profile information. The format is a JSON for the profile picture and profile name. This is combined since they are only ever needed together. Could also use this if you need one of the variables in the future.
 
 # Change Profile Picture
 
