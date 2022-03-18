@@ -15,6 +15,7 @@ const Dashboard = ({auth}) => {
     const [resume, setResume] = useState(null);
     // this may mount the builder component
 
+
     useEffect(() => {
         loadData().then(() => {
             setLoaded(true);
@@ -104,7 +105,7 @@ const Dashboard = ({auth}) => {
 
     return (
         <div className={styles['page-root']}>
-            {isEditor ? <Builder resume={resume} setEditor={setEditor} setResume={setResume}/>
+            {isEditor ? <Builder auth={auth} resume={resume} setEditor={setEditor} setResume={setResume}/>
                 : isLoaded ?
                     <>
                         <section className={styles['workspace']}>

@@ -14,11 +14,7 @@ const routes = (auth, setAuth) => [
     },
     {
         path: ROUTE_SETTINGS,
-        element: auth?.id ? <Settings token={auth.access_token}/> : <Navigate to={ROUTE_LOGIN} />,
-    },
-    {
-        path: ROUTE_BUILDER,
-        element: auth?.id ? <Builder token={auth.access_token}/> : <Navigate to={ROUTE_LOGIN} />,
+        element: auth?.id ? <Settings token={auth}/> : <Navigate to={ROUTE_LOGIN} />,
     },
     {
         path: ROUTE_LOGIN,
