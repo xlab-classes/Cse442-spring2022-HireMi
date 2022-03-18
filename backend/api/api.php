@@ -238,7 +238,7 @@ function getMyThumbnail($id, $n){
     return $data;
 }
 
-function changeName($id, $new_name) {
+function saveName($id, $new_name) {
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
     $password = "50266948";
@@ -297,7 +297,7 @@ function deleteAccount($id) {
     $conn->close();
 }
 
-function changeProfilePic($id, $image){
+function saveProfilePic($id, $image){
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
     $password = "50266948";
@@ -737,7 +737,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
      * Expected query example:
      * 
      * verb: POST
-     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/change_name/
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/save_name/
      * headers: {
      * "Authorization": "Bearer 4FR039z4c9MzOQ=="
      * }
@@ -746,7 +746,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
      * "new_name": "John Doe"
      * }
      */
-    if($verb === 'POST' && $info === '/change_name'){
+    if($verb === 'POST' && $info === '/save_name'){
         try {
             $headers = (array)apache_request_headers();
             $authorization = $headers["Authorization"];
@@ -764,8 +764,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             $id = $json_body["id"]; //redundant but ok
             $new_name = $json_body["new_name"];
             
-            // Change name in database
-            changeName($id, $new_name);
+            // Save name in database
+            saveName($id, $new_name);
             
             header("HTTP/1.1 200 OK");
             echo "Successfully changed name";
@@ -829,7 +829,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
      * Expected query example:
      * 
      * verb: POST
-     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/profile_pic/
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/save_profile_pic/
      * headers: {
      * "Authorization": "Bearer 4FR039z4c9MzOQ=="
      * }
@@ -838,7 +838,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
      * "image": "VIU0Q349H4Q3GH0U984HGIUH=="
      * }
      */
-    if($verb === 'POST' && $info === '/profile_pic'){
+    if($verb === 'POST' && $info === '/save_profile_pic'){
         try {
             $headers = (array)apache_request_headers();
             $authorization = $headers["Authorization"];
@@ -853,7 +853,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             }
 
             $image = $json_body["image"];
-            changeProfilePic($id, $image);
+            saveProfilePic($id, $image);
             
             header("HTTP/1.1 200 OK");
             echo "Successfully updated profile picture";
