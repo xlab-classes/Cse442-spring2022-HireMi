@@ -4,6 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import './Builder.css';
 import Draggable from 'react-draggable';
+import InputBase from '@material-ui/core/InputBase';
 
 const styling = makeStyles({
   container: {
@@ -30,7 +31,7 @@ const Builder = (props) => {
                       height: 48,
                       background: "#ffff"
                     }}>
-                      <h3>Your Name</h3>
+                      <InputBase className='yourname_input' defaultValue="Your Name" />
                     </Box>
                 </div>
                 </Draggable>
@@ -41,7 +42,7 @@ const Builder = (props) => {
                       height: 48,
                       background: "#ffff"
                     }}>
-                      <h4>Education</h4>
+                      <InputBase className='education' defaultValue="Education" />
                     </Box>
                 </div>
                 </Draggable>
@@ -52,7 +53,7 @@ const Builder = (props) => {
                       height: 48,
                       background: "#ffff"
                     }}>
-                      <h5>Experience</h5>
+                      <InputBase className='experience' defaultValue="Experience" />
                     </Box>
                 </div>
                 </Draggable>
