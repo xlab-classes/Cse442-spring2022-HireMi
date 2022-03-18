@@ -59,14 +59,14 @@ function saveResume($id, $resume_id, $thumbnail, $elements, $share = 1){
     // Resume does not already exist, create new resume in table
     if ($row["COUNT(ResumeID)"] == 0) {
         $stmt2 = $conn->prepare("INSERT INTO Resumes(id, Thumbnail, Elements, Share) VALUES (?, ?, ?, ?)");
-        $stmt2->bind_param("sbsi", $id, $thumbnail, $elements, $share);
+        $stmt2->bind_param("sssi", $id, $thumbnail, $elements, $share);
         $stmt2->execute();
         $stmt2->close();
     }
     // Resume exists, update it
     else {
         $stmt3 = $conn->prepare("UPDATE Resumes SET Thumbnail = ?, Elements = ?, Share = ? WHERE ResumeID = ?");
-        $stmt3->bind_param("bsii", $thumbnail, $elements, $share, $resume_id);
+        $stmt3->bind_param("ssii", $thumbnail, $elements, $share, $resume_id);
         $stmt3->execute();
         $stmt3->close();
     }
@@ -87,8 +87,10 @@ function loadResume($id, $resume_id){
         die("Connection failed: " . mysqli_connect_error());
     }
     
-    $stmt1 = $conn->prepare("SELECT Elements, Share FROM Resumes WHERE ResumeID = ? AND id = ?");
-    $stmt1->bind_param("is", $resume_id, $id);
+    //only need ResumeID since we can load other people's shareable resumes too
+    //Prior check for ownership or shareability is done.
+    $stmt1 = $conn->prepare("SELECT Elements, Share FROM Resumes WHERE ResumeID = ?");
+    $stmt1->bind_param("i", $resume_id);
     $stmt1->execute();
   
     $result = $stmt1->get_result();
@@ -100,10 +102,11 @@ function loadResume($id, $resume_id){
         $data = array(
             "resume_id" => $resume_id,
             "elements" => json_decode($row["Elements"]), // Turn elements back into array before returning
-            "share" => $row["Share"]
+            "share" => $row["Share"] 
         );
     }
     else {
+        //Doesn't need header because this will still output "" along with normal header
         echo "The resume does not exist";
     }
 
@@ -112,81 +115,124 @@ function loadResume($id, $resume_id){
     return $data;
 }
 
-/**
- * $id - user's id to query
- * $others - boolean;
- * if true, get some random resume thumbnail.
- * if false, get $resume_id under user's account
- * $n is getting a random resume. We can get the nth resume in
- * some ordering to ensure that the same resume doesn't get pulled twice.
- * (e.g. when n=0, we could get the 0th most popular template, indexed by 0)
- */
-function getThumbnail($id, $others, $resume_id, $n){
-    
+function getOtherThumbnail($id, $n){
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
     $password = "50266948";
     $database = "cse442_2022_spring_team_r_db";
     $port = 3306;
-
     $conn = new mysqli($servername, $username, $password, $database, $port);
     if (mysqli_connect_error()) {
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    //This proved helpful to me
-    //https://stackoverflow.com/questions/7793009/how-to-retrieve-images-from-mysql-database-and-display-in-an-html-tag
+    $stmt1 = $conn->prepare("SELECT ResumeID, id, Thumbnail FROM Resumes WHERE Share = 1");
+    $stmt1->execute();
 
-    if($others === false){
-        //Query for resume associated with resume_id
+    $result = $stmt1->get_result();
+    $data = array();
 
-        $stmt1 = $conn->prepare("SELECT Thumbnail FROM Resumes WHERE ResumeID = ? AND id = ?");
-        $stmt1->bind_param("is", $resume_id, $id);
-        $stmt1->execute();
-
-        $result = $stmt1->get_result();
-        $data = array();
-
-        // The resume exists in the database
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $data = array(
-                "id" => $id,
-                "resume_id" => $resume_id,
-                "thumbnail" => $row["Thumbnail"]
-                // Image should already be encoded when retrieved from database - 
-                // need to decode after getting. Change here if impl. changes.
-
-                // $base64_image = base64_encode( $row["Thumbnail"] );
-            );
+    $counter = 0;
+    //$n index by 0. If num_rows > index position, that means there is an nth row
+    if ($result->num_rows > $n){
+        while( $row = $result->fetch_assoc()){
+            if($counter === $n){
+                $data = array(
+                    "id" => $row["id"],
+                    "resume_id" => $row["ResumeID"],
+                    "thumbnail" => $row["Thumbnail"],
+                );
+                break;
+            }
+            $counter++;
         }
-        $stmt1->close();
-
-    } else {
-        //Otherwise query for a random other image query
-
-        $stmt1 = $conn->prepare("SELECT ResumeID, id, Thumbnail FROM Resumes WHERE Share = ?");
-        $stmt1->bind_param("i", 1); // Share = 1 is default and will always return a result if it exists
-        $stmt1->execute();
-
-        $result = $stmt1->get_result();
-        $data = array();
-
-        // A resume was found
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $data = array(
-                "id" => $id,
-                "resume_id" => $resume_id,
-                "thumbnail" => $row["Thumbnail"]
-                // Image should already be encoded when retrieved from database - 
-                // need to decode after getting. Decode here if needed.
-
-                // $base64_image = base64_decode( $row["Thumbnail"] );
-            );
-        }
-        $stmt1->close();
     }
+    else{
+        //resume_id = 1 is specifically set by me for a dummy thumbnail
+        $stmt2 = $conn->prepare("SELECT Thumbnail FROM Resumes Where ResumeID = 1");
+        $stmt2->execute();
+        $result2 = $stmt2->get_result();
+        $row = $result2->fetch_assoc();
+        $data = array(
+            "id" => "113776533273259442553",
+            "resume_id" => 1,
+            "thumbnail" => $row["Thumbnail"],
+        );
+        $stmt2->close();
+    }
+    $stmt1->close();
+
+    $conn->close();
+    return $data;
+}
+
+function getResumeCount($id){
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $stmt1 = $conn->prepare("SELECT Thumbnail FROM Resumes WHERE id = ?");
+    $stmt1->bind_param("s", $id);
+    $stmt1->execute();
+
+    $result = $stmt1->get_result();
+    $count = $result->num_rows;
+
+    $data = array("count" => $count);
+
+    return $data;
+}
+
+/**
+ * $id - user's id to query
+ * $n is getting a random resume. We can get the nth resume in
+ * some ordering to ensure that the same resume doesn't get pulled twice.
+ * (e.g. when n=0, we could get the 0th most popular template, indexed by 0)
+ */
+function getMyThumbnail($id, $n){
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $stmt1 = $conn->prepare("SELECT ResumeID, id, Thumbnail FROM Resumes WHERE id = ?");
+    $stmt1->bind_param("s", $id);
+    $stmt1->execute();
+
+    $result = $stmt1->get_result();
+    $data = array();
+
+    // The resume exists in the database
+    if ($result->num_rows > $n){
+        $counter = 0;
+        while( $row = $result->fetch_assoc()){
+            if($counter === $n){
+                $data = array(
+                    "id" => $row["id"],
+                    "resume_id" => $row["ResumeID"],
+                    "thumbnail" => $row["Thumbnail"],
+                );
+                break;
+            }
+            $counter++;
+        }
+    }
+    else {
+        echo "Queried for a resume that doesn't exist.";
+    }
+    $stmt1->close();
+
     
     $conn->close();
     return $data;
@@ -218,7 +264,6 @@ function changeName($id, $new_name) {
         $stmt2->execute();
         $stmt2->close();
       }
-
     else {
         echo "Invalid user ID, user does not exist in the database";
     }
@@ -252,7 +297,7 @@ function deleteAccount($id) {
     $conn->close();
 }
 
-function saveProfilePic($id, $file_path) {
+function changeProfilePic($id, $image){
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
     $password = "50266948";
@@ -274,14 +319,15 @@ function saveProfilePic($id, $file_path) {
     // Make sure user exists
     if ($row["COUNT(id)"] > 0) {
         $stmt2 = $conn->prepare("UPDATE Users SET ProfilePic = ? WHERE id = ?");
-        $stmt2->bind_param("ss", $file_path, $id);
+        $stmt2->bind_param("ss", $image, $id);
         $stmt2->execute();
         $stmt2->close();
       }
-    
-      $stmt1->close();
-      $conn->close();
-
+    else {
+        echo "Invalid user ID, user does not exist in the database";
+    }
+    $stmt1->close();
+    $conn->close();
 }
 
 /**
@@ -289,24 +335,8 @@ function saveProfilePic($id, $file_path) {
  */
 function verify($body){
 
-    $jwks = ['keys' => [
-        [
-            'e' => 'AQAB',
-            'n' => 'urIBEeEj2HvBoNipv4PcFPGbw66boVQx60hl0sK7rTLKpLZqIkorKiC2d8nDg7Zrm_uYvYBNsoQWZohEsTh3kBSs92BNnbA_Z1Ok345e8BGDKifsi6YuMtjqffIqsZs-gCWE_AxZ_9m-CfCzs5UGgad7E0qFQxlOe18ds-mHhWd3l-CgQsAYNMoII7GCxLsp5GUaPFjld5E9h5dK7LrKH311swII_rypnK6ktduKpcuMLuxcfz8oQ3Gqzp1oZ1fm9eG98adjSLl796vz5Uh-mz__YBkyD67Jibf4pqtQ07skq_Ff7KKQO32I4Yy0Dp7I0aUTYA2ff8JT0Huz2876LQ',
-            'kty' => 'RSA',
-            'kid' => '3dd6ca2a81dc2fea8c3642431e7e296d2d75b446',
-            'use' => 'sig',
-            'alg' => 'RS256'
-        ],
-        [
-            'n' => 'rXzt9xpKC1vqbtVm-XJi2ys1_4LaiRKBhBNyUTtTBZedgJtr3XU6SSol8HEDwzAuPb3cODABr0wpNmEGFg7dcSL6QOSSb3sntvsiYqxUXIFnFpAGMEA2SzconFLdAaLNKAX1T4F1EU50v20EIZFxWdR8sZ0ClrOrixPf_TR2hRoqiyvrpEyeVxxWatae2DPTmgeTmdanPAKjspR9iF4xEpRoo2MKUGGMDDZvFJSSlL1Bd26SbXEHYvn4muOLWuaro4Va2HUPnfDXJEPPAr2Mag1sbiEMgjs0FUlfJkk_oZr8GEOny4TOlhGmJmrPCkunGj3yAmwOmDULpjRihknkpw',
-            'alg' => 'RS256',
-            'e' => 'AQAB',
-            'use' => 'sig',
-            'kid' => 'd63dbe73aad88c854de0d8d6c014c36dc25c4292',
-            'kty' => 'RSA'
-        ]
-    ]];
+    $jwk_query_results = file_get_contents("https://www.googleapis.com/oauth2/v3/certs");
+    $jwks = json_decode($jwk_query_results,true);
 
     $json_body = (array)json_decode($body);
     $token = $json_body["token"];
@@ -345,6 +375,59 @@ function authenticate($token, $id){
     return false;
 }
 
+function isOwnerOrShareable($id, $resume_id){
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    
+    //Due to ResumeID =? AND id = ?, there is implicit check for ownership of resume
+    $stmt1 = $conn->prepare("SELECT Share FROM Resumes WHERE ResumeID = ? AND id = ?");
+    $stmt1->bind_param("is", $resume_id, $id);
+    $stmt1->execute();
+  
+    $result = $stmt1->get_result();
+    $data = array();
+
+    $retval = false;
+
+    // The resume exists in the database
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $share = $row["Share"];
+        if($share === 1){
+            $retval = true;
+        }
+    }
+
+    $stmt1->close();
+    $conn->close();
+    return $retval;
+}
+
+
+
+
+
+
+
+/**
+ * Using this blank space and code to separate help functions are API implementation.
+ * The reason for this approach rather than using multiple files is to prevent the creation
+ * of an access point from the helper file.
+ */
+
+
+
+
+
+
 $verb = 'default';
 if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['PATH_INFO'])){
     $verb = $_SERVER['REQUEST_METHOD'];
@@ -354,7 +437,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
     $body = '';
     if (($stream = fopen('php://input', "r")) !== FALSE)
         $body = stream_get_contents($stream);
-    
+
+
+    //Unique request in that it is the only one that needs separate auth
+    //Since only login needs this and it's fully implmeneted, no need for documentation
     //localhost/backend/api/api.php/login/
     if($verb === 'POST' && $info === '/login'){
         $verified = verify($body);
@@ -386,16 +472,51 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
         return;
     }
 
+    /**
+     * Used to save a resume from resume builder.
+     * The resume_id will have to match what is in the database. This means that
+     * when a new resume is being created, resume_id cannot be an int > 0,
+     * e.g. "resume_id": 0 will ensure there is no conflict.
+     * 
+     * If an old resume is being updated, then the resume_id must be the same as the
+     * value given when the resume was first loaded from GET at endpoint /resume
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/resume/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553",
+     * "thumbnail": "ASIHWv325g9IHSDF1345h", //Base64 Encoded Image
+     * "data : {
+     *          "resume_id": 1234,
+     *          "share": 1,
+     *          "elements": [{
+     *              "type": "text",
+     *              "offset-x": 100,
+     *              "offset-y": 100,
+     *              "width":    100,
+     *              "height":   100,
+     *              "z-index":  1,
+     *              "prop": {"font-type": "arial", "font-size": 12}
+     *          }]
+     *      }
+     * }
+     */
     if($verb === 'POST' && $info === '/resume'){
         try {
             $headers = (array)apache_request_headers();
             $authorization = $headers["Authorization"];
             $token = explode(" ",$authorization)[1];
     
-            $json_body = (array)json_decode($body);
+            $json_body = (array)json_decode($body, true);
             $id = $json_body["id"];
     
             if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
                 echo "Invalid or expired bearer token. Please log in again.";
                 return;
             }
@@ -406,11 +527,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             //This is necessary to save multiple resumes
             $resume_id = $data["resume_id"];
             $elements = $data["elements"];
+            $share = $data["share"];
             
             //Save to database
-            saveResume($id, $resume_id, $thumbnail, $elements);
+            saveResume($id, $resume_id, $thumbnail, $elements, $share);
             
-            echo "Successfully saved Resume";
+            header("HTTP/1.1 200 OK");
+            echo "Successfully saved resume.";
             return;
         } catch (Exception $e) {
             header("HTTP/1.1 400 Malformed Request");
@@ -420,6 +543,209 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
         }
     }
 
+
+     /**
+     * Used to load a resume for resume builder.
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_resume/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553",
+     * "resume_id": 3
+     * }
+     */
+    if($verb === 'POST' && $info === '/get_resume'){
+
+        try {
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+    
+            $resume_id = $json_body["resume_id"];
+    
+            //Should have permissions to load resume
+            if(isOwnerOrShareable($id, $resume_id)){
+                $data = loadResume($id, $resume_id);
+            } else{
+                header("HTTP/1.1 403 Forbidden");
+                echo "It appears you don't have permission to load this resume.";
+                return;
+            }
+    
+            header("HTTP/1.1 200 OK");
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode($data);
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
+    /**
+     * Used to discover how many resumes a user has.
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_dashboard_count/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553",
+     * }
+     */
+    if($verb === 'POST' && $info === '/get_dashboard_count'){
+        try{
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+            $data = getResumeCount($id);
+    
+            header("HTTP/1.1 200 OK");
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode($data);
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
+    /**
+     * Used to load a single thumbnail for dashboard.
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_dashboard/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553",
+     * "n": 0
+     * }
+     */
+    if($verb === 'POST' && $info === '/get_dashboard'){
+        try{
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+
+            $n = $json_body["n"];
+    
+            $data = getMyThumbnail($id, $n);
+    
+            header("HTTP/1.1 200 OK");
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode($data);
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
+
+    /**
+     * Used to load a single thumbnail for templates.
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_template/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553",
+     * "n": 0
+     * }
+     */
+    if($verb === 'POST' && $info === '/get_template'){
+        try{
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+            $n = $json_body["n"];
+    
+            $data = getOtherThumbnail($id, $n);
+    
+            header("HTTP/1.1 200 OK");
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode($data);
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
+
+    /**
+     * Used to change the name associated with an account.
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/change_name/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553",
+     * "new_name": "John Doe"
+     * }
+     */
     if($verb === 'POST' && $info === '/change_name'){
         try {
             $headers = (array)apache_request_headers();
@@ -430,16 +756,18 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             $id = $json_body["id"];
     
             if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
                 echo "Invalid or expired bearer token. Please log in again.";
                 return;
             }
 
-            $id = $json_body["id"];
+            $id = $json_body["id"]; //redundant but ok
             $new_name = $json_body["new_name"];
             
             // Change name in database
             changeName($id, $new_name);
             
+            header("HTTP/1.1 200 OK");
             echo "Successfully changed name";
             return;
         } catch (Exception $e) {
@@ -450,6 +778,20 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
         }
     }
 
+    /**
+     * Used to delete all information for a certain account.
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/del_acc/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553"
+     * }
+     */
     if($verb === 'POST' && $info === '/del_acc'){
         try {
             $headers = (array)apache_request_headers();
@@ -469,6 +811,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             // Delete account and associated data from database
             deleteAccount($id);
             
+            header("HTTP/1.1 200 OK");
             echo "Successfully deleted the account and all user data";
             return;
         } catch (Exception $e) {
@@ -479,77 +822,50 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
         }
     }
 
-    if($verb === 'GET' && $info === '/resume'){
-        $headers = (array)apache_request_headers();
-        $authorization = $headers["Authorization"];
-        $token = explode(" ",$authorization)[1];
-
-        $json_body = (array)json_decode($body);
-        $id = $json_body["id"];
-
-        if(!authenticate($token, $id)){
-            echo "Invalid or expired bearer token. Please log in again.";
-            return;
-        }
-
-        $resume_id = $json_body["resume_id"];
-        // $data = loadResume($id, $resume_id);
-
-        //TODO: ASIF load resume needs to be implemented.
-        //Should be inverse of saveResume. Dummy data example below.
-        
-        $data = array(
-            "resume_id" => "25",
-            "elements" => array(
-                "type" => "text",
-                "offset-x" => 100,
-                "offset-y" => 100,
-                "width" => 100,
-                "height" => 100,
-                "z-index" => 1,
-                "prop" => array(
-                    "font-type" => "arial",
-                    "font-size" => 12,
-                )
-            )
-        );
-        header("HTTP/1.1 200 OK");
-        header("Content-Type: application/json; charset=utf-8");
-        echo json_encode($data);
-        return;
-    }
 
     /**
-     * This one is a bit different. Capable of returning two things:
-     * 1. current user's resume thumbnails
-     * 2. other people's resumes
+     * Used to change user profile picture.
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/profile_pic/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553"
+     * "image": "VIU0Q349H4Q3GH0U984HGIUH=="
+     * }
      */
-    if($verb === 'GET' && $info === '/dashboard'){
-        $headers = (array)apache_request_headers();
-        $authorization = $headers["Authorization"];
-        $token = explode(" ",$authorization)[1];
+    if($verb === 'POST' && $info === '/profile_pic'){
+        try {
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
 
-        $json_body = (array)json_decode($body);
-        $id = $json_body["id"];
-
-        if(!authenticate($token, $id)){
-            echo "Invalid or expired bearer token. Please log in again.";
+            $image = $json_body["image"];
+            changeProfilePic($id, $image);
+            
+            header("HTTP/1.1 200 OK");
+            echo "Successfully updated profile picture";
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
             return;
         }
-
-        $others = $json_body["others"];
-        $resume_id = $json_body["resume_id"];
-        $n = $json_body["n"];
-
-        //TODO: ASIF getThumbnail() needs to be implemented.
-        $data = getThumbnail($id, $others, $resume_id, $n);
-
-        header("HTTP/1.1 200 OK");
-        header("Content-Type: application/json; charset=utf-8");
-
-        echo json_encode($data);
-        return;
     }
+
     
     header("HTTP/1.1 200 OK");
     header("Content-Type: application/json; charset=utf-8");
@@ -559,51 +875,6 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
 } else{
     header("HTTP/1.1 400 Bad Request");
     echo "Could not properly parse request";
-}
-
-// Handle uploading of profile picture images
-// TODO: Send user id in the post request and verify token
-if(($_FILES["image"]) and (isset($_COOKIE["id"]))){
-
-    $target_dir = "../profile_pics/";
-    $target_file = $target_dir . $_COOKIE["id"] . basename($_FILES["image"]["name"]);
-    $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-
-    // Check if image file is a actual image or fake image
-    $check = getimagesize($_FILES["image"]["tmp_name"]);
-    if($check !== false) {
-        echo "File is an image - " . $check["mime"] . ".";
-        $uploadOk = 1;
-    } else {
-        echo "File is not an image.";
-        $uploadOk = 0;
-    }
-
-    // Check file size - max 4 MB
-    if ($_FILES["image"]["size"] > 4,194,304) {
-        echo "Sorry, your file is too large.";
-        $uploadOk = 0;
-    }
-
-    // Allow certain file formats
-    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
-        echo "Sorry, only JPG, JPEG, PNG files are allowed.";
-        $uploadOk = 0;
-    }
-
-    // Check if $uploadOk is set to 0 by an error
-    if ($uploadOk == 0) {
-        echo "Sorry, your file was not uploaded.";
-    // if everything is ok, try to upload file
-    } else {
-        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-            saveProfilePic($_COOKIE["id"], $target_file);
-            echo "The file has been uploaded.";
-        } else {
-            echo "Sorry, there was an error uploading your file.";
-        }
-    }
 }
 
 ?>
