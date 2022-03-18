@@ -2,7 +2,7 @@ import React from "react";
 import {useEffect, useState} from "react";
 
 import {NavLink, useLocation} from "react-router-dom";
-import {ROUTE_DASHBOARD, ROUTE_LOGIN, ROUTE_SETTINGS} from "../../constants/routes";
+import {ROUTE_BUILDER, ROUTE_DASHBOARD, ROUTE_LOGIN, ROUTE_SETTINGS} from "../../constants/routes";
 
 import styles from './Navbar.module.scss'
 
@@ -11,6 +11,7 @@ const ProtectedLinks = () => {
         <>
             <NavLink to={ROUTE_DASHBOARD}>Dashboard</NavLink>
             <NavLink to={ROUTE_SETTINGS}>Settings</NavLink>
+            <NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>
         </>
     )
 }
@@ -40,6 +41,7 @@ const Navbar = ({auth}) => {
                             <ul className={styles['nav-drop']}>
                                 {pathname === ROUTE_DASHBOARD ? <NavLink to={ROUTE_SETTINGS}>Settings</NavLink> : null}
                                 {pathname === ROUTE_SETTINGS ? <NavLink to={ROUTE_DASHBOARD}>Dashboard</NavLink> : null}
+                                <NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>
                             </ul>
                             :
                             null

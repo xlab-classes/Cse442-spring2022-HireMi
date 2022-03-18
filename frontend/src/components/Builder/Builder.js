@@ -4,6 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import './Builder.css';
 import Draggable from 'react-draggable';
+import InputBase from '@material-ui/core/InputBase';
 
 const styling = makeStyles({
     container: {
