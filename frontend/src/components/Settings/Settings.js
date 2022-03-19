@@ -7,12 +7,12 @@ const Settings = ({auth, setAuth}) => {
 
     const [isEdit, setEdit] = useState(false);
     const [username, setName] = useState(auth?.username);
-    const [pic, setPic] = useState((auth?.pic.length > 1000) ? URL.createObjectURL(atob(auth?.pic)) : "https://lh3.googleusercontent.com/a/AATXAJxOjQQoJshWIHJ0t67X0-fqBJzgTDMnMcCaHvqy=s96-c");
+    const [pic, setPic] = useState((auth?.pic.length > 1000) ? URL.createObjectURL(atob(auth?.pic)) : auth?.pic);
     const [file, setFile] = useState(null);
 
     useEffect(() => {
         if(!file) {
-            setPic((auth?.pic.length > 1000) ? URL.createObjectURL(atob(auth?.pic)) : "https://lh3.googleusercontent.com/a/AATXAJxOjQQoJshWIHJ0t67X0-fqBJzgTDMnMcCaHvqy=s96-c");
+            setPic((auth?.pic.length > 1000) ? URL.createObjectURL(atob(auth?.pic)) : auth?.pic);
             return;
         }
         const objectUrl = URL.createObjectURL(file);
@@ -32,7 +32,7 @@ const Settings = ({auth, setAuth}) => {
     }
 
     function discardPic() {
-        setPic((auth?.pic.length > 1000) ? URL.createObjectURL(atob(auth?.pic)) : "https://lh3.googleusercontent.com/a/AATXAJxOjQQoJshWIHJ0t67X0-fqBJzgTDMnMcCaHvqy=s96-c");
+        setPic((auth?.pic.length > 1000) ? URL.createObjectURL(atob(auth?.pic)) : auth?.pic);
         setFile(null);
     }
 
