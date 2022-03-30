@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato&family=Montserrat&display=swap');
+@use '../../constants/theme';
+
+.page-root {
+    @include theme.app-body;
+}
 
 .buttonClass{
     height: 40px;
@@ -16,7 +20,7 @@
     position:relative;
     top:-7px;
     right: 21px;
-    
+
 }
 #container{
     font-family: 'Lato', sans-serif;
@@ -41,7 +45,7 @@
     padding: 80px 200px;
     border: 3px solid;
     border-radius: 25px;
-    box-shadow: 
+    box-shadow:
        inset 0 -3em 3em rgba(0,0,0,0.1),
              0 0  0 2px rgb(161, 144, 143),
              0.3em 0.3em 1em rgba(0,0,0,0.3);

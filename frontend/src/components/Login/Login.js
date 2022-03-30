@@ -1,46 +1,33 @@
 import React from 'react';
 import {GoogleLogin} from "react-google-login"
-import './Login.css';
+import styles from './Login.module.scss';
 import Logo from './hiremi.png';
 
 
 function Login({setAuth, auth}) {
     return (
-        <div className='backgrounds'>
-            <Borders setAuth={setAuth} auth={auth}/>
+        <div className={styles['page-root']}>
+            <div className='borders'>
+                <div id='container'>
+                    <img
+                        src={Logo}
+                        alt=""
+                        className='row1'>
+                    </img>
+                    <h3
+                        className='row2'>
+                        Welcome Back!
+                    </h3>
+                    <h3
+                        className='row3'>
+                        Login
+                    </h3>
+                    <LoginButton className='row4' setAuth={setAuth} auth={auth}/>
+                </div>
+            </div>
         </div>
     );
 }
-
-function Borders({setAuth, auth}) {
-    return (
-        <div className='borders'>
-            <PageContext setAuth={setAuth} auth={auth}/>
-        </div>
-    );
-}
-
-function PageContext({setAuth, auth}) {
-    return (
-        <div id='container'>
-            <img
-                src={Logo}
-                alt=""
-                className='row1'>
-            </img>
-            <h3
-                className='row2'>
-                Welcome Back!
-            </h3>
-            <h3
-                className='row3'>
-                Login
-            </h3>
-            <LoginButton className='row4' setAuth={setAuth} auth={auth}/>
-        </div>
-    );
-}
-
 
 function LoginButton({setAuth, auth}) {
 
@@ -91,7 +78,7 @@ function LoginButton({setAuth, auth}) {
     }; //end of handleCredentialResponse
 
     return (
-        <div>
+        <div className={styles['page-root']}>
             <GoogleLogin
                 clientId={clientId}
                 render={(renderProps) => (
