@@ -1,12 +1,8 @@
 @use '../../constants/theme';
 
-@mixin backgrounds{
-    background: linear-gradient(180deg, #D5D6EA 47%, #F6ECF5 100%);
-}
-
 .page-root {
     @include theme.app-body;
-    @include backgrounds;
+    //@include theme.background;
 
     display: flex;
     justify-content: center;
@@ -35,6 +31,8 @@
 }
 
 .button-wrap {
+    @include theme.background;
+
     display: flex;
     justify-content: center;
 
@@ -43,7 +41,6 @@
     border: none;
     border-radius: .75rem;
     padding: .75rem;
-    background: linear-gradient(180deg, #D5D6EA 47%, #F6ECF5 100%);
 
     cursor: pointer;
     transition: all .3s ease;
