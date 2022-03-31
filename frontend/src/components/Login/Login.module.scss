@@ -28,6 +28,11 @@
         margin: 0 0 2rem 0;
         font-size: 1.25rem;
     }
+
+    & > p {
+        color: red;
+        font-size: 1rem;
+    }
 }
 
 .button-wrap {
