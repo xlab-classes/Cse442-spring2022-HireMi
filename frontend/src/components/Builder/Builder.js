@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
-import './Builder.css';
+import styles from './Builder.module.scss';
 import Draggable from 'react-draggable';
 import InputBase from '@material-ui/core/InputBase';
 
