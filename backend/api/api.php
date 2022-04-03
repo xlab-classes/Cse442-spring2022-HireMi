@@ -572,6 +572,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
      *              "offset-y": 100,
      *              "width":    100,
      *              "height":   100,
+     *              "content":  "HelloWorld",
      *              "z-index":  1,
      *              "prop": {"font-type": "arial", "font-size": 12}
      *          }]
