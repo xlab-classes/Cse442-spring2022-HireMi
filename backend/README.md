@@ -151,6 +151,7 @@ When a resume is selected, we want to open up an editable resume. This query get
     "width":    100,
     "height":   100,
     "z-index":  1,
+    "content": "HelloWorld",
     "prop": {"font-type": "arial", "font-size": 12}},
     {element 2},
     {element 3},
@@ -174,6 +175,7 @@ Then, the resume and its elements must be saved in the following format:
     "offset-y": 100,
     "width":    100,
     "height":   100,
+    "content": "HelloWorld",
     "z-index":  1,
     "prop": {"font-type": "arial", "font-size": 12}
     }]

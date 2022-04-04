@@ -4,6 +4,8 @@ require __DIR__ . '/../vendor/autoload.php';
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 
+require_once __DIR__ . '/pdf.php';
+
 function login($id, $name, $email, $pic){
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
@@ -572,6 +574,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
      *              "offset-y": 100,
      *              "width":    100,
      *              "height":   100,
+     *              "content":  "HelloWorld",
      *              "z-index":  1,
      *              "prop": {"font-type": "arial", "font-size": 12}
      *          }]
@@ -603,6 +606,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             
             //Save to database
             saveResume($id, $resume_id, $thumbnail, $elements, $share);
+            generatePDF($id, $resume_id, $thumbnail, $elements, $share);
             
             header("HTTP/1.1 200 OK");
             echo "Successfully saved resume.";
