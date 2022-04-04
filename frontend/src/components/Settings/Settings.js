@@ -129,20 +129,20 @@ const Settings = ({auth, setAuth}) => {
             <section className={styles['profile-sect']}>
                 <h6>Account Settings</h6>
                 <div className={styles['profile-pic']}>
-                    <span>Change Photo</span>
-                    <img alt="profile photo" src={pic}/>
+                    {/*<span>Change Photo</span>*/}
+                    <img alt="profile photo" src={pic} />
                     <input type='file' accept="image/*" onChange={onSelect}/>
-                    <button onClick={uploadImage} disabled={pic === auth?.pic}>Update</button>
-                    {file ? <button onClick={discardPic}>Discard Changes</button> : null}
+                    <button className={styles['profile-btn']} onClick={uploadImage} disabled={pic === auth?.pic}>Update</button>
+                    {file ? <button className={styles['profile-btn']} onClick={discardPic}>Discard Changes</button> : null}
                 </div>
-                <div>
-                    <span>Change Name</span>
+                <div className={styles['profile-info']}>
+                    {/*<span>Change Name</span>*/}
                     <input type='text' defaultValue={username} value={username} onChange={e => setName(e.target.value)}/>
-                    <button onClick={changeName} disabled={username === auth?.username}>Update</button>
-                    {username === auth?.username ? null : <button onClick={discardName}>Discard Changes</button>}
+                    <button className={styles['profile-btn']} onClick={changeName} disabled={username === auth?.username}>Update</button>
+                    {username === auth?.username ? null : <button className={styles['profile-btn']} onClick={discardName}>Discard Changes</button>}
                 </div>
                 <div>
-                    <button onClick={deleteAccount}>Delete Account</button>
+                    <button className={`${styles['profile-btn']} ${styles['btn-delete']}`} onClick={deleteAccount}>Delete Account</button>
                 </div>
             </section>
         </div>
