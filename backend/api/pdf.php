@@ -8,35 +8,34 @@ const FONTS = array("times", "timesb", "timesi", "timesbi",
  "symbol", "zapfdingbats");
 
 
-$data = array(
-    "resume_id" => 1,
-    "elements" => array(
-        array(
-            "type" => "text",
-            "offset-x" => 100,
-            "offset-y" => 100,
-            "width" => 100,
-            "height" => 100,
-            "z-index" => 1,
-            "content" => "HelloWorld",
-            "prop" => array(
-                "font-type" => "arial",
-                "font-size" => 12
-            )
-        )
-    ),
-    "share" => 1
-);
+// $data = array(
+//     "resume_id" => 1,
+//     "elements" => array(
+//         array(
+//             "type" => "text",
+//             "offset-x" => 100,
+//             "offset-y" => 100,
+//             "width" => 100,
+//             "height" => 100,
+//             "z-index" => 1,
+//             "content" => "HelloWorld",
+//             "prop" => array(
+//                 "font-type" => "arial",
+//                 "font-size" => 12
+//             )
+//         )
+//     ),
+//     "share" => 1
+// );
+// generatePDF($data);
+
+function generatePDF($id, $resume_id, $thumbnail, $elements, $share){
 
 
-generatePDF($data);
-
-function generatePDF($data){
-
-
-    $resumeID = $data["resume_id"];
-    $elements = $data["elements"];
-    $share = $data["share"];
+    // $resumeID = $data["resume_id"];
+    $resumeID = $resume_id;
+    // $elements = $data["elements"];
+    // $share = $data["share"];
     //By default everything is in mm.
     //8.5"x11" in mm
     $pageLayout = array(215.9, 279.4);
@@ -98,9 +97,9 @@ function generatePDF($data){
     //'F' - saves local file so we could do download link
     ob_clean(); //flushes buffer
     $file = __DIR__ . '/' . $resumeID . '.pdf';
-    // $pdf->Output($file, 'F'); //actual code
-    $pdf->Output($file, 'I'); //for debugging
+    $pdf->Output($file, 'F'); //actual code
+    // $pdf->Output($file, 'I'); //for debugging
 
-    // echo '/CSE442-542/2022-Spring/cse-442r/backend/api/' . $resumeID . '.pdf'            
+    // echo '/CSE442-542/2022-Spring/cse-442r/backend/api/' . $resumeID . '.pdf';         
 }
 ?>
