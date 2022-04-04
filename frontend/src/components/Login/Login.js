@@ -41,7 +41,7 @@ function LoginButton({setAuth, auth, setError, setErrMsg}) {
         const string_body = JSON.stringify(json_body);
 
         // console.log(response);
-        let verified_response =
+        try {
             fetch('./backend/api/api.php/login', {
                 method: 'POST',
                 // mode: 'same-origin',
@@ -69,10 +69,9 @@ function LoginButton({setAuth, auth, setError, setErrMsg}) {
                         access_token: resultJson.verified_token
                     })
                 })
-                .catch((err) => {
-                    handleFailure(err);
-                })
-
+        } catch (err) {
+            handleFailure(err);
+        }
     }; //end of handleCredentialResponse
 
     const handleFailure = err => {
