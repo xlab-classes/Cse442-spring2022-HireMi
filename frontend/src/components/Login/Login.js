@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 
-// import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {GoogleLogin} from "react-google-login"
 import styles from './Login.module.scss';
 
@@ -37,10 +36,8 @@ function LoginButton({setAuth, auth, setError, setErrMsg}) {
         //id_token is a type of jwt token
         const id_token = response['tokenObj']['id_token'];
         const json_body = {"token": id_token};
-        // console.log(json_body);
         const string_body = JSON.stringify(json_body);
 
-        // console.log(response);
         try {
             fetch('./backend/api/api.php/login', {
                 method: 'POST',
@@ -84,7 +81,6 @@ function LoginButton({setAuth, auth, setError, setErrMsg}) {
         <button onClick={renderProps.onClick} disabled={renderProps.disabled} className={styles['button-wrap']}>
             <span className='base_text__2aTiN'>Sign in with </span>
             <img src={g_logo} alt={'google logo'}/>
-            {/*<FontAwesomeIcon icon="fa-solid fa-angle-right" className={styles['fa-icon']}/>*/}
         </button>
     )
 
@@ -99,6 +95,4 @@ function LoginButton({setAuth, auth, setError, setErrMsg}) {
     )
 } //end of LoginButton
 
-
 export default Login;
-
