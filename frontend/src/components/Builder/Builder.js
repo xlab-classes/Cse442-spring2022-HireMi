@@ -20,7 +20,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     useEffect(() => {
 
     }, []);
-
+    
     return (
         <Grid container direction="row" spacing={1}>
             <button onClick={()=>{
@@ -38,7 +38,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     height: 48,
                                     background: "#ffff"
                                 }}>
-                                    <InputBase className='yourname_input' defaultValue="Your Name" />
+                                    <InputBase className='yourname_input' defaultValue="Your Names" />
                                 </Box>
                             </div>
                         </Draggable>
@@ -61,6 +61,13 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     background: "#ffff"
                                 }}>
                                     <InputBase className='experience' defaultValue="Experience" />
+                                </Box>
+                            </div>
+                        </Draggable>
+                        <Draggable>
+                            <div className='New Image'>
+                                <Box>
+                                    
                                 </Box>
                             </div>
                         </Draggable>
@@ -93,7 +100,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 height: 286,
                                 background: "#ffff"
                             }}>
-                                <h3>Text</h3>
+                                <h3>Teehee</h3>
+                                {/* <button onClick={ () => setFontSize(fontsize + 1 )}> A+ </button> 
+                                <button onClick={ () => setFontSize(fontsize - 1 )}> A- </button>                  */}
                             </Box>
                         </div>
                     </div>

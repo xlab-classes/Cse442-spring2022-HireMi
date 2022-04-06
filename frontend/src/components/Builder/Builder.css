@@ -2,7 +2,8 @@
 /**************************************/
 /* column text for dnd and cus */
 /**************************************/
-h1,h2 {
+/*change the header name to class names*/
+h1,h2 { 
     font-family: 'Lato', sans-serif;
     margin: 30px auto;
     text-align: center;
