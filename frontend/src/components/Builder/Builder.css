@@ -103,3 +103,40 @@ h2:after {
     height: 100vh;
     width: 320px;
 }
+
+/**************************************/
+/*button for fontsize*/
+/**************************************/
+.increase {
+    background: #d9ceeb;
+    border: none;
+    color: black;
+    padding: 8px 10px;
+    text-align: center;
+    font-size: 14px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+}
+
+.increase:hover {
+  background-color: #d0d0d0;
+  color: black;
+}
+
+.decrease {
+    background: #d9ceeb;
+    border: none;
+    color: black;
+    padding: 8px 10px;
+    text-align: center;
+    font-size: 14px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+}
+
+.decrease:hover {
+  background-color: #d0d0d0;
+  color: black;
+}

@@ -1,10 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Component} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import './Builder.css';
 import Draggable from 'react-draggable';
 import InputBase from '@material-ui/core/InputBase';
+// import Builder_text from './Builder_text.js'
+// import {render} from "react-dom";
 
 const styling = makeStyles({
     container: {
@@ -20,7 +22,26 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     useEffect(() => {
 
     }, []);
-    
+    function IncreaseFontSize (props) {
+        const [fontSize, setFontSize] = useState('');
+        this.state = {fontSize: 14}
+        function fontChange (event) {
+            setFontSize(event.target.value);
+        }
+        return (
+            <button className='increase' onClick={() => this.fontChange({ fontSize: this.state.fontSize + 1})}>A+</button>
+        )
+    }
+    function DecreaseFontSize (props) {
+        const [fontSize, setFontSize] = useState('');
+        this.state = {fontSize: 14}
+        function fontChange (event) {
+            setFontSize(event.target.value);
+        }
+        return (
+            <button className='decrease' onClick={() => this.fontChange({ fontSize: this.state.fontSize - 1})}>A-</button>
+        )
+    }
     return (
         <Grid container direction="row" spacing={1}>
             <button onClick={()=>{
@@ -100,9 +121,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 height: 286,
                                 background: "#ffff"
                             }}>
-                                <h3>Teehee</h3>
-                                {/* <button onClick={ () => setFontSize(fontsize + 1 )}> A+ </button> 
-                                <button onClick={ () => setFontSize(fontsize - 1 )}> A- </button>                  */}
+                                <h3>Text</h3>
+                                <IncreaseFontSize />
+                                <DecreaseFontSize />
                             </Box>
                         </div>
                     </div>
