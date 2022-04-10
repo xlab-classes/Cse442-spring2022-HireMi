@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import './Builder.css';
 import Draggable from 'react-draggable';
 import InputBase from '@material-ui/core/InputBase';
-import { fontSize } from '@mui/system';
+import { fontSize, style } from '@mui/system';
 import { Button } from '@material-ui/core';
 // import Builder_text from './Builder_text.js'
 // import {render} from "react-dom";
@@ -37,6 +37,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     const [boldfont,setBoldFont] = useState(false);
     // const [fontSize_exp,setFontSize_exp] = useState(12);
     // const [fontSize_edu,setFontSize_edu] = useState(12);
+    
     const increaseFS = () => {
         setFontSize(fontSize + 1);
     };
@@ -45,7 +46,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     };
     const boldF = () => {
         setBoldFont(!boldfont);
-    }
+    };
     return (
         <Grid container direction="row" spacing={1}>
             <button onClick={()=>{
@@ -68,7 +69,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                         className='yourname_input' 
                                         defaultValue="Your Names" 
                                         style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
-                                        // onClick={() => this.eventHandler}
+                                        // onClick={this.eventHandler}
                                          />
                                 </Box>
                             </div>
