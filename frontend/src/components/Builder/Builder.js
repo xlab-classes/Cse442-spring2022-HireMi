@@ -34,6 +34,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     }, []);
     const [fontSize,setFontSize] = useState(12);
+    const [boldfont,setBoldFont] = useState(false);
     // const [fontSize_exp,setFontSize_exp] = useState(12);
     // const [fontSize_edu,setFontSize_edu] = useState(12);
     const increaseFS = () => {
@@ -42,6 +43,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     const decreaseFS = () => {
         setFontSize(fontSize - 1);
     };
+    const boldF = () => {
+        setBoldFont(!boldfont);
+    }
     return (
         <Grid container direction="row" spacing={1}>
             <button onClick={()=>{
@@ -63,7 +67,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='yourname_input' 
                                         defaultValue="Your Names" 
-                                        style={{fontSize: fontSize}}
+                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
                                         // onClick={() => this.eventHandler}
                                          />
                                 </Box>
@@ -79,7 +83,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='education' 
                                         defaultValue="Education"
-                                        style={{fontSize: fontSize}} 
+                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}} 
                                         // onClick={this.eventHandler}
                                         />
                                 </Box>
@@ -95,7 +99,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='experience' 
                                         defaultValue="Experience"
-                                        style={{fontSize: fontSize}}
+                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
                                         // onKeyDown={this.onKeyDown} 
                                         />
                                 </Box>
@@ -138,8 +142,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 background: "#ffff"
                             }}>
                                 <h3 className='txt_h3'>Text</h3>
-                                <button onClick={() => { increaseFS(); } }>A+</button>
-                                <button onClick={() => { decreaseFS(); } }>A-</button>
+                                <button className="increase" onClick={() => { increaseFS(); } }>A+</button>
+                                <button className="decrease" onClick={() => { decreaseFS(); } }>A-</button>
+                                <button className='bold' onClick={() => { boldF(); } }>Bold</button>
                             </Box>
                         </div>
                     </div>

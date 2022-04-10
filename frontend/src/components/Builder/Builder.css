@@ -105,18 +105,19 @@ h2:after {
 }
 
 /**************************************/
-/*button for fontsize*/
+/*buttons for fontsize*/
 /**************************************/
 .increase {
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 8px 10px;
+    padding: 6px 6.5px;
     text-align: center;
-    font-size: 14px;
+    font-size: 12px;
     margin: 4px 2px;
     transition: 0.3s;
     border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
 }
 
 .increase:hover {
@@ -128,15 +129,34 @@ h2:after {
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 8px 10px;
+    padding: 6px 6.5px;
     text-align: center;
-    font-size: 14px;
+    font-size: 12px;
     margin: 4px 2px;
     transition: 0.3s;
     border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
 }
 
 .decrease:hover {
+  background-color: #d0d0d0;
+  color: black;
+}
+
+.bold {
+    background: #d9ceeb;
+    border: none;
+    color: black;
+    padding: 6px 6.5px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.bold:hover {
   background-color: #d0d0d0;
   color: black;
 }
