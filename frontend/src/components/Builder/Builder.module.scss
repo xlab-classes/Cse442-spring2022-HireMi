@@ -1,3 +1,9 @@
+@use '../../constants/theme';
+
+// Builder
+.page-root {
+    @include theme.app-body;
+}
 /**************************************/
 /* column text for dnd and cus */
 /**************************************/

@@ -32,7 +32,7 @@ const Navbar = ({auth}) => {
                             <ul className={styles['nav-drop']}>
                                 {pathname === ROUTE_DASHBOARD ? <NavLink to={ROUTE_SETTINGS}>Settings</NavLink> : null}
                                 {pathname === ROUTE_SETTINGS ? <NavLink to={ROUTE_DASHBOARD}>Dashboard</NavLink> : null}
-                                <NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>
+                                {/*<NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>*/}
                             </ul>
                             :
                             null

@@ -5,8 +5,8 @@ import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
 import Draggable from 'react-draggable';
 import InputBase from '@material-ui/core/InputBase';
-import { fontSize } from '@mui/system';
-import { Button } from '@material-ui/core';
+import {fontSize} from '@mui/system';
+import {Button} from '@material-ui/core';
 // import Builder_text from './Builder_text.js'
 // import {render} from "react-dom";
 
@@ -33,8 +33,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     useEffect(() => {
 
     }, []);
-    const [fontSize,setFontSize] = useState(12);
-    const [boldfont,setBoldFont] = useState(false);
+    const [fontSize, setFontSize] = useState(12);
+    const [boldfont, setBoldFont] = useState(false);
     // const [fontSize_exp,setFontSize_exp] = useState(12);
     // const [fontSize_edu,setFontSize_edu] = useState(12);
     const increaseFS = () => {
@@ -47,110 +47,122 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         setBoldFont(!boldfont);
     }
     return (
-        <Grid container direction="row" spacing={1}>
-            <button onClick={()=>{
-                setResume(null)
-                setEditor(false)
-            }}>Close</button>
-            <Grid item xs>
-                <div className='dnd'>
-                    <div className={columns.container}>
-                        <h1 className='dnd_h1'>Drag and Drop</h1>
-                        <Draggable>
-                            <div className='yourname'>
-                                <Box sx={{
-                                    width: 245,
-                                    height: 48,
-                                    background: "#ffff"
-                                }}>
+        <div className={styles['page-root']}>
+            <Grid container direction="row" spacing={1}>
+                <button onClick={() => {
+                    setResume(null)
+                    setEditor(false)
+                }}>Close
+                </button>
+                <Grid item xs>
+                    <div className='dnd'>
+                        <div className={columns.container}>
+                            <h1 className='dnd_h1'>Drag and Drop</h1>
+                            <Draggable>
+                                <div className='yourname'>
+                                    <Box sx={{
+                                        width: 245,
+                                        height: 48,
+                                        background: "#ffff"
+                                    }}>
 
-                                    <InputBase 
-                                        className='yourname_input' 
-                                        defaultValue="Your Names" 
-                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
-                                        // onClick={() => this.eventHandler}
-                                         />
-                                </Box>
-                            </div>
-                        </Draggable>
-                        <Draggable>
-                            <div className='education'>
-                                <Box sx={{
-                                    width: 245,
-                                    height: 48,
-                                    background: "#ffff"
-                                }}>
-                                    <InputBase 
-                                        className='education' 
-                                        defaultValue="Education"
-                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}} 
-                                        // onClick={this.eventHandler}
+                                        <InputBase
+                                            className='yourname_input'
+                                            defaultValue="Your Names"
+                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
+                                            // onClick={() => this.eventHandler}
                                         />
-                                </Box>
-                            </div>
-                        </Draggable>
-                        <Draggable>
-                            <div className='experience'>
-                                <Box sx={{
-                                    width: 245,
-                                    height: 48,
-                                    background: "#ffff"
-                                }}>
-                                    <InputBase 
-                                        className='experience' 
-                                        defaultValue="Experience"
-                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
-                                        // onKeyDown={this.onKeyDown} 
+                                    </Box>
+                                </div>
+                            </Draggable>
+                            <Draggable>
+                                <div className='education'>
+                                    <Box sx={{
+                                        width: 245,
+                                        height: 48,
+                                        background: "#ffff"
+                                    }}>
+                                        <InputBase
+                                            className='education'
+                                            defaultValue="Education"
+                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
+                                            // onClick={this.eventHandler}
                                         />
-                                </Box>
-                            </div>
-                        </Draggable>
-                        <Draggable>
-                            <div className='New Image'>
-                                <Box>
-                                    
-                                </Box>
-                            </div>
-                        </Draggable>
-                    </div>
-                </div>
-            </Grid>
+                                    </Box>
+                                </div>
+                            </Draggable>
+                            <Draggable>
+                                <div className='experience'>
+                                    <Box sx={{
+                                        width: 245,
+                                        height: 48,
+                                        background: "#ffff"
+                                    }}>
+                                        <InputBase
+                                            className='experience'
+                                            defaultValue="Experience"
+                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
+                                            // onKeyDown={this.onKeyDown}
+                                        />
+                                    </Box>
+                                </div>
+                            </Draggable>
+                            <Draggable>
+                                <div className='New Image'>
+                                    <Box>
 
-            <Grid item xs={5}>
-                <div className='middle'>
-                    <div className={columns.container}>
-                        <div className='resume'>
-                            <Box sx={{
-                                width: 595,
-                                height: 812,
-                                border: ".5px solid black"
-                            }}>
-                            </Box>
+                                    </Box>
+                                </div>
+                            </Draggable>
                         </div>
                     </div>
-                </div>
-            </Grid>
+                </Grid>
 
-            <Grid item xs>
-                <div className='cus'>
-                    <div className={columns.container}>
-                        <h2 className='cus_h2'>Customize!</h2>
-                        <div className='textEdit'>
-                            <Box sx={{
-                                width: 200,
-                                height: 286,
-                                background: "#ffff"
-                            }}>
-                                <h3 className='txt_h3'>Text</h3>
-                                <button className="increase" onClick={() => { increaseFS(); } }>A+</button>
-                                <button className="decrease" onClick={() => { decreaseFS(); } }>A-</button>
-                                <button className='bold' onClick={() => { boldF(); } }>Bold</button>
-                            </Box>
+                <Grid item xs={5}>
+                    <div className='middle'>
+                        <div className={columns.container}>
+                            <div className='resume'>
+                                <Box sx={{
+                                    width: 595,
+                                    height: 812,
+                                    border: ".5px solid black"
+                                }}>
+                                </Box>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </Grid>
+
+                <Grid item xs>
+                    <div className='cus'>
+                        <div className={columns.container}>
+                            <h2 className='cus_h2'>Customize!</h2>
+                            <div className='textEdit'>
+                                <Box sx={{
+                                    width: 200,
+                                    height: 286,
+                                    background: "#ffff"
+                                }}>
+                                    <h3 className='txt_h3'>Text</h3>
+                                    <button className="increase" onClick={() => {
+                                        increaseFS();
+                                    }}>A+
+                                    </button>
+                                    <button className="decrease" onClick={() => {
+                                        decreaseFS();
+                                    }}>A-
+                                    </button>
+                                    <button className='bold' onClick={() => {
+                                        boldF();
+                                    }}>Bold
+                                    </button>
+                                </Box>
+                            </div>
+                        </div>
+                    </div>
+                </Grid>
             </Grid>
-        </Grid>
+        </div>
     );
 
 }
