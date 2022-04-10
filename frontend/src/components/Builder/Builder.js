@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import './Builder.css';
 import Draggable from 'react-draggable';
 import InputBase from '@material-ui/core/InputBase';
+import { fontSize } from '@mui/system';
+import { Button } from '@material-ui/core';
 // import Builder_text from './Builder_text.js'
 // import {render} from "react-dom";
 
@@ -15,33 +17,29 @@ const styling = makeStyles({
         textAlign: "center",
     }
 });
-
+// function FontChange () {
+//     const [FontSize, setFontSize] = useState(14);
+//     const increaseFS = () => setFontSize(FontSize + 1)
+//     const decreaseFS = () => setFontSize(FontSize - 1)
+//     return (
+//         <div>
+//             <Builder changeFS_in={increaseFS} changeFS_de={decreaseFS} fontSize={setFontSize}/>
+//         </div>
+//     );
+// }
 const Builder = ({auth, resume, setEditor, setResume}) => {
     const columns = styling();
 
     useEffect(() => {
 
     }, []);
-    function IncreaseFontSize (props) {
-        const [fontSize, setFontSize] = useState('');
-        this.state = {fontSize: 14}
-        function fontChange (event) {
-            setFontSize(event.target.value);
-        }
-        return (
-            <button className='increase' onClick={() => this.fontChange({ fontSize: this.state.fontSize + 1})}>A+</button>
-        )
-    }
-    function DecreaseFontSize (props) {
-        const [fontSize, setFontSize] = useState('');
-        this.state = {fontSize: 14}
-        function fontChange (event) {
-            setFontSize(event.target.value);
-        }
-        return (
-            <button className='decrease' onClick={() => this.fontChange({ fontSize: this.state.fontSize - 1})}>A-</button>
-        )
-    }
+    const [fontSize,setFontSize] = useState(12);
+    const increaseFS = () => {
+        setFontSize(fontSize + 1)
+    };
+    const decreaseFS = () => {
+        setFontSize(fontSize - 1)
+    };
     return (
         <Grid container direction="row" spacing={1}>
             <button onClick={()=>{
@@ -59,7 +57,11 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     height: 48,
                                     background: "#ffff"
                                 }}>
-                                    <InputBase className='yourname_input' defaultValue="Your Names" />
+
+                                    <InputBase 
+                                        className='yourname_input' 
+                                        defaultValue="Your Names" 
+                                        style={{fontSize: fontSize}} />
                                 </Box>
                             </div>
                         </Draggable>
@@ -70,7 +72,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     height: 48,
                                     background: "#ffff"
                                 }}>
-                                    <InputBase className='education' defaultValue="Education" />
+                                    <InputBase 
+                                        className='education' 
+                                        defaultValue="Education"
+                                        style={{fontSize: fontSize}} />
                                 </Box>
                             </div>
                         </Draggable>
@@ -81,7 +86,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     height: 48,
                                     background: "#ffff"
                                 }}>
-                                    <InputBase className='experience' defaultValue="Experience" />
+                                    <InputBase 
+                                        className='experience' 
+                                        defaultValue="Experience"
+                                        style={{fontSize: fontSize}} />
                                 </Box>
                             </div>
                         </Draggable>
@@ -122,8 +130,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 background: "#ffff"
                             }}>
                                 <h3>Text</h3>
-                                <IncreaseFontSize />
-                                <DecreaseFontSize />
+                                <button onClick={() => { increaseFS(); } }>A+</button>
+                                <button onClick={() => { decreaseFS(); } }>A-</button>
                             </Box>
                         </div>
                     </div>
@@ -131,6 +139,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
             </Grid>
         </Grid>
     );
+
 }
 
 export default Builder;
