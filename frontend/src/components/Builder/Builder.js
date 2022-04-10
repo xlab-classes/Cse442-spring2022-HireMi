@@ -34,11 +34,13 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     }, []);
     const [fontSize,setFontSize] = useState(12);
+    // const [fontSize_exp,setFontSize_exp] = useState(12);
+    // const [fontSize_edu,setFontSize_edu] = useState(12);
     const increaseFS = () => {
-        setFontSize(fontSize + 1)
+        setFontSize(fontSize + 1);
     };
     const decreaseFS = () => {
-        setFontSize(fontSize - 1)
+        setFontSize(fontSize - 1);
     };
     return (
         <Grid container direction="row" spacing={1}>
@@ -49,7 +51,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
             <Grid item xs>
                 <div className='dnd'>
                     <div className={columns.container}>
-                        <h1>Drag and Drop</h1>
+                        <h1 className='dnd_h1'>Drag and Drop</h1>
                         <Draggable>
                             <div className='yourname'>
                                 <Box sx={{
@@ -61,7 +63,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='yourname_input' 
                                         defaultValue="Your Names" 
-                                        style={{fontSize: fontSize}} />
+                                        style={{fontSize: fontSize}}
+                                        // onClick={() => this.eventHandler}
+                                         />
                                 </Box>
                             </div>
                         </Draggable>
@@ -75,7 +79,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='education' 
                                         defaultValue="Education"
-                                        style={{fontSize: fontSize}} />
+                                        style={{fontSize: fontSize}} 
+                                        // onClick={this.eventHandler}
+                                        />
                                 </Box>
                             </div>
                         </Draggable>
@@ -89,7 +95,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='experience' 
                                         defaultValue="Experience"
-                                        style={{fontSize: fontSize}} />
+                                        style={{fontSize: fontSize}}
+                                        // onKeyDown={this.onKeyDown} 
+                                        />
                                 </Box>
                             </div>
                         </Draggable>
@@ -122,14 +130,14 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
             <Grid item xs>
                 <div className='cus'>
                     <div className={columns.container}>
-                        <h2>Customize!</h2>
+                        <h2 className='cus_h2'>Customize!</h2>
                         <div className='textEdit'>
                             <Box sx={{
                                 width: 200,
                                 height: 286,
                                 background: "#ffff"
                             }}>
-                                <h3>Text</h3>
+                                <h3 className='txt_h3'>Text</h3>
                                 <button onClick={() => { increaseFS(); } }>A+</button>
                                 <button onClick={() => { decreaseFS(); } }>A-</button>
                             </Box>
