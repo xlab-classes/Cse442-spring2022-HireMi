@@ -606,7 +606,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             
             //Save to database
             saveResume($id, $resume_id, $thumbnail, $elements, $share);
-            generatePDF($id, $resume_id, $thumbnail, $elements, $share);
+            generatePDF($resume_id, $elements);
             
             header("HTTP/1.1 200 OK");
             echo "Successfully saved resume.";
