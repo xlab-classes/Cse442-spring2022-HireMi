@@ -84,27 +84,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                          />
                                 </Box>
                             </div>
-                        </Draggable>
-                        <Draggable>
-                            <div className='education'>
-                                <Box sx={{
-                                    width: 245,
-                                    height: 48,
-                                    background: "#ffff"
-                                }}>
-                                    <InputBase 
-                                        className='education' 
-                                        defaultValue="Education"
-                                        style={{
-                                            fontSize: fontSize, 
-                                            fontWeight: boldfont ? 'bold' : 'normal', 
-                                            fontStyle: italfont ? 'italic' : 'normal',
-                                            textDecorationLine: underfont ? 'underline' : 'none'
-                                        }} 
-                                        // onClick={this.eventHandler}
-                                        />
-                                    </Box>
-                                </div>
                             </Draggable>
                             <Draggable>
                                 <div className='education'>
