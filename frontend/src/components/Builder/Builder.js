@@ -1,10 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
-import Draggable from 'react-draggable';
-import InputBase from '@material-ui/core/InputBase';
+import { Rnd } from "react-rnd";
 
 const styling = makeStyles({
     container: {
@@ -13,6 +12,11 @@ const styling = makeStyles({
         textAlign: "center",
     }
 });
+const style = {
+    display: 'flex',
+    justifyContent: 'center',
+    textAlign: 'center'
+}
 // function FontChange () {
 //     const [FontSize, setFontSize] = useState(14);
 //     const increaseFS = () => setFontSize(FontSize + 1)
@@ -23,19 +27,38 @@ const styling = makeStyles({
 //         </div>
 //     );
 // }
-const Builder = ({auth, resume, setEditor, setResume}) => {
+
+const tempData = {
+    "elements": [
+        {
+            "type": "text",
+            "content": "some string",
+            "offset-x": 100,
+            "offset-y": 100,
+            "width": 100,
+            "height": 100,
+            "z-index": 1,
+            "prop": { "font-type": "arial", "font-size": 12 }
+        },
+    ]
+}
+
+const Builder = ({ auth, resume, setEditor, setResume }) => {
     const columns = styling();
 
     useEffect(() => {
-
+        // assume that we fetched the data successfully
     }, []);
-    const [fontSize, setFontSize] = useState(12);
+
+    const [rawDoc, updateDoc] = useState(tempData)
+
+    const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
     const [italfont, setItalFont] = useState(false);
     const [underfont, setUnderFont] = useState(false);
     // const [fontSize_exp,setFontSize_exp] = useState(12);
     // const [fontSize_edu,setFontSize_edu] = useState(12);
-    
+
     const increaseFS = () => {
         setFontSize(fontSize + 1);
     };
@@ -54,94 +77,93 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     return (
         <div className={styles['page-root']}>
             <Grid container direction="row" spacing={1}>
-                <button onClick={() => {
-                    setResume(null)
-                    setEditor(false)
-                }}>Close
-                </button>
                 <Grid item xs>
-                    <div className='dnd'>
+                    <div className={styles['dnd']}>
                         <div className={columns.container}>
-                            <h1 className='dnd_h1'>Drag and Drop</h1>
-                            <Draggable>
-                                <div className='yourname'>
-                                    <Box sx={{
-                                        width: 245,
-                                        height: 48,
-                                        background: "#ffff"
-                                    }}>
-
-                                    <InputBase 
-                                        className='yourname_input' 
-                                        defaultValue="Your Names" 
-                                        style={{
-                                            fontSize: fontSize, 
-                                            fontWeight: boldfont ? 'bold' : 'normal', 
-                                            fontStyle: italfont ? 'italic' : 'normal',
-                                            textDecorationLine: underfont ? 'underline' : 'none'
-                                        }}
-                                        // onClick={this.eventHandler}
-                                         />
-                                </Box>
-                            </div>
-                            </Draggable>
-                            <Draggable>
-                                <div className='education'>
-                                    <Box sx={{
-                                        width: 245,
-                                        height: 48,
-                                        background: "#ffff"
-                                    }}>
-                                        <InputBase
-                                            className='education'
-                                            defaultValue="Education"
-                                            style={{
-                                                fontSize: fontSize, 
-                                                fontWeight: boldfont ? 'bold' : 'normal', 
-                                                fontStyle: italfont ? 'italic' : 'normal',
-                                                textDecorationLine: underfont ? 'underline' : 'none'
-                                            }}
-                                            // onClick={this.eventHandler}
-                                        />
-                                    </Box>
-                                </div>
-                            </Draggable>
-                            <Draggable>
-                                <div className='experience'>
-                                    <Box sx={{
-                                        width: 245,
-                                        height: 48,
-                                        background: "#ffff"
-                                    }}>
-                                        <InputBase
-                                            className='experience'
-                                            defaultValue="Experience"
-                                            style={{
-                                                fontSize: fontSize, 
-                                                fontWeight: boldfont ? 'bold' : 'normal', 
-                                                fontStyle: italfont ? 'italic' : 'normal',
-                                                textDecorationLine: underfont ? 'underline' : 'none'
-                                            }}
-                                            // onKeyDown={this.onKeyDown}
-                                        />
-                                    </Box>
-                                </div>
-                            </Draggable>
-                            <Draggable>
-                                <div className='New Image'>
-                                    <Box>
-
-                                    </Box>
-                                </div>
-                            </Draggable>
+                            <h1 className={styles['dnd_h1']}>Drag and Drop</h1>
+                            <Rnd
+                                // className={styles['rnd_drag']}
+                                style={style}
+                                default={{
+                                    x: 50,
+                                    y: 85,
+                                    width: 213,
+                                    height: 43
+                                }}
+                            >
+                                <input 
+                                type="text" 
+                                defaultValue={'Your Name'} 
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    fontSize: fontSize, 
+                                    fontWeight: boldfont ? 'bold' : 'normal', 
+                                    fontStyle: italfont ? 'italic' : 'normal',
+                                    textDecorationLine: underfont ? 'underline' : 'none',
+                                    border: 'none',
+                                    textAlign: 'center'
+                                }}
+                                />
+                            </Rnd>
+                            <Rnd
+                                // className={styles['rnd_drag']}
+                                style={style}
+                                default={{
+                                    x: 50,
+                                    y: 140,
+                                    width: 213,
+                                    height: 43
+                                }}
+                            >
+                                <input 
+                                type="text" 
+                                defaultValue={'Education'} 
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    fontSize: fontSize, 
+                                    fontWeight: boldfont ? 'bold' : 'normal', 
+                                    fontStyle: italfont ? 'italic' : 'normal',
+                                    textDecorationLine: underfont ? 'underline' : 'none',
+                                    border: 'none',
+                                    textAlign: 'center'
+                                }}
+                                />
+                            </Rnd>
+                            <Rnd
+                                // className={styles['rnd_drag']}
+                                style={style}
+                                default={{
+                                    x: 50,
+                                    y: 191,
+                                    width: 213,
+                                    height: 43
+                                }}
+                            >
+                                <input 
+                                type="text" 
+                                defaultValue={'Experience'} 
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    fontSize: fontSize, 
+                                    fontWeight: boldfont ? 'bold' : 'normal', 
+                                    fontStyle: italfont ? 'italic' : 'normal',
+                                    textDecorationLine: underfont ? 'underline' : 'none',
+                                    border: 'none',
+                                    textAlign: 'center'
+                                }}
+                                />
+                            </Rnd>
                         </div>
                     </div>
                 </Grid>
 
                 <Grid item xs={5}>
-                    <div className='middle'>
+                    <div className={styles['middle']}>
                         <div className={columns.container}>
-                            <div className='resume'>
+                            <div className={styles['resume']}>
                                 <Box sx={{
                                     width: 595,
                                     height: 812,
@@ -154,38 +176,43 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 </Grid>
 
                 <Grid item xs>
-                    <div className='cus'>
+                    <div className={styles['cus']}>
                         <div className={columns.container}>
-                            <h2 className='cus_h2'>Customize!</h2>
-                            <div className='textEdit'>
+                            <h2 className={styles['cus_h2']}>Customize!</h2>
+                            <div className={styles['textEdit']}>
                                 <Box sx={{
                                     width: 200,
                                     height: 286,
                                     background: "#ffff"
                                 }}>
-                                    <h3 className='txt_h3'>Text</h3>
-                                    <button className="increase" onClick={() => {
+                                    <h3 className={styles['txt_h3']}>Text</h3>
+                                    <button className={styles['increase']} onClick={() => {
                                         increaseFS();
                                     }}>A+
                                     </button>
-                                    <button className="decrease" onClick={() => {
+                                    <button className={styles['decrease']} onClick={() => {
                                         decreaseFS();
                                     }}>A-
                                     </button>
-                                    <button className='bold' onClick={() => {
+                                    <button className={styles['bold']} onClick={() => {
                                         boldF();
                                     }}>Bold
                                     </button>
-                                    <button className='italicized' onClick={() => {
+                                    <button className={styles['italicized']} onClick={() => {
                                         italF();
                                     }}>Italic
                                     </button>
-                                    <button className='underline' onClick={() => {
+                                    <button className={styles['underline']} onClick={() => {
                                         underF();
                                     }}>U
                                     </button>
                                 </Box>
                             </div>
+                            <button className={styles['closeButton']} onClick={() => {
+                                setResume(null)
+                                setEditor(false)
+                            }}>Close
+                            </button>
                         </div>
                     </div>
                 </Grid>
