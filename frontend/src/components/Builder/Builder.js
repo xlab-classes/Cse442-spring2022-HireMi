@@ -32,6 +32,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     const [fontSize, setFontSize] = useState(12);
     const [boldfont, setBoldFont] = useState(false);
     const [italfont, setItalFont] = useState(false);
+    const [underfont, setUnderFont] = useState(false);
     // const [fontSize_exp,setFontSize_exp] = useState(12);
     // const [fontSize_edu,setFontSize_edu] = useState(12);
     
@@ -46,6 +47,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     };
     const italF = () => {
         setItalFont(!italfont);
+    };
+    const underF = () => {
+        setUnderFont(!underfont);
     };
     return (
         <div className={styles['page-root']}>
@@ -70,7 +74,12 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='yourname_input' 
                                         defaultValue="Your Names" 
-                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal', fontStyle: italfont ? 'italic' : 'normal'}}
+                                        style={{
+                                            fontSize: fontSize, 
+                                            fontWeight: boldfont ? 'bold' : 'normal', 
+                                            fontStyle: italfont ? 'italic' : 'normal',
+                                            textDecorationLine: underfont ? 'underline' : 'none'
+                                        }}
                                         // onClick={this.eventHandler}
                                          />
                                 </Box>
@@ -86,7 +95,12 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='education' 
                                         defaultValue="Education"
-                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal',fontStyle: italfont ? 'italic' : 'normal'}} 
+                                        style={{
+                                            fontSize: fontSize, 
+                                            fontWeight: boldfont ? 'bold' : 'normal', 
+                                            fontStyle: italfont ? 'italic' : 'normal',
+                                            textDecorationLine: underfont ? 'underline' : 'none'
+                                        }} 
                                         // onClick={this.eventHandler}
                                         />
                                     </Box>
@@ -102,7 +116,12 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                         <InputBase
                                             className='education'
                                             defaultValue="Education"
-                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal',fontStyle: italfont ? 'italic' : 'normal'}}
+                                            style={{
+                                                fontSize: fontSize, 
+                                                fontWeight: boldfont ? 'bold' : 'normal', 
+                                                fontStyle: italfont ? 'italic' : 'normal',
+                                                textDecorationLine: underfont ? 'underline' : 'none'
+                                            }}
                                             // onClick={this.eventHandler}
                                         />
                                     </Box>
@@ -118,7 +137,12 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                         <InputBase
                                             className='experience'
                                             defaultValue="Experience"
-                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal',fontStyle: italfont ? 'italic' : 'normal'}}
+                                            style={{
+                                                fontSize: fontSize, 
+                                                fontWeight: boldfont ? 'bold' : 'normal', 
+                                                fontStyle: italfont ? 'italic' : 'normal',
+                                                textDecorationLine: underfont ? 'underline' : 'none'
+                                            }}
                                             // onKeyDown={this.onKeyDown}
                                         />
                                     </Box>
@@ -176,6 +200,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <button className='italicized' onClick={() => {
                                         italF();
                                     }}>Italic
+                                    </button>
+                                    <button className='underline' onClick={() => {
+                                        underF();
+                                    }}>U
                                     </button>
                                 </Box>
                             </div>
