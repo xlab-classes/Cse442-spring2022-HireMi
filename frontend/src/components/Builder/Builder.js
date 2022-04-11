@@ -31,6 +31,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }, []);
     const [fontSize, setFontSize] = useState(12);
     const [boldfont, setBoldFont] = useState(false);
+    const [italfont, setItalFont] = useState(false);
     // const [fontSize_exp,setFontSize_exp] = useState(12);
     // const [fontSize_edu,setFontSize_edu] = useState(12);
     
@@ -42,6 +43,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     };
     const boldF = () => {
         setBoldFont(!boldfont);
+    };
+    const italF = () => {
+        setItalFont(!italfont);
     };
     return (
         <div className={styles['page-root']}>
@@ -66,7 +70,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='yourname_input' 
                                         defaultValue="Your Names" 
-                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
+                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal', fontStyle: italfont ? 'italic' : 'normal'}}
                                         // onClick={this.eventHandler}
                                          />
                                 </Box>
@@ -82,7 +86,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <InputBase 
                                         className='education' 
                                         defaultValue="Education"
-                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}} 
+                                        style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal',fontStyle: italfont ? 'italic' : 'normal'}} 
                                         // onClick={this.eventHandler}
                                         />
                                     </Box>
@@ -98,7 +102,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                         <InputBase
                                             className='education'
                                             defaultValue="Education"
-                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
+                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal',fontStyle: italfont ? 'italic' : 'normal'}}
                                             // onClick={this.eventHandler}
                                         />
                                     </Box>
@@ -114,7 +118,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                         <InputBase
                                             className='experience'
                                             defaultValue="Experience"
-                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
+                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal',fontStyle: italfont ? 'italic' : 'normal'}}
                                             // onKeyDown={this.onKeyDown}
                                         />
                                     </Box>
@@ -168,6 +172,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     <button className='bold' onClick={() => {
                                         boldF();
                                     }}>Bold
+                                    </button>
+                                    <button className='italicized' onClick={() => {
+                                        italF();
+                                    }}>Italic
                                     </button>
                                 </Box>
                             </div>
