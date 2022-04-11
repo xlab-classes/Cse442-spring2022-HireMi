@@ -5,13 +5,8 @@ import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
 import Draggable from 'react-draggable';
 import InputBase from '@material-ui/core/InputBase';
-<<<<<<< HEAD
 import { fontSize, style } from '@mui/system';
 import { Button } from '@material-ui/core';
-=======
-import {fontSize} from '@mui/system';
-import {Button} from '@material-ui/core';
->>>>>>> 50e57d15eef281e360e6df3189627eb9bd927748
 // import Builder_text from './Builder_text.js'
 // import {render} from "react-dom";
 
@@ -72,7 +67,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                         background: "#ffff"
                                     }}>
 
-<<<<<<< HEAD
                                     <InputBase 
                                         className='yourname_input' 
                                         defaultValue="Your Names" 
@@ -94,13 +88,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                         defaultValue="Education"
                                         style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}} 
                                         // onClick={this.eventHandler}
-=======
-                                        <InputBase
-                                            className='yourname_input'
-                                            defaultValue="Your Names"
-                                            style={{fontSize: fontSize, fontWeight: boldfont ? 'bold' : 'normal'}}
-                                            // onClick={() => this.eventHandler}
->>>>>>> 50e57d15eef281e360e6df3189627eb9bd927748
                                         />
                                     </Box>
                                 </div>
