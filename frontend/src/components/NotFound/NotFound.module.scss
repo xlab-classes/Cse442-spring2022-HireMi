@@ -1,0 +1,6 @@
+@use '../../constants/theme';
+
+// Not Found
+.page-root {
+  @include theme.app-body;
+}

@@ -83,7 +83,8 @@
 }
 
 .nav-drop {
-  display: block;
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: 3rem;
   right: 0;
@@ -91,10 +92,19 @@
   border: .1rem solid #000;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 1rem;
 
-  & > li {
-    margin: 0;
+  & > a {
+    text-align: center;
+    text-decoration: none;
+    margin: .25rem;
     padding: 0;
+
+    transition: all .3s ease;
+  }
+
+  & > a:hover {
+    transform: scale(1.1);
+    opacity: .9;
   }
 }

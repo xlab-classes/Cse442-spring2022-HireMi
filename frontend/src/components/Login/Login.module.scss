@@ -1,0 +1,75 @@
+@use '../../constants/theme';
+
+.page-root {
+    @include theme.app-body;
+    //@include theme.background;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 0;
+}
+
+.login-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 6rem;
+    border-radius: 1.25rem;
+    background-color: #fff;
+
+    & > img {
+        height: 10rem;
+        width: auto;
+    }
+
+    & > h1 {
+        margin: 0 0 2rem 0;
+        font-size: 1.25rem;
+    }
+
+    & > p {
+        color: red;
+        font-size: 1rem;
+    }
+}
+
+.button-wrap {
+    @include theme.background;
+
+    display: flex;
+    justify-content: center;
+
+    align-items: center;
+
+    border: none;
+    border-radius: .75rem;
+    padding: .75rem;
+
+    cursor: pointer;
+    transition: all .3s ease;
+
+    &:hover {
+        opacity: .8;
+        transform: scale(1.1);
+    }
+
+    & > img {
+        color: #000;
+        height: 1.75rem;
+        width: auto;
+    }
+
+    & > span {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #000;
+
+        margin-right: .5rem;
+    }
+
+    //& > .fa-icon {
+    //    color: #000;
+    //}
+}
