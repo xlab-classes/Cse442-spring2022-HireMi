@@ -155,6 +155,14 @@ When a resume is selected, we want to open up an editable resume. This query get
     "prop": {"font-type": "arial", "font-size": 12}},
     {element 2},
     {element 3},
+    {"type": "image",
+    "offset-x": 100,
+    "offset-y": 100,
+    "width":    100,
+    "height":   100,
+    "z-index":  1,
+    "content": Base64 string,
+    "prop": {}} (Currently don't use or need this, but in case we need it later)
     ...
     ]
 ```
@@ -177,8 +185,19 @@ Then, the resume and its elements must be saved in the following format:
     "height":   100,
     "content": "HelloWorld",
     "z-index":  1,
-    "prop": {"font-type": "arial", "font-size": 12}
-    }]
+    "prop": {"font-type": "arial", "font-size": 12}}
+    {element 2},
+    {element 3},
+    {"type": "image",
+    "offset-x": 100,
+    "offset-y": 100,
+    "width":    100,
+    "height":   100,
+    "z-index":  1,
+    "content": Base64 string,
+    "prop": {}} (Currently don't use or need this, but in case we need it later)
+    ...
+    ]
 }
 ```
 
