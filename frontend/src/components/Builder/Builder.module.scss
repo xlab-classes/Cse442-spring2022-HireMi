@@ -8,54 +8,54 @@
 /* column text for dnd and cus */
 /**************************************/
 /*change the header name to class names*/
-//h1,h2 {
-//    font-family: 'Lato', sans-serif;
-//    margin: 30px auto;
-//    text-align: center;
-//    font-size: 30px;
-//    max-width: 600px;
-//    position: relative;
-//}
-//h1:before {
-//    content: "";
-//    display: block;
-//    width: 50px;
-//    height: 3px;
-//    background: #A4938F;
-//    left: 0;
-//    top: 50%;
-//    position: absolute;
-//}
-//h1:after {
-//    content: "";
-//    display: block;
-//    width: 50px;
-//    height: 3px;
-//    background: #A4938F;
-//    right: 0;
-//    top: 50%;
-//    position: absolute;
-//}
-//h2:before {
-//    content: "";
-//    display: block;
-//    width: 60px;
-//    height: 3px;
-//    background: #A4938F;
-//    left: 0;
-//    top: 50%;
-//    position: absolute;
-//}
-//h2:after {
-//    content: "";
-//    display: block;
-//    width: 60px;
-//    height: 3px;
-//    background: #A4938F;
-//    right: 0;
-//    top: 50%;
-//    position: absolute;
-//}
+.dnd_h1,.cus_h2 {
+   font-family: 'Lato', sans-serif;
+   margin: 30px auto;
+   text-align: center;
+   font-size: 30px;
+   max-width: 600px;
+   position: relative;
+}
+.dnd_h1:before {
+   content: "";
+   display: block;
+   width: 50px;
+   height: 3px;
+   background: #A4938F;
+   left: 0;
+   top: 50%;
+   position: absolute;
+}
+.dnd_h1:after {
+   content: "";
+   display: block;
+   width: 50px;
+   height: 3px;
+   background: #A4938F;
+   right: 0;
+   top: 50%;
+   position: absolute;
+}
+.cus_h2:before {
+   content: "";
+   display: block;
+   width: 60px;
+   height: 3px;
+   background: #A4938F;
+   left: 0;
+   top: 50%;
+   position: absolute;
+}
+.cus_h2:after {
+   content: "";
+   display: block;
+   width: 60px;
+   height: 3px;
+   background: #A4938F;
+   right: 0;
+   top: 50%;
+   position: absolute;
+}
 
 /**************************************/
 /*box for yourname*/
