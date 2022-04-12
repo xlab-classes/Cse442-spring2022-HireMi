@@ -22,7 +22,7 @@ const tempData = {
     "elements": [
         {
             "type": "text",
-            "content": "some string",
+            "content": "some string 1",
             "offset-x": 100,
             "offset-y": 120,
             "width": 100,
@@ -32,32 +32,32 @@ const tempData = {
         },
         {
             "type": "text",
-            "content": "some string",
-            "offset-x": 100,
+            "content": "some string 2",
+            "offset-x": 70,
             "offset-y": 140,
             "width": 100,
             "height": 100,
-            "z-index": 1,
+            "z-index": 2,
             "prop": { "font-type": "arial", "font-size": 12 }
         },
         {
             "type": "text",
-            "content": "some string",
-            "offset-x": 100,
+            "content": "some string 3",
+            "offset-x": 10,
             "offset-y": 160,
             "width": 100,
             "height": 100,
-            "z-index": 1,
+            "z-index": 3,
             "prop": { "font-type": "arial", "font-size": 12 }
         }
         , {
             "type": "text",
-            "content": "some string",
-            "offset-x": 100,
+            "content": "some string 4",
+            "offset-x": 40,
             "offset-y": 200,
             "width": 100,
             "height": 100,
-            "z-index": 1,
+            "z-index": 4,
             "prop": { "font-type": "arial", "font-size": 12 }
         }
     ]
@@ -117,35 +117,44 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         setUnderFont(!underfont);
     };
 
-    console.log(mappedData)
 
-    // const renderedData = mappedData ? mappedData.entries().map(el =>
-    //     <Rnd
-    //         style={style}
-    //         default={{
-    //             x: el[1]['offset-x'],
-    //             y: el[1]['offset-y'],
-    //             width: el[1]['width'],
-    //             height: el[1]['height']
-    //         }}
-    //         key={el[0]}
-    //     >
-    //         <input
-    //             type="text"
-    //             defaultValue={el[1]['content']}
-    //             style={{
-    //                 width: '100%',
-    //                 height: '100%',
-    //                 fontSize: fontSize,
-    //                 fontWeight: boldfont ? 'bold' : 'normal',
-    //                 fontStyle: italfont ? 'italic' : 'normal',
-    //                 textDecorationLine: underfont ? 'underline' : 'none',
-    //                 border: 'none',
-    //                 textAlign: 'center'
-    //             }}
-    //         />
-    //     </Rnd>
-    // ) : null;
+
+    const renderedData = Object.entries(mappedData ? mappedData : {}).map(el =>
+    {
+        if (el[0] === 'prev') {
+            return null;
+        }
+        return (
+                <Rnd
+                    style={style}
+                    default={{
+                        x: el[1]['offset-x'],
+                        y: el[1]['offset-y'],
+                        width: el[1]['width'],
+                        height: el[1]['height']
+                    }}
+                    key={el[0]}
+                >
+                    <input
+                        type="text"
+                        defaultValue={el[1]['content']}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            fontSize: fontSize,
+                            fontWeight: boldfont ? 'bold' : 'normal',
+                            fontStyle: italfont ? 'italic' : 'normal',
+                            textDecorationLine: underfont ? 'underline' : 'none',
+                            border: 'none',
+                            textAlign: 'center'
+                        }}
+                    />
+                </Rnd>
+            )
+
+    }
+
+    );
 
     return (
         <div className={styles['page-root']}>
@@ -254,7 +263,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                                     border: ".5px solid black",
                                     background: "white"
                                 }}>
-
+                                    {renderedData}
                                 </Box>
                             </div>
                         </div>
