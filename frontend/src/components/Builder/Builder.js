@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from "@material-ui/core/styles";
+import React, {useState, useEffect} from 'react';
+import {makeStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
-import { Rnd } from "react-rnd";
+import {Rnd} from "react-rnd";
 
 const styling = makeStyles({
     container: {
@@ -28,7 +28,7 @@ const tempData = {
             "width": 100,
             "height": 100,
             "z-index": 1,
-            "prop": { "font-type": "arial", "font-size": 12 }
+            "prop": {"font-type": "arial", "font-size": 12}
         },
         {
             "type": "text",
@@ -38,7 +38,7 @@ const tempData = {
             "width": 100,
             "height": 100,
             "z-index": 2,
-            "prop": { "font-type": "arial", "font-size": 12 }
+            "prop": {"font-type": "arial", "font-size": 12}
         },
         {
             "type": "text",
@@ -48,7 +48,7 @@ const tempData = {
             "width": 100,
             "height": 100,
             "z-index": 3,
-            "prop": { "font-type": "arial", "font-size": 12 }
+            "prop": {"font-type": "arial", "font-size": 12}
         }
         , {
             "type": "text",
@@ -58,17 +58,19 @@ const tempData = {
             "width": 100,
             "height": 100,
             "z-index": 4,
-            "prop": { "font-type": "arial", "font-size": 12 }
+            "prop": {"font-type": "arial", "font-size": 12}
         }
     ]
 }
 
-const Builder = ({ auth, resume, setEditor, setResume }) => {
+const Builder = ({auth, resume, setEditor, setResume}) => {
     const columns = styling();
 
 
     const [rawDoc, updateDoc] = useState(tempData)
     const [mappedData, updateData] = useState(null);
+
+    const [increment, setIncrement] = useState(null);
 
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
@@ -93,10 +95,10 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                     }
                 )
             }
-            , { prev: 0 }
+            , {prev: 0}
         )
 
-
+        setIncrement(remapped['prev'] + 1);
         updateData(remapped);
 
     }, []);
@@ -118,13 +120,12 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     };
 
 
+    const renderedData = Object.entries(mappedData ? mappedData : {}).map(el => {
+            if (el[0] === 'prev') {
+                return null;
+            }
 
-    const renderedData = Object.entries(mappedData ? mappedData : {}).map(el =>
-    {
-        if (el[0] === 'prev') {
-            return null;
-        }
-        return (
+            return (
                 <Rnd
                     style={style}
                     default={{
@@ -135,25 +136,32 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                     }}
                     key={el[0]}
                 >
-                    <input
-                        type="text"
-                        defaultValue={el[1]['content']}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            fontSize: fontSize,
-                            fontWeight: boldfont ? 'bold' : 'normal',
-                            fontStyle: italfont ? 'italic' : 'normal',
-                            textDecorationLine: underfont ? 'underline' : 'none',
-                            border: 'none',
-                            textAlign: 'center'
-                        }}
-                    />
+                    {el[1]['type'] === 'text' ?
+                        <input
+                            type="text"
+                            defaultValue={el[1]['content']}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                fontSize: fontSize,
+                                fontWeight: boldfont ? 'bold' : 'normal',
+                                fontStyle: italfont ? 'italic' : 'normal',
+                                textDecorationLine: underfont ? 'underline' : 'none',
+                                border: 'none',
+                                textAlign: 'center'
+                            }}
+                        /> :
+                        <img src={} alt={''}
+                             style={{
+                                 width: '100%',
+                                 height: 'auto',
+                             }}
+                        />
+                    }
                 </Rnd>
             )
 
-    }
-
+        }
     );
 
     return (
