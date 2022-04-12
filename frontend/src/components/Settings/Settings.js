@@ -7,12 +7,12 @@ const Settings = ({auth, setAuth}) => {
 
     const [isEdit, setEdit] = useState(false);
     const [username, setName] = useState(auth?.username);
-    const [pic, setPic] = useState(URL.createObjectURL(atob(auth?.pic)));
+    const [pic, setPic] = useState((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic);
     const [file, setFile] = useState(null);
 
     useEffect(() => {
         if(!file) {
-            setPic(URL.createObjectURL(atob(auth?.pic)));
+            setPic((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic);
             return;
         }
         const objectUrl = URL.createObjectURL(file);
@@ -23,6 +23,26 @@ const Settings = ({auth, setAuth}) => {
         return () => URL.revokeObjectURL(objectUrl);
     }, [file]);
 
+    const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+        const byteCharacters = atob(b64Data);
+        const byteArrays = [];
+      
+        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+          const slice = byteCharacters.slice(offset, offset + sliceSize);
+      
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+      
+          const byteArray = new Uint8Array(byteNumbers);
+          byteArrays.push(byteArray);
+        }
+      
+        const blob = new Blob(byteArrays, {type: contentType});
+        return blob;
+      }
+
     function onSelect(e) {
         if (!e.target.files || e.target.files.length === 0) {
             setFile(null);
@@ -32,14 +52,20 @@ const Settings = ({auth, setAuth}) => {
     }
 
     function discardPic() {
-        setPic(URL.createObjectURL(atob(auth?.pic)));
+        setPic((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic);
         setFile(null);
     }
 
-    function uploadImage() {
+    function changeImage() {
+        const reader = new FileReader();
+        reader.onload = () => uploadImage(reader.result);
+        reader.readAsBinaryString(file);
+    }
+
+    function uploadImage(file_binary) {
         // Implement uploading to database through backend api with token
 
-        const encoded_image = btoa(file);
+        const encoded_image = btoa(file_binary);
         const json_body = {'id': auth?.id, 'image': encoded_image};
         const string_body = JSON.stringify(json_body);
 
@@ -132,7 +158,7 @@ const Settings = ({auth, setAuth}) => {
                     <span>Change Photo</span>
                     <img alt="profile photo" src={pic}/>
                     <input type='file' accept="image/*" onChange={onSelect}/>
-                    <button onClick={uploadImage} disabled={pic === URL.createObjectURL(atob(auth?.pic))}>Update</button>
+                    <button onClick={changeImage} disabled={pic === (auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic}>Update</button>
                     {file ? <button onClick={discardPic}>Discard Changes</button> : null}
                 </div>
                 <div>
