@@ -7,23 +7,24 @@ const Settings = ({auth, setAuth}) => {
 
     const [isEdit, setEdit] = useState(false);
     const [username, setName] = useState(auth?.username);
-    const [pic, setPic] = useState((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic);
+    const [pic, setPic] = useState(auth?.pic);
     const [file, setFile] = useState(null);
 
     useEffect(() => {
         if(!file) {
-            setPic((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic);
+            setPic(auth?.pic);
             return;
         }
-        const objectUrl = URL.createObjectURL(file);
-        setPic(objectUrl);
+
+        const reader = new FileReader();
+        reader.onload = () => setPic(btoa(reader.result));
+        reader.readAsBinaryString(file);
+
         // setFile(selectedFile)
 
-        // free memory when ever this component is unmounted
-        return () => URL.revokeObjectURL(objectUrl);
     }, [file]);
 
-    const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+    function b64toBlob(b64Data, contentType='', sliceSize=512) {
         const byteCharacters = atob(b64Data);
         const byteArrays = [];
       
@@ -52,7 +53,7 @@ const Settings = ({auth, setAuth}) => {
     }
 
     function discardPic() {
-        setPic((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic);
+        setPic(auth?.pic);
         setFile(null);
     }
 
@@ -156,10 +157,10 @@ const Settings = ({auth, setAuth}) => {
                 <h6>Account Settings</h6>
                 <div className={styles['profile-pic']}>
                     <span>Change Photo</span>
-                    <img alt="profile photo" src={pic}/>
+                    <img alt="profile photo" src={(pic.length > 1000) ? URL.createObjectURL(b64toBlob(pic)) : pic}/>
                     <input type='file' accept="image/*" onChange={onSelect}/>
-                    <button onClick={changeImage} disabled={pic === (auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic}>Update</button>
-                    {file ? <button onClick={discardPic}>Discard Changes</button> : null}
+                    <button onClick={changeImage} disabled={pic === auth?.pic}>Update</button>
+                    {pic === auth?.pic ? null : <button onClick={discardPic}>Discard Changes</button>}
                 </div>
                 <div>
                     <span>Change Name</span>
