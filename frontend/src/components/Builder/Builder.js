@@ -136,7 +136,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     }}
                     key={el[0]}
                     onDragStop={(e, data) => {
-                        console.log(data)
+                        // console.log(data)
 
                         const updated = {
                             ...mappedData,
@@ -150,7 +150,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         updateData(updated);
                     }}
                     onResizeStop={(e, dir, ref, delta, position) => {
-                        console.log(position)
+                        // console.log(position)
 
                         const updated = {
                             ...mappedData,
@@ -180,6 +180,19 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 border: 'none',
                                 textAlign: 'center',
                                 backgroundColor: 'grey'
+                            }}
+                            onChange={e => {
+                                const str = e.target.value;
+
+                                const updated = {
+                                    ...mappedData,
+                                    [el[0]]: {
+                                        ...mappedData[el[0]],
+                                        content: str
+                                    }
+                                }
+
+                                updateData(updated);
                             }}
                         /> :
                         <img src={''} alt={''}
