@@ -135,6 +135,36 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         height: el[1]['height']
                     }}
                     key={el[0]}
+                    onDragStop={(e, data) => {
+                        console.log(data)
+
+                        const updated = {
+                            ...mappedData,
+                            [el[0]]: {
+                                ...mappedData[el[0]],
+                                'offset-x': data['x'],
+                                'offset-y': data['y'],
+                            }
+                        }
+
+                        updateData(updated);
+                    }}
+                    onResizeStop={(e, dir, ref, delta, position) => {
+                        console.log(position)
+
+                        const updated = {
+                            ...mappedData,
+                            [el[0]]: {
+                                ...mappedData[el[0]],
+                                width: mappedData[el[0]]['width'] + delta['width'],
+                                height: mappedData[el[0]]['height'] + delta['height'],
+                                'offset-x': position['x'],
+                                'offset-y': position['y'],
+                            }
+                        }
+
+                        updateData(updated);
+                    }}
                 >
                     {el[1]['type'] === 'text' ?
                         <input
@@ -148,10 +178,11 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 fontStyle: italfont ? 'italic' : 'normal',
                                 textDecorationLine: underfont ? 'underline' : 'none',
                                 border: 'none',
-                                textAlign: 'center'
+                                textAlign: 'center',
+                                backgroundColor: 'grey'
                             }}
                         /> :
-                        <img src={} alt={''}
+                        <img src={''} alt={''}
                              style={{
                                  width: '100%',
                                  height: 'auto',
