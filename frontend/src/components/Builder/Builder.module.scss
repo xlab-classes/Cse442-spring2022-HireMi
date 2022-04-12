@@ -10,23 +10,26 @@
 /* column text for dnd and cus */
 /**************************************/
 /*change the header name to class names*/
-.dnd_h1 {
+.dnd_h1, .cus_h2 {
     font-family: 'Lato', sans-serif;
-    margin: 30px auto;
+    // margin: 30px auto;
+    width: 100%;
+    margin: 0;
+    padding: 30px 0;
     text-align: center;
     font-size: 30px;
     max-width: 600px;
     position: relative;
 }
 
-.cus_h2 {
-    font-family: 'Lato', sans-serif;
-    margin: 30px auto;
-    text-align: center;
-    font-size: 30px;
-    max-width: 600px;
-    position: relative;
-}
+// .cus_h2 {
+//     font-family: 'Lato', sans-serif;
+//     margin: 30px auto;
+//     text-align: center;
+//     font-size: 30px;
+//     max-width: 600px;
+//     position: relative;
+// }
 
 .dnd_h1:before {
     content: "";
@@ -80,18 +83,25 @@
     // position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;
+    // height: 100vh;
+    height: 100%;
     width: 320px;
 }
 
 .cus {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
     background: linear-gradient(180deg, #D5D6EA 18.87%, #F6ECF5 39.45%);
     // position: fixed;
     top: 0;
     right: 0;
-    height: 100vh;
+    // height: 100vh;
+    height: 100%;
     width: 320px;
-    justify-content: center;
+
 }
 
 /**************************************/
