@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
+// import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
 import {Rnd} from "react-rnd";
+import {sampleRawData} from "./hardCodedData.js";
 
 const styling = makeStyles({
     container: {
@@ -18,50 +19,7 @@ const style = {
     textAlign: 'center'
 }
 
-const tempData = {
-    "elements": [
-        {
-            "type": "text",
-            "content": "some string 1",
-            "offset-x": 100,
-            "offset-y": 120,
-            "width": 100,
-            "height": 100,
-            "z-index": 1,
-            "prop": {"font-type": "arial", "font-size": 12}
-        },
-        {
-            "type": "text",
-            "content": "some string 2",
-            "offset-x": 70,
-            "offset-y": 140,
-            "width": 100,
-            "height": 100,
-            "z-index": 2,
-            "prop": {"font-type": "arial", "font-size": 12}
-        },
-        {
-            "type": "text",
-            "content": "some string 3",
-            "offset-x": 10,
-            "offset-y": 160,
-            "width": 100,
-            "height": 100,
-            "z-index": 3,
-            "prop": {"font-type": "arial", "font-size": 12}
-        }
-        , {
-            "type": "text",
-            "content": "some string 4",
-            "offset-x": 40,
-            "offset-y": 200,
-            "width": 100,
-            "height": 100,
-            "z-index": 4,
-            "prop": {"font-type": "arial", "font-size": 12}
-        }
-    ]
-}
+const tempData = sampleRawData
 
 const Builder = ({auth, resume, setEditor, setResume}) => {
     const columns = styling();
@@ -71,7 +29,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     const [mappedData, updateData] = useState(null);
 
     const [increment, setIncrement] = useState(null);
-
+    const [share, setShare] = useState(false);
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
     const [italfont, setItalFont] = useState(false);
@@ -80,9 +38,62 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     // const [fontSize_edu,setFontSize_edu] = useState(12);
 
     useEffect(() => {
+        loadingElements().then(() => {
+            fetch('./backend/api/api.php/get_resume')
+            const remapped = rawDoc["elements"].reduce(
+                (obj, el) => {
+                    const id = obj['prev'] + 1;
+                    return (
+                        {
+                            ...obj,
+                            prev: id,
+                            [id]: {
+                                ...el
+                            }
+                        }
+                    )
+                }
+                , {prev: 0}
+            )
+    
+            setIncrement(remapped['prev'] + 1);
+            updateData(remapped);
+        }).catch(err => {
+            console.error(err)
+        }); 
         // assume that we fetched the data successfully
+        // const remapped = rawDoc["elements"].reduce(
+        //     (obj, el) => {
+        //         const id = obj['prev'] + 1;
+        //         return (
+        //             {
+        //                 ...obj,
+        //                 prev: id,
+        //                 [id]: {
+        //                     ...el
+        //                 }
+        //             }
+        //         )
+        //     }
+        //     , {prev: 0}
+        // )
 
-        const remapped = rawDoc["elements"].reduce(
+        // setIncrement(remapped['prev'] + 1);
+        // updateData(remapped);
+
+        // Needs to be integrated with the fetch API
+        // renderData(rawDoc)
+
+    }, []);
+    useEffect(() => {
+        saveElements().then(() => {
+            fetch('./backend/api/api.php/resume')
+        }).catch(err => {
+            console.error(err)
+        }); 
+    },[]);
+    function renderData(rawData) {
+        const remapped = rawData["elements"].reduce(
             (obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
@@ -100,8 +111,65 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         setIncrement(remapped['prev'] + 1);
         updateData(remapped);
+    }
 
-    }, []);
+    // This function needs to be paired with the save using fetch API
+    async function encodeData(formattedData) {
+        const filteredData = Object.values(formattedData).filter(el => {
+            if (typeof el === 'object') {
+                return el
+            } else {
+                return null
+            }
+        })
+
+        // Upload filteredData to push it to the server
+
+    }
+
+    function convertBase64(file) {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+
+            fileReader.onerror = error => {
+                reject(error);
+            }
+        });
+    }
+
+    async function addImage(e) {
+        const currentPrev = mappedData['prev'] + 1
+
+        const file = e.target.files[0];
+        const base64 = await convertBase64(file);
+
+        let img = new Image;
+        img.onload = () => {
+            const newData = {
+                ...mappedData,
+                [currentPrev]: {
+                    "type": "image",
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "width": img.width ? img.width : 100,
+                    "height": img.height ? img.height : 100,
+                    "z-index": 1,
+                    "content": base64,
+                    "prop": {}
+                },
+                prev: currentPrev
+            }
+
+            updateData(newData);
+        }
+        img.src = base64
+
+    }
 
     const increaseFS = () => {
         setFontSize(fontSize + 1);
@@ -195,10 +263,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 updateData(updated);
                             }}
                         /> :
-                        <img src={''} alt={''}
+                        <img src={el[1]['content']} alt={''} draggable={false}
                              style={{
                                  width: '100%',
-                                 height: 'auto',
+                                 height: '100%',
                              }}
                         />
                     }
@@ -207,7 +275,48 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         }
     );
-
+        // load from server (api)
+        async function loadingElements () {
+            await fetch('./backend/api/api.php/get_resume' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + auth?.access_token
+                },
+                body: JSON.stringify({
+                    'id' : auth?.id,
+                    'resume_id': parseInt(resume.split('-')[0])
+                })
+            })
+            .then((result) => result.json())
+            .then((resultJson) => {
+                let data = []
+                let resume_id = resultJson.resume_id;
+                let loadedEl = renderData(rawDoc);
+                let share = setShare(false);
+                data.push({'resume_id':resume_id, 'elements': loadedEl, 'share': share});
+                
+            })
+        }
+        async function saveElements () {
+            await fetch('./backend/api/api.php/resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + auth?.access_token
+                },
+                body: JSON.stringify({
+                    'id': auth?.id,
+                    'thumbnail': 'data:image/png;base64',
+                    'data': encodeData
+                })
+            })
+            .then((result) => result.json())
+            .then((resultJson) => {
+                
+                console.log("Successfully saved resume.",resultJson);
+            })
+        }
     return (
         <div className={styles['page-root']}>
             {/* <Grid container direction="row" spacing={1}>
@@ -303,7 +412,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 </aside>
 
                 {/* </Grid>
-
                 <Grid item xs={5}> */}
                 <section>
                     <div className={styles['middle']}>
@@ -323,7 +431,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 </section>
 
                 {/* </Grid>
-
                 <Grid item xs> */}
                 <aside>
                     <div className={styles['cus']}>
@@ -337,9 +444,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 margin: '0 auto'
                             }}>
                                 <h3 className={styles['txt_h3']}>Text</h3>
-                                <input 
+                                <input
                                     className={styles["fontSize_input"]}
-                                    value={fontSize}
+                                    defaultValue={fontSize}
+                                    // value={fontSize}
                                     onChange={renderedData.entries[1]}
                                 />
                                 <button className={styles['increase']} onClick={() => {
@@ -368,6 +476,15 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             setResume(null)
                             setEditor(false)
                         }}>Close Editor
+                        </button>
+                        <button onClick={() => encodeData(mappedData)}>
+                            TEST button for encoder
+                        </button>
+                        <input type='file' accept="image/*" onChange={addImage}/>
+                        <button className={styles['saveButton']} onClick={() => {
+                            setResume(null)
+                            setEditor(false)
+                        }}>Save Resume
                         </button>
                     </div>
                     {/* </div> */}
