@@ -81,7 +81,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     useEffect(() => {
         // assume that we fetched the data successfully
-
         const remapped = rawDoc["elements"].reduce(
             (obj, el) => {
                 const id = obj['prev'] + 1;
