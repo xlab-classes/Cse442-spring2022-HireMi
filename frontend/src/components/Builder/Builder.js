@@ -4,6 +4,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
 import {Rnd} from "react-rnd";
+import {sampleRawData} from "./hardCodedData";
 
 const styling = makeStyles({
     container: {
@@ -18,50 +19,7 @@ const style = {
     textAlign: 'center'
 }
 
-const tempData = {
-    "elements": [
-        {
-            "type": "text",
-            "content": "some string 1",
-            "offset-x": 100,
-            "offset-y": 120,
-            "width": 100,
-            "height": 100,
-            "z-index": 1,
-            "prop": {"font-type": "arial", "font-size": 12}
-        },
-        {
-            "type": "text",
-            "content": "some string 2",
-            "offset-x": 70,
-            "offset-y": 140,
-            "width": 100,
-            "height": 100,
-            "z-index": 2,
-            "prop": {"font-type": "arial", "font-size": 12}
-        },
-        {
-            "type": "text",
-            "content": "some string 3",
-            "offset-x": 10,
-            "offset-y": 160,
-            "width": 100,
-            "height": 100,
-            "z-index": 3,
-            "prop": {"font-type": "arial", "font-size": 12}
-        }
-        , {
-            "type": "text",
-            "content": "some string 4",
-            "offset-x": 40,
-            "offset-y": 200,
-            "width": 100,
-            "height": 100,
-            "z-index": 4,
-            "prop": {"font-type": "arial", "font-size": 12}
-        }
-    ]
-}
+const tempData = sampleRawData
 
 const Builder = ({auth, resume, setEditor, setResume}) => {
     const columns = styling();
@@ -232,10 +190,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 updateData(updated);
                             }}
                         /> :
-                        <img src={''} alt={''}
+                        <img src={'data:image/jpeg;base64,' + el[1]['content']} alt={''} draggable={false}
                              style={{
                                  width: '100%',
-                                 height: 'auto',
+                                 height: '100%',
                              }}
                         />
                     }
