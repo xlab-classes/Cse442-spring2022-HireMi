@@ -27,8 +27,13 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     const [rawDoc, updateDoc] = useState(tempData)
     const [mappedData, updateData] = useState(null);
-
+    // Increment for tracking newly added object
     const [increment, setIncrement] = useState(null);
+    // state to set active status of deleting an element
+    const [isDelete, setDelete] = useState({
+        active: false,
+        id: null,
+    });
 
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
@@ -114,7 +119,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }
 
     async function addImage(e) {
-        const currentPrev = mappedData['prev'] + 1
+        const currentPrev = increment
 
         const file = e.target.files[0];
         const base64 = await convertBase64(file);
@@ -137,10 +142,34 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
             }
 
             updateData(newData);
+            setIncrement(increment + 1)
         }
         img.src = base64
-
     }
+
+    function controlElement(e, id) {
+        setDelete({
+            active: !isDelete['active'],
+            id: isDelete['id'] ? null : id
+        });
+
+        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
+    }
+
+    function deleteElement(id) {
+        const updatedMap = {
+            ...mappedData
+        }
+
+        delete updatedMap[id]
+
+        setDelete({
+            active: false,
+            id: null
+        });
+        updateData(updatedMap);
+    }
+
 
     const increaseFS = () => {
         setFontSize(fontSize + 1);
@@ -174,6 +203,20 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         height: el[1]['height']
                     }}
                     key={el[0]}
+                    onClick={e => {
+                        // if (el[1]['type'] === 'image') {
+                            controlElement(e, el[0])
+                        // } else if(el[1]['type'] === 'text') {
+                        //
+                        // }
+                    }}
+                    // onFocus={e => {
+                    //     if (el[1]['type'] === 'text') {
+                    //         controlElement(e, el[0])
+                    //     }
+                    // }}
+
+
                     onDragStop={(e, data) => {
                         // console.log(data)
 
@@ -353,7 +396,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     height: 814,
                                     border: ".5px solid black",
                                     background: "white"
-                                }}>
+                                }}
+                                >
                                     {renderedData}
                                 </Box>
                             </div>
@@ -410,9 +454,12 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         }}>Close Editor
                         </button>
                         <button onClick={() => encodeData(mappedData)}>
-                            TEST button for encoder
+                            TEST button for encoding data to save to the server
                         </button>
                         <input type='file' accept="image/*" onChange={addImage}/>
+                        {isDelete['active'] ? <button onClick={() => deleteElement(isDelete['id'])}>
+                            delete element (id: {isDelete["id"]} )
+                        </button> : null}
                     </div>
                     {/* </div> */}
                 </aside>
