@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
+// import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
 import {Rnd} from "react-rnd";
@@ -100,7 +100,45 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         setIncrement(remapped['prev'] + 1);
         updateData(remapped);
 
+        // Needs to be integrated with the fetch API
+        // renderData(rawDoc)
+
     }, []);
+
+    function renderData(rawData) {
+        const remapped = rawData["elements"].reduce(
+            (obj, el) => {
+                const id = obj['prev'] + 1;
+                return (
+                    {
+                        ...obj,
+                        prev: id,
+                        [id]: {
+                            ...el
+                        }
+                    }
+                )
+            }
+            , {prev: 0}
+        )
+
+        setIncrement(remapped['prev'] + 1);
+        updateData(remapped);
+    }
+
+    // This function needs to be paired with the save using fetch API
+    async function encodeData(formattedData) {
+        const filteredData = Object.values(formattedData).filter(el =>{
+            if(typeof el === 'object') {
+                return el
+            }else {
+                return null
+            }
+        })
+
+        // Upload filteredData to push it to the server
+
+    }
 
     const increaseFS = () => {
         setFontSize(fontSize + 1);
@@ -336,9 +374,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 margin: '0 auto'
                             }}>
                                 <h3 className={styles['txt_h3']}>Text</h3>
-                                <input 
+                                <input
                                     className={styles["fontSize_input"]}
-                                    value={fontSize}
+                                    defaultValue={fontSize}
+                                    // value={fontSize}
                                     onChange={renderedData.entries[1]}
                                 />
                                 <button className={styles['increase']} onClick={() => {
@@ -367,6 +406,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             setResume(null)
                             setEditor(false)
                         }}>Close Editor
+                        </button>
+                        <button onClick={() => encodeData(mappedData)}>
+                            TEST button for encoder
                         </button>
                     </div>
                     {/* </div> */}
