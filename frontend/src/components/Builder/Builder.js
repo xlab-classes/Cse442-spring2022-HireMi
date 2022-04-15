@@ -4,6 +4,8 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
 import { Rnd } from "react-rnd";
+import html2canvas from 'html2canvas';
+import ConvertApi from 'convertapi-js';
 
 const styling = makeStyles({
     container: {
@@ -43,6 +45,8 @@ const tempData = {
     ]
 }
 
+
+
 const Builder = ({ auth, resume, setEditor, setResume }) => {
     const columns = styling();
 
@@ -74,6 +78,72 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     const underF = () => {
         setUnderFont(!underfont);
     };
+
+    function downloadHandler() {
+        let imgString;
+        let resume = document.getElementById('screenshot');
+        html2canvas(resume)
+        .then(function (canvas) {
+            imgString = canvas.toDataURL("image/png", 0.9).replace(/^[^,]+, */, '');
+            console.log(imgString);
+        })
+        .then(() => {
+            const resumeID = 1;
+            const data = {
+                "resume_id": resumeID,
+                "share": 1,
+                "elements": [{
+                    "type": "text",
+                    "offset-x": 100,
+                    "offset-y": 100,
+                    "width": 100,
+                    "height": 100,
+                    "content": 'helloworld',
+                    "z-index": 1,
+                    "prop": { "font-type": "arial", "font-size": 12 }
+                }]
+            }
+
+            const json_body = {
+                'id': auth?.id,
+                'thumbnail': imgString,
+                'data': data
+            }
+
+            console.log('b');
+
+            const json_string = JSON.stringify(json_body);
+
+            fetch('./backend/api/api.php/resume/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + auth?.access_token
+                },
+
+                body: json_string
+
+            })
+                .then((result) => console.log(result))
+                .then(() => {
+                    const url = 'http://localhost/CSE442-542/2022-Spring/cse-442r/backend/api/' + resumeID + '.pdf';
+                    console.log(url);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'myresume.pdf';
+                    link.dispatchEvent(new MouseEvent('click'));
+                    console.log('yea');
+                })
+                .catch(error => { console.log('error: ', error) });
+
+        })
+        .catch((e) => {console.log(e)})
+
+
+
+    };
+
     return (
         <div className={styles['page-root']}>
             <Grid container direction="row" spacing={1}>
@@ -161,7 +231,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 </Grid>
 
                 <Grid item xs={5}>
-                    <div className={styles['middle']}>
+                    <div id='screenshot' className={styles['middle']}>
                         <div className={columns.container}>
                             <div className={styles['resume']}>
                                 <Box sx={{
@@ -212,6 +282,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                                 setResume(null)
                                 setEditor(false)
                             }}>Close
+                            </button>
+                            <button className='downloadButton' onClick={downloadHandler}>
+                                Download PDF
                             </button>
                         </div>
                     </div>
