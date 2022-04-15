@@ -86,15 +86,59 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     // This function needs to be paired with the save using fetch API
     async function encodeData(formattedData) {
-        const filteredData = Object.values(formattedData).filter(el =>{
-            if(typeof el === 'object') {
+        const filteredData = Object.values(formattedData).filter(el => {
+            if (typeof el === 'object') {
                 return el
-            }else {
+            } else {
                 return null
             }
         })
 
         // Upload filteredData to push it to the server
+
+    }
+
+    function convertBase64(file) {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+
+            fileReader.onerror = error => {
+                reject(error);
+            }
+        });
+    }
+
+    async function addImage(e) {
+        const currentPrev = mappedData['prev'] + 1
+
+        const file = e.target.files[0];
+        const base64 = await convertBase64(file);
+
+        let img = new Image;
+        img.onload = () => {
+            const newData = {
+                ...mappedData,
+                [currentPrev]: {
+                    "type": "image",
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "width": img.width ? img.width : 100,
+                    "height": img.height ? img.height : 100,
+                    "z-index": 1,
+                    "content": base64,
+                    "prop": {}
+                },
+                prev: currentPrev
+            }
+
+            updateData(newData);
+        }
+        img.src = base64
 
     }
 
@@ -190,7 +234,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 updateData(updated);
                             }}
                         /> :
-                        <img src={'data:image/jpeg;base64,' + el[1]['content']} alt={''} draggable={false}
+                        <img src={el[1]['content']} alt={''} draggable={false}
                              style={{
                                  width: '100%',
                                  height: '100%',
@@ -368,6 +412,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         <button onClick={() => encodeData(mappedData)}>
                             TEST button for encoder
                         </button>
+                        <input type='file' accept="image/*" onChange={addImage}/>
                     </div>
                     {/* </div> */}
                 </aside>

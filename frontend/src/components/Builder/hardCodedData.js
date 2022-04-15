@@ -41,13 +41,14 @@ export const sampleRawData = {
             "z-index": 4,
             "prop": {"font-type": "arial", "font-size": 12}
         },
-        {"type": "image",
+        {
+            "type": "image",
             "offset-x": 100,
             "offset-y": 100,
-            "width":    100,
-            "height":   100,
-            "z-index":  1,
-            "content": sampleImgBase64,
+            "width": 100,
+            "height": 100,
+            "z-index": 1,
+            "content": 'data:image/png;base64,' + sampleImgBase64,
             "prop": {}
         }
     ]
