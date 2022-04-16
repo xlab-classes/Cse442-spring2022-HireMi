@@ -462,8 +462,8 @@ function isOwnerOrShareable($id, $resume_id){
     }
     
     //Due to ResumeID =? AND id = ?, there is implicit check for ownership of resume
-    $stmt1 = $conn->prepare("SELECT Share FROM Resumes WHERE ResumeID = ? AND id = ?");
-    $stmt1->bind_param("is", $resume_id, $id);
+    $stmt1 = $conn->prepare("SELECT id, Share FROM Resumes WHERE ResumeID = ?");
+    $stmt1->bind_param("i", $resume_id);
     $stmt1->execute();
   
     $result = $stmt1->get_result();
@@ -471,12 +471,16 @@ function isOwnerOrShareable($id, $resume_id){
 
     $retval = false;
 
+
     // The resume exists in the database
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $share = $row["Share"];
-        if($share === 1){
+        if($share === 1){ // if shareable, true
             $retval = true;
+        }
+        if($row["id"] === $id){ // if owner, true
+            $retval = True;
         }
     }
 
