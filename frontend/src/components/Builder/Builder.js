@@ -5,7 +5,6 @@ import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
 import { Rnd } from "react-rnd";
 import html2canvas from 'html2canvas';
-import ConvertApi from 'convertapi-js';
 
 const styling = makeStyles({
     container: {
@@ -81,26 +80,25 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
     function downloadHandler() {
         let imgString;
-        let resume = document.getElementById('screenshot');
-        html2canvas(resume)
+        html2canvas(document.getElementById('screenshot'))
         .then(function (canvas) {
             imgString = canvas.toDataURL("image/png", 0.9).replace(/^[^,]+, */, '');
-            console.log(imgString);
         })
         .then(() => {
+
             const resumeID = 1;
             const data = {
                 "resume_id": resumeID,
                 "share": 1,
                 "elements": [{
-                    "type": "text",
+                    "type": "image",
                     "offset-x": 100,
                     "offset-y": 100,
-                    "width": 100,
-                    "height": 100,
-                    "content": 'helloworld',
-                    "z-index": 1,
-                    "prop": { "font-type": "arial", "font-size": 12 }
+                    "width":    100,
+                    "height":   100,
+                    "z-index":  1,
+                    "content":  imgString,
+                    "prop": {}
                 }]
             }
 
@@ -109,8 +107,6 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 'thumbnail': imgString,
                 'data': data
             }
-
-            console.log('b');
 
             const json_string = JSON.stringify(json_body);
 
@@ -121,27 +117,19 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                     'Accept': 'application/json',
                     'Authorization': 'Bearer ' + auth?.access_token
                 },
-
                 body: json_string
-
             })
-                .then((result) => console.log(result))
-                .then(() => {
-                    const url = 'http://localhost/CSE442-542/2022-Spring/cse-442r/backend/api/' + resumeID + '.pdf';
-                    console.log(url);
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'myresume.pdf';
-                    link.dispatchEvent(new MouseEvent('click'));
-                    console.log('yea');
-                })
-                .catch(error => { console.log('error: ', error) });
+            .then(() => {
+                const url = 'http://localhost/CSE442-542/2022-Spring/cse-442r/backend/api/' + resumeID + '.pdf';
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = 'myresume.pdf';
+                link.dispatchEvent(new MouseEvent('click'));
+            })
+            .catch(error => { console.log('error: ', error) });
 
         })
         .catch((e) => {console.log(e)})
-
-
-
     };
 
     return (
