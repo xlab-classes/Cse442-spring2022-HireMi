@@ -112,13 +112,13 @@ const Dashboard = ({auth}) => {
                             <div className={styles['documents-space']}>
                                 <NewDocument setEditor={setEditor} setResume={setResume}/>
                                 {documents.map((el) => <Document setEditor={setEditor} setResume={setResume}
-                                                                 key={el.id + '-doc'} image={el.thumbnail}/>)}
+                                                                resumeID={el.id + '-doc'} image={el.thumbnail}/>)}
                             </div>
                         </section>
                         <section className={isDrawer ? `${styles.templates} ${styles.active}` : styles['templates']}>
                             <div className={`${styles['templates-options']}`}>
                                 {templates.map(el => <Template setEditor={setEditor} setResume={setResume}
-                                                               key={el.id + '-template'} isDrawer={isDrawer}
+                                                               resumeID={el.id + '-template'} isDrawer={isDrawer}
                                                                image={el.thumbnail}/>)}
                             </div>
                             <span className={`${styles['templates-fade']}`}/>
@@ -146,7 +146,9 @@ const NewDocument = ({setEditor, setResume}) => {
     return (
         <div
             onClick={() => {
-                setResume('new');
+                //I chose an arbitrarily high number to ensure that it isn't created already.
+                //The result is that the api sees no 999999-doc and inserts at len(resumes)+1.
+                setResume('999999-doc');
                 setEditor(true);
             }} className={`${styles['new-doc']}`}>
             <FontAwesomeIcon icon="fa-solid fa-plus"/>
@@ -154,13 +156,13 @@ const NewDocument = ({setEditor, setResume}) => {
     )
 }
 
-const Document = ({setEditor, setResume, image, key}) => {
+const Document = ({setEditor, setResume, resumeID, image}) => {
 
 
     return (
         <div
             onClick={() => {
-                setResume(key);
+                setResume(resumeID);
                 setEditor(true);
             }}
             className={`${styles['single-doc']}`}>
@@ -169,12 +171,12 @@ const Document = ({setEditor, setResume, image, key}) => {
     )
 }
 
-const Template = ({setEditor, setResume, isDrawer, image, key}) => {
+const Template = ({setEditor, setResume, isDrawer, resumeID, image}) => {
 
     return (
         <div
             onClick={() => {
-                setResume(key);
+                setResume(resumeID);
                 setEditor(true);
             }}
             className={isDrawer ? `${styles['single-template']} ${styles.active}` : `${styles['single-template']}`}>

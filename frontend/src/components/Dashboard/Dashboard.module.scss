@@ -1,9 +1,8 @@
+@use '../../constants/theme';
+
 // Dashboard
 .page-root {
-  position: relative;
-  padding-top: 3rem;
-  width: 100%;
-  height: 100%;
+  @include theme.app-body;
 }
 
 // Side Templates
