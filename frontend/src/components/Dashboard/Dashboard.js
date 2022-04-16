@@ -13,6 +13,7 @@ const Dashboard = ({auth}) => {
     const [documents, setDocuments] = useState([]);
     const [isEditor, setEditor] = useState(false);
     const [resume, setResume] = useState(null);
+    const [resumeTotal, setResumeTotal] = useState(0);
     // this may mount the builder component
 
 
@@ -36,6 +37,23 @@ const Dashboard = ({auth}) => {
 
     async function loadData() {
 
+        //This gets the number of resumes in entire database, not just the ones the user owns.
+        const resumeCount = await fetch('./backend/api/api.php/resume_count', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + auth?.access_token
+            },
+            body: JSON.stringify({
+                'id': auth?.id
+            })
+        }).catch(err => {
+            console.error(err)
+        });
+
+        const resumeCountJSON = await resumeCount.json();
+        setResumeTotal(resumeCountJSON.count);
+
         let templateArray = [];
         for (let i = 0; i < 4; i++) {
             fetch('./backend/api/api.php/get_template', {
@@ -46,7 +64,7 @@ const Dashboard = ({auth}) => {
                 },
                 body: JSON.stringify({
                     'id': auth?.id,
-                    'n': 1
+                    'n': Math.floor(Math.random() * resumeCountJSON.count) //This range is int [0, resumeTotal)
                 })
             }).then((result) => result.json())
                 .then((resultJson) => {
@@ -110,7 +128,7 @@ const Dashboard = ({auth}) => {
                     <>
                         <section className={styles['workspace']}>
                             <div className={styles['documents-space']}>
-                                <NewDocument setEditor={setEditor} setResume={setResume}/>
+                                <NewDocument setEditor={setEditor} setResume={setResume} resumeTotal={resumeTotal}/>
                                 {documents.map((el) => <Document setEditor={setEditor} setResume={setResume}
                                                                 resumeID={el.id + '-doc'} image={el.thumbnail}/>)}
                             </div>
@@ -142,13 +160,11 @@ const Dashboard = ({auth}) => {
     )
 }
 
-const NewDocument = ({setEditor, setResume}) => {
+const NewDocument = ({setEditor, setResume, resumeTotal}) => {
     return (
         <div
             onClick={() => {
-                //I chose an arbitrarily high number to ensure that it isn't created already.
-                //The result is that the api sees no 999999-doc and inserts at len(resumes)+1.
-                setResume('999999-doc');
+                setResume((resumeTotal+1) + '-doc');
                 setEditor(true);
             }} className={`${styles['new-doc']}`}>
             <FontAwesomeIcon icon="fa-solid fa-plus"/>

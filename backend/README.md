@@ -134,6 +134,19 @@ A guide to the current available api calls:
     - Returns:
         - "Successfully updated profile picture"
 
+<br>
+
+- [Get Resume Count](#get-resume-count)
+    - POST
+    - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/resume_count/
+    - Header:
+        - "Authorization": "Bearer ABCDEFGHIJ=="
+    - Body:
+        - "id": string
+        - "image": Base64 string
+    - Returns:
+        - "count": int
+
 ---
 
 # Login
@@ -228,3 +241,7 @@ Returns a json with profile information. The format is a JSON for the profile pi
 # Change Profile Picture
 
 More or less self-explanatory. Only concern is to make sure that the image being sent is processed on the frontend so that the API receives a Base64 encoded image that it can just store as a string.
+
+# Get Resume Count
+
+Gets the number of rows in the Resumes table. Useful for creating new resumes and getting possible range for getting templates.
