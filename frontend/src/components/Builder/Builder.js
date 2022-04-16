@@ -47,6 +47,31 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         const loadingElements = async () => {
 
+            //Checks if loading resume is a template.
+            //If it is, then we create a new resume that is owned by user.
+            if(resume.split('-')[1] === 'template'){
+                //This gets the number of resumes in entire database, not just the ones the user owns.
+                const resumeCount = await fetch('./backend/api/api.php/resume_count', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + auth?.access_token
+                    },
+                    body: JSON.stringify({
+                        'id': auth?.id
+                    })
+                }).catch(err => {
+                    console.error(err)
+                });
+
+                const resumeCountJSON = await resumeCount.json();
+                setResume((resumeCountJSON.count+1) + '-doc');
+                // immediate save doesn't work, but there's possibility of error if
+                // separate users save at the same time
+                // encodeData(mappedData)
+            }
+            
+
             const resumeData = await fetch('./backend/api/api.php/get_resume', {
                 method: 'POST',
                 headers: {
