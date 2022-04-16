@@ -96,8 +96,12 @@ function generatePDF($resume_id, $elements){
             //Do we need prop?
 
             $image = base64_decode($content);
+            $x = $x/$MAX_X * 215.9;
+            $y = $y/$MAX_Y * 279.4;
+            $width = $width/$MAX_X * 215.9;
+            $height = $height/$MAX_Y * 279.4;
 
-            $pdf->Image('@'.$image, $x/$MAX_X * 215.9, $y/$MAX_Y * 279.4, $width, $height);
+            $pdf->Image('@'.$image, $x, $y, $width, $height);
         }
     }
 
