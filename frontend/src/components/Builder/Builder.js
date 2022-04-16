@@ -30,6 +30,11 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     const [mappedData, updateData] = useState(null);
 
     const [increment, setIncrement] = useState(null);
+    // state to set active status of deleting an element
+    const [isDelete, setDelete] = useState({
+        active: false,
+        id: null,
+    });
     const [share, setShare] = useState(false);
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
@@ -55,8 +60,16 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
             })
 
             const resumeDataJSON = await resumeData.json();
-            updateDoc(resumeDataJSON); //updates rawDoc
 
+            console.log(resumeDataJSON)
+            for(let i = 0; i < resumeDataJSON.elements.length; i++){
+                var element = resumeDataJSON["elements"][i];
+                console.log(element);
+                if(element.type == "image"){
+                    element.content = 'data:image/png;base64,' + element.content;
+                }
+            }
+            updateDoc(resumeDataJSON); //updates rawDoc
             //passing this instead of rawDoc because doesn't update immediately
             renderData(resumeDataJSON);
         }
@@ -173,7 +186,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }
 
     async function addImage(e) {
-        const currentPrev = mappedData['prev'] + 1
+        const currentPrev = increment;
 
         const file = e.target.files[0];
         const base64 = await convertBase64(file);
@@ -196,9 +209,30 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
             }
 
             updateData(newData);
+            setIncrement(increment + 1);
         }
         img.src = base64
+    }
+    function controlElement(e, id) {
+        setDelete({
+            active: !isDelete['active'],
+            id: isDelete['id'] ? null : id
+        });
+        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
+    }
 
+    function deleteElement(id) {
+        const updatedMap = {
+            ...mappedData
+        }
+
+        delete updatedMap[id]
+
+        setDelete({
+            active: false,
+            id: null
+        });
+        updateData(updatedMap);
     }
 
     const increaseFS = () => {
@@ -233,6 +267,18 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         height: el[1]['height']
                     }}
                     key={el[0]}
+                    onClick={e => {
+                        // if (el[1]['type'] === 'image') {
+                            controlElement(e, el[0])
+                        // } else if(el[1]['type'] === 'text') {
+                        //
+                        // }
+                    }}
+                    // onFocus={e => {
+                    //     if (el[1]['type'] === 'text') {
+                    //         controlElement(e, el[0])
+                    //     }
+                    // }}
                     onDragStop={(e, data) => {
                         // console.log(data)
 
@@ -418,7 +464,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     height: 814,
                                     border: ".5px solid black",
                                     background: "white"
-                                }}>
+                                }}
+                                >
                                     {renderedData}
                                 </Box>
                             </div>
@@ -443,7 +490,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 <input
                                     className={styles["fontSize_input"]}
                                     defaultValue={fontSize}
-                                    // value={fontSize}
                                     onChange={renderedData.entries[1]}
                                 />
                                 <button className={styles['increase']} onClick={() => {
@@ -474,6 +520,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         }}>Close Editor
                         </button>
                         <input type='file' accept="image/*" onChange={addImage}/>
+                        {isDelete['active'] ? <button onClick={() => deleteElement(isDelete['id'])}>
+                            delete element (id: {isDelete["id"]} )
+                        </button> : null}
                         <button className={styles['saveButton']} onClick={() => encodeData(mappedData)}>
                             Save Resume
                         </button>
