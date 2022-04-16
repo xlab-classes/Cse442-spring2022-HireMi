@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
 import {Rnd} from "react-rnd";
 import {sampleRawData} from "./hardCodedData.js";
+import html2canvas from 'html2canvas';
 
 const styling = makeStyles({
     container: {
@@ -38,61 +39,34 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     // const [fontSize_edu,setFontSize_edu] = useState(12);
 
     useEffect(() => {
-        loadingElements().then(() => {
-            fetch('./backend/api/api.php/get_resume')
-            const remapped = rawDoc["elements"].reduce(
-                (obj, el) => {
-                    const id = obj['prev'] + 1;
-                    return (
-                        {
-                            ...obj,
-                            prev: id,
-                            [id]: {
-                                ...el
-                            }
-                        }
-                    )
-                }
-                , {prev: 0}
-            )
-    
-            setIncrement(remapped['prev'] + 1);
-            updateData(remapped);
-        }).catch(err => {
-            console.error(err)
-        }); 
-        // assume that we fetched the data successfully
-        // const remapped = rawDoc["elements"].reduce(
-        //     (obj, el) => {
-        //         const id = obj['prev'] + 1;
-        //         return (
-        //             {
-        //                 ...obj,
-        //                 prev: id,
-        //                 [id]: {
-        //                     ...el
-        //                 }
-        //             }
-        //         )
-        //     }
-        //     , {prev: 0}
-        // )
 
-        // setIncrement(remapped['prev'] + 1);
-        // updateData(remapped);
+        const loadingElements = async () => {
 
-        // Needs to be integrated with the fetch API
-        // renderData(rawDoc)
+            const resumeData = await fetch('./backend/api/api.php/get_resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + auth?.access_token
+                },
+                body: JSON.stringify({
+                    'id': auth?.id,
+                    'resume_id': parseInt(resume.split('-')[0])
+                })
+            })
+
+            const resumeDataJSON = await resumeData.json();
+            updateDoc(resumeDataJSON); //updates rawDoc
+
+            //passing this instead of rawDoc because doesn't update immediately
+            renderData(resumeDataJSON);
+        }
+
+        loadingElements();
 
     }, []);
-    useEffect(() => {
-        saveElements().then(() => {
-            fetch('./backend/api/api.php/resume')
-        }).catch(err => {
-            console.error(err)
-        }); 
-    },[]);
+
     function renderData(rawData) {
+        // assume that we fetched the data successfully
         const remapped = rawData["elements"].reduce(
             (obj, el) => {
                 const id = obj['prev'] + 1;
@@ -124,7 +98,57 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         })
 
         // Upload filteredData to push it to the server
+        console.log(filteredData);
+        const thumbnail = await capture();
+        saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
+    }
 
+    async function saveElements (encodedData, thumbnail) {
+        await fetch('./backend/api/api.php/resume', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + auth?.access_token
+            },
+            body: JSON.stringify({
+                'id': auth?.id,
+                'thumbnail': thumbnail,
+                'data': {
+                    'resume_id': parseInt(resume.split('-')[0]),
+                    'share': 1,
+                    'elements': encodedData
+                }
+            })
+        })
+        .then((result) => result.text())
+        .then((resultText) => {
+            console.log(resultText);
+        })
+        // Not need since output isn't json and just confirms save.
+        // .then((resultJson) => {
+        //     console.log("Successfully saved resume.",resultJson);
+        // })
+    }
+
+    const capture = async () => {
+        const element = document.getElementsByClassName('MuiBox-root css-s2v7vp');
+        const canvas = await html2canvas(element[0]);
+        const link = canvas.toDataURL("image/png");
+        return link;
+    }
+
+    function download() {
+        encodeData(mappedData); //should save before download
+        //resume.split('-')[0] returns a string of an int, which is okay in this case
+        const url = './backend/api/' + resume.split('-')[0] + '.pdf';
+
+        const stringURL = url.toString();
+        const a = document.createElement('a')
+        a.href = stringURL
+        a.download = stringURL.split('/').pop()
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
     }
 
     function convertBase64(file) {
@@ -275,48 +299,14 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         }
     );
-        // load from server (api)
-        async function loadingElements () {
-            await fetch('./backend/api/api.php/get_resume' , {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + auth?.access_token
-                },
-                body: JSON.stringify({
-                    'id' : auth?.id,
-                    'resume_id': parseInt(resume.split('-')[0])
-                })
-            })
-            .then((result) => result.json())
-            .then((resultJson) => {
-                let data = []
-                let resume_id = resultJson.resume_id;
-                let loadedEl = renderData(rawDoc);
-                let share = setShare(false);
-                data.push({'resume_id':resume_id, 'elements': loadedEl, 'share': share});
-                
-            })
-        }
-        async function saveElements () {
-            await fetch('./backend/api/api.php/resume', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + auth?.access_token
-                },
-                body: JSON.stringify({
-                    'id': auth?.id,
-                    'thumbnail': 'data:image/png;base64',
-                    'data': encodeData
-                })
-            })
-            .then((result) => result.json())
-            .then((resultJson) => {
-                
-                console.log("Successfully saved resume.",resultJson);
-            })
-        }
+
+
+
+
+
+
+
+
     return (
         <div className={styles['page-root']}>
             {/* <Grid container direction="row" spacing={1}>
@@ -485,6 +475,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             setResume(null)
                             setEditor(false)
                         }}>Save Resume
+                        </button>
+                        <button classname={styles['closeButton']} onClick={() => {
+                            download()
+                        }}>Download Button
                         </button>
                     </div>
                     {/* </div> */}
