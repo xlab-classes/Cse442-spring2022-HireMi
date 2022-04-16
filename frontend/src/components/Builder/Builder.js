@@ -89,7 +89,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     // This function needs to be paired with the save using fetch API
     async function encodeData(formattedData) {
-        const filteredData = Object.values(formattedData).filter(el => {
+        var filteredData = Object.values(formattedData).filter(el => {
             if (typeof el === 'object') {
                 return el
             } else {
@@ -98,8 +98,14 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         })
 
         // Upload filteredData to push it to the server
-        console.log(filteredData);
         const thumbnail = await capture();
+        for(let i = 0; i < filteredData.length; i++){
+            var element = filteredData[i];
+            console.log(element);
+            if(element.type == "image"){
+                element.content = element.content.split(',')[1];
+            }
+        }
         saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
     }
 
@@ -467,14 +473,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             setEditor(false)
                         }}>Close Editor
                         </button>
-                        <button onClick={() => encodeData(mappedData)}>
-                            TEST button for encoder
-                        </button>
                         <input type='file' accept="image/*" onChange={addImage}/>
-                        <button className={styles['saveButton']} onClick={() => {
-                            setResume(null)
-                            setEditor(false)
-                        }}>Save Resume
+                        <button className={styles['saveButton']} onClick={() => encodeData(mappedData)}>
+                            Save Resume
                         </button>
                         <button classname={styles['closeButton']} onClick={() => {
                             download()
