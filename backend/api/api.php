@@ -343,7 +343,7 @@ function getProfileName($id){
 
     $data = "";
 
-    if ($row["COUNT(id"] > 0){
+    if ($row["COUNT(id)"] > 0){
         $stmt2 = $conn->prepare("SELECT Name FROM Users WHERE id = ?");
         $stmt2->bind_param("s", $id);
         $stmt2->execute();
@@ -379,7 +379,7 @@ function getProfilePic($id){
 
     $data = "";
 
-    if ($row["COUNT(id"] > 0){
+    if ($row["COUNT(id)"] > 0){
         $stmt2 = $conn->prepare("SELECT ProfilePic FROM Users WHERE id = ?");
         $stmt2->bind_param("s", $id);
         $stmt2->execute();
@@ -957,7 +957,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             );
             
             header("HTTP/1.1 200 OK");
-            echo "Successfully updated profile picture";
+            header("Content-Type: application/json; charset=utf-8");
             echo json_encode($data);
             return;
         } catch (Exception $e) {
