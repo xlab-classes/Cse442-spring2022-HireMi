@@ -15,7 +15,7 @@ const Settings = ({auth, setAuth}) => {
         const json_body = {'id': auth?.id};
         const string_body = JSON.stringify(json_body);
 
-        fetch('https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_profile_info', {
+        fetch('./backend/api/api.php/get_profile_info', {
             method: 'POST',
             // mode: 'same-origin',
             headers: {
@@ -90,7 +90,7 @@ const Settings = ({auth, setAuth}) => {
         const json_body = {'id': auth?.id, 'image': newPic};
         const string_body = JSON.stringify(json_body);
 
-        fetch('https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/profile_pic', {
+        fetch('./backend/api/api.php/profile_pic', {
             method: 'POST',
             // mode: 'same-origin',
             headers: {
@@ -121,7 +121,7 @@ const Settings = ({auth, setAuth}) => {
         const string_body = JSON.stringify(json_body);
 
         // Implement changing name in database through backend api with token
-        fetch('https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/change_name', {
+        fetch('./backend/api/api.php/change_name', {
             method: 'POST',
             // mode: 'same-origin',
             headers: {
@@ -146,7 +146,7 @@ const Settings = ({auth, setAuth}) => {
         const json_body = {'id': auth?.id};
         const string_body = JSON.stringify(json_body);
 
-        fetch('https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/del_acc', {
+        fetch('./backend/api/api.php/del_acc', {
             method: 'POST',
             // mode: 'same-origin',
             headers: {
