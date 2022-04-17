@@ -13,6 +13,7 @@ const Dashboard = ({auth}) => {
     const [documents, setDocuments] = useState([]);
     const [isEditor, setEditor] = useState(false);
     const [resume, setResume] = useState(null);
+    const [resumeTotal, setResumeTotal] = useState(0);
     // this may mount the builder component
 
 
@@ -36,6 +37,23 @@ const Dashboard = ({auth}) => {
 
     async function loadData() {
 
+        //This gets the number of resumes in entire database, not just the ones the user owns.
+        const resumeCount = await fetch('./backend/api/api.php/resume_count', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + auth?.access_token
+            },
+            body: JSON.stringify({
+                'id': auth?.id
+            })
+        }).catch(err => {
+            console.error(err)
+        });
+
+        const resumeCountJSON = await resumeCount.json();
+        setResumeTotal(resumeCountJSON.count);
+
         let templateArray = [];
         for (let i = 0; i < 4; i++) {
             fetch('./backend/api/api.php/get_template', {
@@ -46,7 +64,7 @@ const Dashboard = ({auth}) => {
                 },
                 body: JSON.stringify({
                     'id': auth?.id,
-                    'n': 1
+                    'n': Math.floor(Math.random() * resumeCountJSON.count) //This range is int [0, resumeTotal)
                 })
             }).then((result) => result.json())
                 .then((resultJson) => {
@@ -110,15 +128,15 @@ const Dashboard = ({auth}) => {
                     <>
                         <section className={styles['workspace']}>
                             <div className={styles['documents-space']}>
-                                <NewDocument setEditor={setEditor} setResume={setResume}/>
+                                <NewDocument setEditor={setEditor} setResume={setResume} resumeTotal={resumeTotal}/>
                                 {documents.map((el) => <Document setEditor={setEditor} setResume={setResume}
-                                                                 key={el.id + '-doc'} image={el.thumbnail}/>)}
+                                                                resumeID={el.id + '-doc'} image={el.thumbnail}/>)}
                             </div>
                         </section>
                         <section className={isDrawer ? `${styles.templates} ${styles.active}` : styles['templates']}>
                             <div className={`${styles['templates-options']}`}>
                                 {templates.map(el => <Template setEditor={setEditor} setResume={setResume}
-                                                               key={el.id + '-template'} isDrawer={isDrawer}
+                                                               resumeID={el.id + '-template'} isDrawer={isDrawer}
                                                                image={el.thumbnail}/>)}
                             </div>
                             <span className={`${styles['templates-fade']}`}/>
@@ -142,11 +160,11 @@ const Dashboard = ({auth}) => {
     )
 }
 
-const NewDocument = ({setEditor, setResume}) => {
+const NewDocument = ({setEditor, setResume, resumeTotal}) => {
     return (
         <div
             onClick={() => {
-                setResume('new');
+                setResume((resumeTotal+1) + '-doc');
                 setEditor(true);
             }} className={`${styles['new-doc']}`}>
             <FontAwesomeIcon icon="fa-solid fa-plus"/>
@@ -154,13 +172,13 @@ const NewDocument = ({setEditor, setResume}) => {
     )
 }
 
-const Document = ({setEditor, setResume, image, key}) => {
+const Document = ({setEditor, setResume, resumeID, image}) => {
 
 
     return (
         <div
             onClick={() => {
-                setResume(key);
+                setResume(resumeID);
                 setEditor(true);
             }}
             className={`${styles['single-doc']}`}>
@@ -169,12 +187,12 @@ const Document = ({setEditor, setResume, image, key}) => {
     )
 }
 
-const Template = ({setEditor, setResume, isDrawer, image, key}) => {
+const Template = ({setEditor, setResume, isDrawer, resumeID, image}) => {
 
     return (
         <div
             onClick={() => {
-                setResume(key);
+                setResume(resumeID);
                 setEditor(true);
             }}
             className={isDrawer ? `${styles['single-template']} ${styles.active}` : `${styles['single-template']}`}>

@@ -134,6 +134,19 @@ A guide to the current available api calls:
     - Returns:
         - "Successfully updated profile picture"
 
+<br>
+
+- [Get Resume Count](#get-resume-count)
+    - POST
+    - https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/resume_count/
+    - Header:
+        - "Authorization": "Bearer ABCDEFGHIJ=="
+    - Body:
+        - "id": string
+        - "image": Base64 string
+    - Returns:
+        - "count": int
+
 ---
 
 # Login
@@ -151,9 +164,18 @@ When a resume is selected, we want to open up an editable resume. This query get
     "width":    100,
     "height":   100,
     "z-index":  1,
+    "content": "HelloWorld",
     "prop": {"font-type": "arial", "font-size": 12}},
     {element 2},
     {element 3},
+    {"type": "image",
+    "offset-x": 100,
+    "offset-y": 100,
+    "width":    100,
+    "height":   100,
+    "z-index":  1,
+    "content": Base64 string,
+    "prop": {}} (Currently don't use or need this, but in case we need it later)
     ...
     ]
 ```
@@ -174,9 +196,21 @@ Then, the resume and its elements must be saved in the following format:
     "offset-y": 100,
     "width":    100,
     "height":   100,
+    "content": "HelloWorld",
     "z-index":  1,
-    "prop": {"font-type": "arial", "font-size": 12}
-    }]
+    "prop": {"font-type": "arial", "font-size": 12}}
+    {element 2},
+    {element 3},
+    {"type": "image",
+    "offset-x": 100,
+    "offset-y": 100,
+    "width":    100,
+    "height":   100,
+    "z-index":  1,
+    "content": Base64 string,
+    "prop": {}} (Currently don't use or need this, but in case we need it later)
+    ...
+    ]
 }
 ```
 
@@ -207,3 +241,7 @@ Returns a json with profile information. The format is a JSON for the profile pi
 # Change Profile Picture
 
 More or less self-explanatory. Only concern is to make sure that the image being sent is processed on the frontend so that the API receives a Base64 encoded image that it can just store as a string.
+
+# Get Resume Count
+
+Gets the number of rows in the Resumes table. Useful for creating new resumes and getting possible range for getting templates.

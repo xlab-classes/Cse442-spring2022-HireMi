@@ -4,6 +4,8 @@ require __DIR__ . '/../vendor/autoload.php';
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 
+require_once __DIR__ . '/pdf.php';
+
 function login($id, $name, $email, $pic){
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
@@ -166,6 +168,7 @@ function getOtherThumbnail($id, $n){
     return $data;
 }
 
+//Note: this counts only resumes that a user owns.
 function getResumeCount($id){
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
@@ -186,6 +189,28 @@ function getResumeCount($id){
 
     $data = array("count" => $count);
 
+    return $data;
+}
+
+//Note: this counts all resumes regardless of owner
+function getAllResumeCount(){
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $stmt1 = $conn->prepare("SELECT COUNT(*) FROM Resumes");
+    $stmt1->execute();
+
+    $result = $stmt1->get_result();
+    $row = $result->fetch_assoc();
+
+    $count = $row["COUNT(*)"];
+    $data = array("count" => $count);
     return $data;
 }
 
@@ -318,7 +343,7 @@ function getProfileName($id){
 
     $data = "";
 
-    if ($row["COUNT(id"] > 0){
+    if ($row["COUNT(id)"] > 0){
         $stmt2 = $conn->prepare("SELECT Name FROM Users WHERE id = ?");
         $stmt2->bind_param("s", $id);
         $stmt2->execute();
@@ -354,7 +379,7 @@ function getProfilePic($id){
 
     $data = "";
 
-    if ($row["COUNT(id"] > 0){
+    if ($row["COUNT(id)"] > 0){
         $stmt2 = $conn->prepare("SELECT ProfilePic FROM Users WHERE id = ?");
         $stmt2->bind_param("s", $id);
         $stmt2->execute();
@@ -459,9 +484,8 @@ function isOwnerOrShareable($id, $resume_id){
         die("Connection failed: " . mysqli_connect_error());
     }
     
-    //Due to ResumeID =? AND id = ?, there is implicit check for ownership of resume
-    $stmt1 = $conn->prepare("SELECT Share FROM Resumes WHERE ResumeID = ? AND id = ?");
-    $stmt1->bind_param("is", $resume_id, $id);
+    $stmt1 = $conn->prepare("SELECT id, Share FROM Resumes WHERE ResumeID = ?");
+    $stmt1->bind_param("i", $resume_id);
     $stmt1->execute();
   
     $result = $stmt1->get_result();
@@ -469,12 +493,16 @@ function isOwnerOrShareable($id, $resume_id){
 
     $retval = false;
 
+
     // The resume exists in the database
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $share = $row["Share"];
-        if($share === 1){
+        if($share === 1){ // if shareable, true
             $retval = true;
+        }
+        if($row["id"] === $id){ // if owner, true
+            $retval = True;
         }
     }
 
@@ -572,6 +600,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
      *              "offset-y": 100,
      *              "width":    100,
      *              "height":   100,
+     *              "content":  "HelloWorld",
      *              "z-index":  1,
      *              "prop": {"font-type": "arial", "font-size": 12}
      *          }]
@@ -603,6 +632,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             
             //Save to database
             saveResume($id, $resume_id, $thumbnail, $elements, $share);
+            generatePDF($resume_id, $elements);
             
             header("HTTP/1.1 200 OK");
             echo "Successfully saved resume.";
@@ -927,7 +957,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             );
             
             header("HTTP/1.1 200 OK");
-            echo "Successfully updated profile picture";
+            header("Content-Type: application/json; charset=utf-8");
             echo json_encode($data);
             return;
         } catch (Exception $e) {
@@ -973,6 +1003,50 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             
             header("HTTP/1.1 200 OK");
             echo "Successfully updated profile picture";
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
+
+    /**
+     * Gets the number of rows in the Resumes table.
+     * Useful for creating new resumes and getting possible range 
+     * for getting templates.
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/resume_count/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553"
+     * }
+     */
+    if($verb === 'POST' && $info === '/resume_count'){
+        try {
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+
+            $data = getAllResumeCount();
+            
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode($data);
             return;
         } catch (Exception $e) {
             header("HTTP/1.1 400 Malformed Request");
