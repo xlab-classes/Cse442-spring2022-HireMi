@@ -5,19 +5,43 @@ import styles from "../Settings/Settings.module.scss";
 
 const Settings = ({auth, setAuth}) => {
 
-    const [isEdit, setEdit] = useState(false);
-    const [username, setName] = useState(auth?.username);
+    const [username, setName] = useState("");
+    const [newName, setNewName] = useState("");
     const [pic, setPic] = useState(auth?.pic);
+    const [newPic, setNewPic] = useState(auth?.pic);
     const [file, setFile] = useState(null);
 
     useEffect(() => {
+        const json_body = {'id': auth?.id};
+        const string_body = JSON.stringify(json_body);
+
+        fetch('https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_profile_info', {
+            method: 'POST',
+            // mode: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + auth?.access_token
+            },
+            body: string_body
+        }).then((result) => result.json())
+        .then((resultJson) => {
+            console.log(resultJson);
+
+            setName(resultJson.profile_name);
+            setNewName(resultJson.profile_name);
+            setPic(resultJson.profile_picture);
+            setNewPic(resultJson.profile_picture);
+        });
+    }, []);
+
+    useEffect(() => {
         if(!file) {
-            setPic(auth?.pic);
+            setNewPic(pic);
             return;
         }
 
         const reader = new FileReader();
-        reader.onload = () => setPic(btoa(reader.result));
+        reader.onload = () => setNewPic(btoa(reader.result));
         reader.readAsBinaryString(file);
 
         // setFile(selectedFile)
@@ -50,24 +74,20 @@ const Settings = ({auth, setAuth}) => {
             return;
         }
         setFile(e.target.files[0]);
+        // Clear the input value so that the same file can be uploaded twice
+        e.target.value = null;
     }
 
     function discardPic() {
-        setPic(auth?.pic);
+        setNewPic(pic);
         setFile(null);
     }
 
-    function changeImage() {
-        const reader = new FileReader();
-        reader.onload = () => uploadImage(reader.result);
-        reader.readAsBinaryString(file);
-    }
-
-    function uploadImage(file_binary) {
+    function uploadImage() {
         // Implement uploading to database through backend api with token
+        setPic(newPic);
 
-        const encoded_image = btoa(file_binary);
-        const json_body = {'id': auth?.id, 'image': encoded_image};
+        const json_body = {'id': auth?.id, 'image': newPic};
         const string_body = JSON.stringify(json_body);
 
         fetch('https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/profile_pic', {
@@ -84,19 +104,20 @@ const Settings = ({auth, setAuth}) => {
         setAuth({
             username: auth?.username,
             id: auth?.id,
-            pic: encoded_image, // Change the profile picture
+            pic: newPic, // Change the profile picture
             email: auth?.email,
             access_token: auth?.access_token,
         })
     }
 
     function discardName() {
-        setName(auth?.username);
+        setNewName(username);
     }
 
     function changeName() {
+        setName(newName);
 
-        const json_body = {'id': auth?.id, 'new_name': username};
+        const json_body = {'id': auth?.id, 'new_name': newName};
         const string_body = JSON.stringify(json_body);
 
         // Implement changing name in database through backend api with token
@@ -112,7 +133,7 @@ const Settings = ({auth, setAuth}) => {
         }).then((result) => console.log(result));
 
         setAuth({
-            username: username, // Change the username
+            username: newName, // Change the username
             id: auth?.id,
             pic: auth?.pic,
             email: auth?.email,
@@ -157,16 +178,16 @@ const Settings = ({auth, setAuth}) => {
                 <h6>Account Settings</h6>
                 <div className={styles['profile-pic']}>
                     <span>Change Photo</span>
-                    <img alt="profile photo" src={(pic.length > 1000) ? URL.createObjectURL(b64toBlob(pic)) : pic}/>
+                    <img alt="profile photo" src={(newPic.length > 1000) ? URL.createObjectURL(b64toBlob(newPic)) : newPic}/>
                     <input type='file' accept="image/*" onChange={onSelect}/>
-                    <button onClick={changeImage} disabled={pic === auth?.pic}>Update</button>
-                    {pic === auth?.pic ? null : <button onClick={discardPic}>Discard Changes</button>}
+                    <button onClick={uploadImage} disabled={pic === newPic}>Update</button>
+                    {pic === newPic ? null : <button onClick={discardPic}>Discard Changes</button>}
                 </div>
                 <div>
                     <span>Change Name</span>
-                    <input type='text' defaultValue={username} value={username} onChange={e => setName(e.target.value)}/>
-                    <button onClick={changeName} disabled={username === auth?.username}>Update</button>
-                    {username === auth?.username ? null : <button onClick={discardName}>Discard Changes</button>}
+                    <input type='text' defaultValue={newName} value={newName} onChange={e => setNewName(e.target.value)}/>
+                    <button onClick={changeName} disabled={username === newName}>Update</button>
+                    {username === newName ? null : <button onClick={discardName}>Discard Changes</button>}
                 </div>
                 <div>
                     <button onClick={deleteAccount}>Delete Account</button>

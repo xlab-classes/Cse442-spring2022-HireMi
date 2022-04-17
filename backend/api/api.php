@@ -309,7 +309,7 @@ function getProfileName($id){
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    $stmt1 = $conn->prepare("Select COUNT(id) FROM Users WHERE id = ?");
+    $stmt1 = $conn->prepare("SELECT COUNT(id) FROM Users WHERE id = ?");
     $stmt1->bind_param("s", $id);
     $stmt1->execute();
 
@@ -318,7 +318,7 @@ function getProfileName($id){
 
     $data = "";
 
-    if ($row["COUNT(id"] > 0){
+    if ($row["COUNT(id)"] > 0){
         $stmt2 = $conn->prepare("SELECT Name FROM Users WHERE id = ?");
         $stmt2->bind_param("s", $id);
         $stmt2->execute();
@@ -345,7 +345,7 @@ function getProfilePic($id){
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    $stmt1 = $conn->prepare("Select COUNT(id) FROM Users WHERE id = ?");
+    $stmt1 = $conn->prepare("SELECT COUNT(id) FROM Users WHERE id = ?");
     $stmt1->bind_param("s", $id);
     $stmt1->execute();
 
@@ -354,7 +354,7 @@ function getProfilePic($id){
 
     $data = "";
 
-    if ($row["COUNT(id"] > 0){
+    if ($row["COUNT(id)"] > 0){
         $stmt2 = $conn->prepare("SELECT ProfilePic FROM Users WHERE id = ?");
         $stmt2->bind_param("s", $id);
         $stmt2->execute();
@@ -908,8 +908,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
      * "id": "113776533273259442553"
      * }
      */
-    if($verb === 'POST' & $info === '/get_profile_info'){
-        try {
+    if($verb === 'POST' && $info === '/get_profile_info'){
+        try{
             $headers = (array)apache_request_headers();
             $authorization = $headers["Authorization"];
             $token = explode(" ",$authorization)[1];
@@ -918,6 +918,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             $id = $json_body["id"];
     
             if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
                 echo "Invalid or expired bearer token. Please log in again.";
                 return;
             }
@@ -925,9 +926,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
                 "profile_picture" => getProfilePic($id),
                 "profile_name" => getProfileName($id)
             );
-            
+    
             header("HTTP/1.1 200 OK");
-            echo "Successfully updated profile picture";
+            header("Content-Type: application/json; charset=utf-8");
             echo json_encode($data);
             return;
         } catch (Exception $e) {
