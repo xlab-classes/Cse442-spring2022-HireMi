@@ -28,7 +28,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     const [rawDoc, updateDoc] = useState(tempData)
     const [mappedData, updateData] = useState(null);
-
+    // Increment for tracking newly added object
     const [increment, setIncrement] = useState(null);
     // state to set active status of deleting an element
     const [isDelete, setDelete] = useState({
@@ -259,6 +259,134 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         });
         updateData(updatedMap);
     }
+
+    function renderData(rawData) {
+        const remapped = rawData["elements"].reduce(
+            (obj, el) => {
+                const id = obj['prev'] + 1;
+                return (
+                    {
+                        ...obj,
+                        prev: id,
+                        [id]: {
+                            ...el
+                        }
+                    }
+                )
+            }
+            , {prev: 0}
+        )
+
+        setIncrement(remapped['prev'] + 1);
+        updateData(remapped);
+    }
+
+    // This function needs to be paired with the save using fetch API
+    async function encodeData(formattedData) {
+        const filteredData = Object.values(formattedData).filter(el => {
+            if (typeof el === 'object') {
+                return el
+            } else {
+                return null
+            }
+        })
+
+        // Upload filteredData to push it to the server
+
+    }
+
+    function convertBase64(file) {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+
+            fileReader.onerror = error => {
+                reject(error);
+            }
+        });
+    }
+
+    // Add TEXT
+
+    function addText() {
+        const currentPrev= increment
+
+        const newData = {
+            ...mappedData,
+            [currentPrev]: {
+                "type": "text",
+                "content": "text element",
+                "offset-x": 0,
+                "offset-y": 0,
+                "width": 'auto',
+                "height": 'auto',
+                "z-index": 1,
+                "prop": {"font-type": "arial", "font-size": 12}
+            },
+            prev: currentPrev
+        }
+
+        updateData(newData);
+        setIncrement(increment + 1)
+
+    }
+
+    async function addImage(e) {
+        const currentPrev = increment
+
+        const file = e.target.files[0];
+        const base64 = await convertBase64(file);
+
+        let img = new Image;
+        img.onload = () => {
+            const newData = {
+                ...mappedData,
+                [currentPrev]: {
+                    "type": "image",
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "width": img.width ? img.width : 100,
+                    "height": img.height ? img.height : 100,
+                    "z-index": 1,
+                    "content": base64,
+                    "prop": {}
+                },
+                prev: currentPrev
+            }
+
+            updateData(newData);
+            setIncrement(increment + 1)
+        }
+        img.src = base64
+    }
+
+    function controlElement(e, id) {
+        setDelete({
+            active: !isDelete['active'],
+            id: isDelete['id'] ? null : id
+        });
+
+        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
+    }
+
+    function deleteElement(id) {
+        const updatedMap = {
+            ...mappedData
+        }
+
+        delete updatedMap[id]
+
+        setDelete({
+            active: false,
+            id: null
+        });
+        updateData(updatedMap);
+    }
+
 
     const increaseFS = () => {
         setFontSize(fontSize + 1);
@@ -544,6 +672,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             setEditor(false)
                         }}>Close Editor
                         </button>
+                        <button onClick={() => encodeData(mappedData)}>
+                            TEST button for encoding data to save to the server
+                        </button>
+                        <button onClick={addText}>Add Text (test)</button>
                         <input type='file' accept="image/*" onChange={addImage}/>
                         {isDelete['active'] ? <button onClick={() => deleteElement(isDelete['id'])}>
                             delete element (id: {isDelete["id"]} )
