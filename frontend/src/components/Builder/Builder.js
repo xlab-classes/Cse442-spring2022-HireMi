@@ -281,20 +281,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         updateData(remapped);
     }
 
-    // This function needs to be paired with the save using fetch API
-    async function encodeData(formattedData) {
-        const filteredData = Object.values(formattedData).filter(el => {
-            if (typeof el === 'object') {
-                return el
-            } else {
-                return null
-            }
-        })
-
-        // Upload filteredData to push it to the server
-
-    }
-
     function convertBase64(file) {
         return new Promise((resolve, reject) => {
             const fileReader = new FileReader();
