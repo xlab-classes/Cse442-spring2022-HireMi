@@ -118,6 +118,31 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         });
     }
 
+    // Add TEXT
+
+    function addText() {
+        const currentPrev= increment
+
+        const newData = {
+            ...mappedData,
+            [currentPrev]: {
+                "type": "text",
+                "content": "text element",
+                "offset-x": 0,
+                "offset-y": 0,
+                "width": 'auto',
+                "height": 'auto',
+                "z-index": 1,
+                "prop": {"font-type": "arial", "font-size": 12}
+            },
+            prev: currentPrev
+        }
+
+        updateData(newData);
+        setIncrement(increment + 1)
+
+    }
+
     async function addImage(e) {
         const currentPrev = increment
 
@@ -456,6 +481,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         <button onClick={() => encodeData(mappedData)}>
                             TEST button for encoding data to save to the server
                         </button>
+                        <button onClick={addText}>Add Text (test)</button>
                         <input type='file' accept="image/*" onChange={addImage}/>
                         {isDelete['active'] ? <button onClick={() => deleteElement(isDelete['id'])}>
                             delete element (id: {isDelete["id"]} )
