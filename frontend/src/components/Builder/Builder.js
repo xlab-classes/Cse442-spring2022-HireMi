@@ -6,6 +6,7 @@ import styles from './Builder.module.scss';
 import { Rnd } from "react-rnd";
 import { sampleRawData } from "./hardCodedData.js";
 import html2canvas from 'html2canvas';
+import { parse } from "@fortawesome/fontawesome-svg-core";
 
 const styling = makeStyles({
     container: {
@@ -35,6 +36,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         active: false,
         id: null,
     });
+    const [isDragging, setDraggingg] = useState(false);
     const [share, setShare] = useState(false);
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
@@ -87,20 +89,27 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
             const resumeDataJSON = await resumeData.json();
 
             console.log(resumeDataJSON)
-            for (let i = 0; i < resumeDataJSON.elements.length; i++) {
-                var element = resumeDataJSON["elements"][i];
-                console.log(element);
-                if (element.type == "image") {
-                    element.content = 'data:image/png;base64,' + element.content;
-                }
-            }
-            updateDoc(resumeDataJSON); //updates rawDoc
-            //passing this instead of rawDoc because doesn't update immediately
-            renderData(resumeDataJSON);
+
+            const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
+                const id = obj['prev'] + 1;
+                return (
+                    {
+                        ...obj,
+                        prev: id,
+                        [id]: {
+                            ...el,
+                            'content': el['type'] === "image" ? 'data:image/png;base64,' + el['content'] : el['content']
+                        }
+                    }
+                )
+            }, { prev: 0 })
+
+            setIncrement(parsedData['prev'] + 1);
+            updateData(parsedData); // updates mapped data
         }
 
-        loadingElements();
-
+        loadingElements()
+            .catch(console.error);
     }, []);
 
     function renderData(rawData) {
@@ -351,6 +360,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     }
 
     function controlElement(e, id) {
+        if (isDragging) {
+            return;
+        }
         setDelete({
             active: !isDelete['active'],
             id: isDelete['id'] ? null : id
