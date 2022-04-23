@@ -26,8 +26,6 @@ const tempData = sampleRawData
 const Builder = ({auth, resume, setEditor, setResume}) => {
     const columns = styling();
 
-
-    const [rawDoc, updateDoc] = useState(tempData)
     const [mappedData, updateData] = useState(null);
     // Increment for tracking newly added object
     const [increment, setIncrement] = useState(null);
@@ -103,18 +101,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 )
             }, {prev: 0})
 
-            // for(let i = 0; i < resumeDataJSON.elements.length; i++){
-            //     var element = resumeDataJSON["elements"][i];
-            //     console.log(element);
-            //     if(element.type == "image"){
-            //         element.content = 'data:image/png;base64,' + element.content;
-            //     }
-            // }
-
             setIncrement(parsedData['prev'] + 1);
-            updateDoc(resumeDataJSON); //updates rawDoc
-            //passing this instead of rawDoc because doesn't update immediately
-            // renderData(resumeDataJSON);
             updateData(parsedData); // updates mapped data
         }
 
