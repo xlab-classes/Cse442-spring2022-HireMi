@@ -6,6 +6,7 @@ import styles from './Builder.module.scss';
 import {Rnd} from "react-rnd";
 import {sampleRawData} from "./hardCodedData.js";
 import html2canvas from 'html2canvas';
+import {parse} from "@fortawesome/fontawesome-svg-core";
 
 const styling = makeStyles({
     container: {
@@ -49,7 +50,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
             //Checks if loading resume is a template.
             //If it is, then we create a new resume that is owned by user.
-            if(resume.split('-')[1] === 'template'){
+            if (resume.split('-')[1] === 'template') {
                 //This gets the number of resumes in entire database, not just the ones the user owns.
                 const resumeCount = await fetch('./backend/api/api.php/resume_count', {
                     method: 'POST',
@@ -65,12 +66,12 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 });
 
                 const resumeCountJSON = await resumeCount.json();
-                setResume((resumeCountJSON.count+1) + '-doc');
+                setResume((resumeCountJSON.count + 1) + '-doc');
                 // immediate save doesn't work, but there's possibility of error if
                 // separate users save at the same time
                 // encodeData(mappedData)
             }
-            
+
 
             const resumeData = await fetch('./backend/api/api.php/get_resume', {
                 method: 'POST',
@@ -87,19 +88,38 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
             const resumeDataJSON = await resumeData.json();
 
             console.log(resumeDataJSON)
-            for(let i = 0; i < resumeDataJSON.elements.length; i++){
-                var element = resumeDataJSON["elements"][i];
-                console.log(element);
-                if(element.type == "image"){
-                    element.content = 'data:image/png;base64,' + element.content;
-                }
-            }
+
+            const parsedData = tempData['elements'].reduce((obj, el) => {
+                const id = obj['prev'] + 1;
+                return (
+                    {
+                        ...obj,
+                        prev: id,
+                        [id]: {
+                            ...el,
+                            'content': el['type'] === "image" ? 'data:image/png;base64,' + el['content'] : el['content']
+                        }
+                    }
+                )
+            }, {prev: 0})
+
+            // for(let i = 0; i < resumeDataJSON.elements.length; i++){
+            //     var element = resumeDataJSON["elements"][i];
+            //     console.log(element);
+            //     if(element.type == "image"){
+            //         element.content = 'data:image/png;base64,' + element.content;
+            //     }
+            // }
+
+            setIncrement(parsedData['prev'] + 1);
             updateDoc(resumeDataJSON); //updates rawDoc
             //passing this instead of rawDoc because doesn't update immediately
-            renderData(resumeDataJSON);
+            // renderData(resumeDataJSON);
+            updateData(parsedData); // updates mapped data
         }
 
-        loadingElements();
+        loadingElements()
+            .catch(console.error);
 
     }, []);
 
@@ -137,17 +157,17 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         // Upload filteredData to push it to the server
         const thumbnail = await capture();
-        for(let i = 0; i < filteredData.length; i++){
+        for (let i = 0; i < filteredData.length; i++) {
             var element = filteredData[i];
             console.log(element);
-            if(element.type == "image"){
+            if (element.type == "image") {
                 element.content = element.content.split(',')[1];
             }
         }
         saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
     }
 
-    async function saveElements (encodedData, thumbnail) {
+    async function saveElements(encodedData, thumbnail) {
         await fetch('./backend/api/api.php/resume', {
             method: 'POST',
             headers: {
@@ -164,10 +184,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 }
             })
         })
-        .then((result) => result.text())
-        .then((resultText) => {
-            console.log(resultText);
-        })
+            .then((result) => result.text())
+            .then((resultText) => {
+                console.log(resultText);
+            })
         // Not need since output isn't json and just confirms save.
         // .then((resultJson) => {
         //     console.log("Successfully saved resume.",resultJson);
@@ -238,6 +258,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         }
         img.src = base64
     }
+
     function controlElement(e, id) {
         setDelete({
             active: !isDelete['active'],
@@ -299,7 +320,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     // Add TEXT
 
     function addText() {
-        const currentPrev= increment
+        const currentPrev = increment
 
         const newData = {
             ...mappedData,
@@ -408,7 +429,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     key={el[0]}
                     onClick={e => {
                         // if (el[1]['type'] === 'image') {
-                            controlElement(e, el[0])
+                        controlElement(e, el[0])
                         // } else if(el[1]['type'] === 'text') {
                         //
                         // }
@@ -490,12 +511,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         }
     );
-
-
-
-
-
-
 
 
     return (
