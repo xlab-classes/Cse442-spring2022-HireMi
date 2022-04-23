@@ -120,6 +120,7 @@ function generatePDF($resume_id, $elements){
     ob_clean(); //flushes buffer
     $file = __DIR__ . '/' . $resumeID . '.pdf';
     $pdf->Output($file, 'F'); //actual code
+    chmod($file, 0777);
     // $pdf->Output($file, 'I'); //for debugging
 
     // echo '/CSE442-542/2022-Spring/cse-442r/backend/api/' . $resumeID . '.pdf';         
