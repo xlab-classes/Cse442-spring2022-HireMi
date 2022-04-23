@@ -6,6 +6,7 @@ import styles from './Builder.module.scss';
 import { Rnd } from "react-rnd";
 import { sampleRawData } from "./hardCodedData.js";
 import html2canvas from 'html2canvas';
+import { parse } from "@fortawesome/fontawesome-svg-core";
 
 const styling = makeStyles({
     container: {
@@ -25,8 +26,6 @@ const tempData = sampleRawData
 const Builder = ({ auth, resume, setEditor, setResume }) => {
     const columns = styling();
 
-
-    const [rawDoc, updateDoc] = useState(tempData)
     const [mappedData, updateData] = useState(null);
     // Increment for tracking newly added object
     const [increment, setIncrement] = useState(null);
@@ -35,6 +34,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         active: false,
         id: null,
     });
+    const [isDragging, setDraggingg] = useState(false);
     const [share, setShare] = useState(false);
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
@@ -87,25 +87,32 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
             const resumeDataJSON = await resumeData.json();
 
             console.log(resumeDataJSON)
-            for (let i = 0; i < resumeDataJSON.elements.length; i++) {
-                var element = resumeDataJSON["elements"][i];
-                console.log(element);
-                if (element.type == "image") {
-                    element.content = 'data:image/png;base64,' + element.content;
-                }
-            }
-            updateDoc(resumeDataJSON); //updates rawDoc
-            //passing this instead of rawDoc because doesn't update immediately
-            renderData(resumeDataJSON);
+
+            const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
+                const id = obj['prev'] + 1;
+                return (
+                    {
+                        ...obj,
+                        prev: id,
+                        [id]: {
+                            ...el,
+                            'content': el['type'] === "image" ? 'data:image/png;base64,' + el['content'] : el['content']
+                        }
+                    }
+                )
+            }, { prev: 0 })
+
+            setIncrement(parsedData['prev'] + 1);
+            updateData(parsedData); // updates mapped data
         }
 
-        loadingElements();
-
+        loadingElements()
+            .catch(console.error);
     }, []);
 
     function renderData(rawData) {
         // assume that we fetched the data successfully
-        const remapped = rawData["elements"].reduce(
+        const remapped = tempData["elements"].reduce(
             (obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
@@ -140,7 +147,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         for (let i = 0; i < filteredData.length; i++) {
             var element = filteredData[i];
             console.log(element);
-            if (element.type == "image") {
+            if (element.type === "image") {
                 element.content = element.content.split(',')[1];
             }
         }
@@ -238,48 +245,6 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         }
         img.src = base64
     }
-    function controlElement(e, id) {
-        setDelete({
-            active: !isDelete['active'],
-            id: isDelete['id'] ? null : id
-        });
-        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
-    }
-
-    function deleteElement(id) {
-        const updatedMap = {
-            ...mappedData
-        }
-
-        delete updatedMap[id]
-
-        setDelete({
-            active: false,
-            id: null
-        });
-        updateData(updatedMap);
-    }
-
-    function renderData(rawData) {
-        const remapped = rawData["elements"].reduce(
-            (obj, el) => {
-                const id = obj['prev'] + 1;
-                return (
-                    {
-                        ...obj,
-                        prev: id,
-                        [id]: {
-                            ...el
-                        }
-                    }
-                )
-            }
-            , { prev: 0 }
-        )
-
-        setIncrement(remapped['prev'] + 1);
-        updateData(remapped);
-    }
 
     function convertBase64(file) {
         return new Promise((resolve, reject) => {
@@ -351,6 +316,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     }
 
     function controlElement(e, id) {
+        if (isDragging) {
+            return;
+        }
         setDelete({
             active: !isDelete['active'],
             id: isDelete['id'] ? null : id
