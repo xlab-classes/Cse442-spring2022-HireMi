@@ -590,7 +590,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         </Rnd>
                         <div className={styles['left_buttons_area']}>
                             <button onClick={addText} className={styles['add_text_button']}>
-                                Add Text (test)
+                                Add Text
                             </button>
                             <input type='file' className={styles['add_image_button']} accept="image/*" onChange={addImage} />
                             {isDelete['active'] ? <button className={styles['delete_element_button']} onClick={() => deleteElement(isDelete['id'])}>
