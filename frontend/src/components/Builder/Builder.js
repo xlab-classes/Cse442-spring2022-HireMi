@@ -26,8 +26,6 @@ const tempData = sampleRawData
 const Builder = ({ auth, resume, setEditor, setResume }) => {
     const columns = styling();
 
-
-    const [rawDoc, updateDoc] = useState(tempData)
     const [mappedData, updateData] = useState(null);
     // Increment for tracking newly added object
     const [increment, setIncrement] = useState(null);
@@ -36,7 +34,8 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         active: false,
         id: null,
     });
-    const [isDragging, setDraggingg] = useState(false);
+    const [isDragging, setDragging] = useState(false);
+
     const [share, setShare] = useState(false);
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
@@ -102,7 +101,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         }
                     }
                 )
-            }, { prev: 0 })
+            }, {prev: 0})
+
+            console.log(parsedData)
 
             setIncrement(parsedData['prev'] + 1);
             updateData(parsedData); // updates mapped data
@@ -112,9 +113,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
             .catch(console.error);
     }, []);
 
-    function renderData(rawData) {
+    function renderData() {
         // assume that we fetched the data successfully
-        const remapped = rawData["elements"].reduce(
+        const remapped = tempData["elements"].reduce(
             (obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
@@ -127,7 +128,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                     }
                 )
             }
-            , { prev: 0 }
+            , {prev: 0}
         )
 
         setIncrement(remapped['prev'] + 1);
@@ -136,7 +137,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
     // This function needs to be paired with the save using fetch API
     async function encodeData(formattedData) {
-        var filteredData = Object.values(formattedData).filter(el => {
+        const filteredData = Object.values(formattedData).filter(el => {
             if (typeof el === 'object') {
                 return el
             } else {
@@ -147,9 +148,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         // Upload filteredData to push it to the server
         const thumbnail = await capture();
         for (let i = 0; i < filteredData.length; i++) {
-            var element = filteredData[i];
+            const element = filteredData[i];
             console.log(element);
-            if (element.type == "image") {
+            if (element.type === "image") {
                 element.content = element.content.split(',')[1];
             }
         }
@@ -219,92 +220,6 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         });
     }
 
-    async function addImage(e) {
-        const currentPrev = increment;
-
-        const file = e.target.files[0];
-        const base64 = await convertBase64(file);
-
-        let img = new Image;
-        img.onload = () => {
-            const newData = {
-                ...mappedData,
-                [currentPrev]: {
-                    "type": "image",
-                    "offset-x": 0,
-                    "offset-y": 0,
-                    "width": img.width ? img.width : 100,
-                    "height": img.height ? img.height : 100,
-                    "z-index": 1,
-                    "content": base64,
-                    "prop": {}
-                },
-                prev: currentPrev
-            }
-
-            updateData(newData);
-            setIncrement(increment + 1);
-        }
-        img.src = base64
-    }
-    function controlElement(e, id) {
-        setDelete({
-            active: !isDelete['active'],
-            id: isDelete['id'] ? null : id
-        });
-        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
-    }
-
-    function deleteElement(id) {
-        const updatedMap = {
-            ...mappedData
-        }
-
-        delete updatedMap[id]
-
-        setDelete({
-            active: false,
-            id: null
-        });
-        updateData(updatedMap);
-    }
-
-    function renderData(rawData) {
-        const remapped = rawData["elements"].reduce(
-            (obj, el) => {
-                const id = obj['prev'] + 1;
-                return (
-                    {
-                        ...obj,
-                        prev: id,
-                        [id]: {
-                            ...el
-                        }
-                    }
-                )
-            }
-            , { prev: 0 }
-        )
-
-        setIncrement(remapped['prev'] + 1);
-        updateData(remapped);
-    }
-
-    function convertBase64(file) {
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(file);
-
-            fileReader.onload = () => {
-                resolve(fileReader.result);
-            };
-
-            fileReader.onerror = error => {
-                reject(error);
-            }
-        });
-    }
-
     // Add TEXT
 
     function addText() {
@@ -320,7 +235,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 "width": 'auto',
                 "height": 'auto',
                 "z-index": 1,
-                "prop": { "font-type": "arial", "font-size": 12 }
+                "prop": {"font-type": "arial", "font-size": 12}
             },
             prev: currentPrev
         }
@@ -360,9 +275,10 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     }
 
     function controlElement(e, id) {
-        if (isDragging) {
+        if(isDragging) {
             return;
         }
+
         setDelete({
             active: !isDelete['active'],
             id: isDelete['id'] ? null : id
@@ -372,6 +288,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     }
 
     function deleteElement(id) {
+
         const updatedMap = {
             ...mappedData
         }
@@ -404,110 +321,98 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
 
     const renderedData = Object.entries(mappedData ? mappedData : {}).map(el => {
-        if (el[0] === 'prev') {
-            return null;
-        }
+            if (el[0] === 'prev') {
+                return null;
+            }
 
-        return (
-            <Rnd
-                style={style}
-                default={{
-                    x: el[1]['offset-x'],
-                    y: el[1]['offset-y'],
-                    width: el[1]['width'],
-                    height: el[1]['height']
-                }}
-                key={el[0]}
-                onClick={e => {
-                    // if (el[1]['type'] === 'image') {
-                    controlElement(e, el[0])
-                    // } else if(el[1]['type'] === 'text') {
-                    //
-                    // }
-                }}
-                // onFocus={e => {
-                //     if (el[1]['type'] === 'text') {
-                //         controlElement(e, el[0])
-                //     }
-                // }}
-                onDragStop={(e, data) => {
-                    // console.log(data)
+            return (
+                <Rnd
+                    style={style}
+                    default={{
+                        x: el[1]['offset-x'],
+                        y: el[1]['offset-y'],
+                        width: el[1]['width'],
+                        height: el[1]['height']
+                    }}
+                    key={el[0]}
+                    onMouseDown={e => {
 
-                    const updated = {
-                        ...mappedData,
-                        [el[0]]: {
-                            ...mappedData[el[0]],
-                            'offset-x': data['x'],
-                            'offset-y': data['y'],
-                        }
-                    }
+                        controlElement(e, el[0])
+                    }}
+                    onDragStart={e => {
+                        setDragging(true)
+                    }}
+                    onDragStop={(e, data) => {
+                        setDragging(false)
 
-                    updateData(updated);
-                }}
-                onResizeStop={(e, dir, ref, delta, position) => {
-                    // console.log(position)
-
-                    const updated = {
-                        ...mappedData,
-                        [el[0]]: {
-                            ...mappedData[el[0]],
-                            width: mappedData[el[0]]['width'] + delta['width'],
-                            height: mappedData[el[0]]['height'] + delta['height'],
-                            'offset-x': position['x'],
-                            'offset-y': position['y'],
-                        }
-                    }
-
-                    updateData(updated);
-                }}
-            >
-                {el[1]['type'] === 'text' ?
-                    <input
-                        type="text"
-                        defaultValue={el[1]['content']}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            fontSize: fontSize,
-                            fontWeight: boldfont ? 'bold' : 'normal',
-                            fontStyle: italfont ? 'italic' : 'normal',
-                            textDecorationLine: underfont ? 'underline' : 'none',
-                            border: 'none',
-                            textAlign: 'center',
-                            backgroundColor: 'grey'
-                        }}
-                        onChange={e => {
-                            const str = e.target.value;
-
-                            const updated = {
-                                ...mappedData,
-                                [el[0]]: {
-                                    ...mappedData[el[0]],
-                                    content: str
-                                }
+                        const updated = {
+                            ...mappedData,
+                            [el[0]]: {
+                                ...mappedData[el[0]],
+                                'offset-x': data['x'],
+                                'offset-y': data['y'],
                             }
+                        }
 
-                            updateData(updated);
-                        }}
-                    /> :
-                    <img src={el[1]['content']} alt={''} draggable={false}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                        }}
-                    />
-                }
-            </Rnd>
-        )
+                        updateData(updated);
+                    }}
+                    onResizeStop={(e, dir, ref, delta, position) => {
+                        // console.log(position)
 
-    }
+                        const updated = {
+                            ...mappedData,
+                            [el[0]]: {
+                                ...mappedData[el[0]],
+                                width: mappedData[el[0]]['width'] + delta['width'],
+                                height: mappedData[el[0]]['height'] + delta['height'],
+                                'offset-x': position['x'],
+                                'offset-y': position['y'],
+                            }
+                        }
+
+                        updateData(updated);
+                    }}
+                >
+                    {el[1]['type'] === 'text' ?
+                        <input
+                            type="text"
+                            defaultValue={el[1]['content']}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                fontSize: fontSize,
+                                fontWeight: boldfont ? 'bold' : 'normal',
+                                fontStyle: italfont ? 'italic' : 'normal',
+                                textDecorationLine: underfont ? 'underline' : 'none',
+                                border: 'none',
+                                // textAlign: 'center',
+                            }}
+                            onChange={e => {
+                                const str = e.target.value;
+
+                                const updated = {
+                                    ...mappedData,
+                                    [el[0]]: {
+                                        ...mappedData[el[0]],
+                                        content: str
+                                    }
+                                }
+
+                                updateData(updated);
+                            }}
+                        /> :
+                        <img src={el[1]['content']} alt={''} draggable={false}
+                             style={{
+                                 width: '100%',
+                                 height: '100%',
+                             }}
+                        />
+                    }
+                </Rnd>
+            )
+
+        }
     );
-
-
-
-
-
-
 
 
     return (
