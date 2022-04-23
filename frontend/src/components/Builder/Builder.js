@@ -188,7 +188,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         return link;
     }
 
-    function download() {
+    async function download() {
         const response = await encodeData(mappedData); //should save before download
         const responseText = await response.text();
         console.log(responseText);
