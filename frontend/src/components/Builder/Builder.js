@@ -636,7 +636,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 <h3 className={styles['txt_h3']}>Text</h3>
                                 <input
                                     className={styles["fontSize_input"]}
-                                    defaultValue={fontSize}
+                                    value={fontSize}
                                     onChange={renderedData.entries[1]}
                                 />
                                 <button className={styles['increase']} onClick={() => {
