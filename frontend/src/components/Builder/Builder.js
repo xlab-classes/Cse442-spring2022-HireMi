@@ -89,7 +89,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
             console.log(resumeDataJSON)
 
-            const parsedData = tempData['elements'].reduce((obj, el) => {
+            const parsedData = resumeDataJSON.reduce((obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
                     {
