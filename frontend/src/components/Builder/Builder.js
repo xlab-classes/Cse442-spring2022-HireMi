@@ -174,8 +174,6 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 }
             })
         });
-        const resultText = await result.text();
-        console.log(resultText);
 
         return result;
         // Not need since output isn't json and just confirms save.
