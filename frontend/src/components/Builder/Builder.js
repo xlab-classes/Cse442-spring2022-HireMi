@@ -149,11 +149,11 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 element.content = element.content.split(',')[1];
             }
         }
-        saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
+        return saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
     }
 
     async function saveElements(encodedData, thumbnail) {
-        await fetch('./backend/api/api.php/resume', {
+        const result = await fetch('./backend/api/api.php/resume', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -168,11 +168,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                     'elements': encodedData
                 }
             })
-        })
-            .then((result) => result.text())
-            .then((resultText) => {
-                console.log(resultText);
-            })
+        });
+
+        return result;
         // Not need since output isn't json and just confirms save.
         // .then((resultJson) => {
         //     console.log("Successfully saved resume.",resultJson);
@@ -186,8 +184,11 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         return link;
     }
 
-    function download() {
-        encodeData(mappedData); //should save before download
+    async function download() {
+        const response = await encodeData(mappedData); //should save before download
+        const responseText = await response.text();
+        console.log(responseText);
+        
         //resume.split('-')[0] returns a string of an int, which is okay in this case
         const url = './backend/api/' + resume.split('-')[0] + '.pdf';
 
