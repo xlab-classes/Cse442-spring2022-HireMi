@@ -230,8 +230,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 "content": "text element",
                 "offset-x": 0,
                 "offset-y": 0,
-                // "width": 'auto',
-                // "height": 'auto',
+                "width": 100,
+                "height": 30,
                 "z-index": 1,
                 "prop": {"font-type": "arial", "font-size": 12}
             },
