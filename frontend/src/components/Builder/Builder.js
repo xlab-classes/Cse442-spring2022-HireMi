@@ -469,8 +469,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 fontStyle: italfont ? 'italic' : 'normal',
                                 textDecorationLine: underfont ? 'underline' : 'none',
                                 border: 'none',
-                                textAlign: 'center',
-                                backgroundColor: 'grey'
+                                // textAlign: 'center',
                             }}
                             onChange={e => {
                                 const str = e.target.value;
