@@ -6,6 +6,7 @@ import styles from './Builder.module.scss';
 import {Rnd} from "react-rnd";
 import {sampleRawData} from "./hardCodedData.js";
 import html2canvas from 'html2canvas';
+import {parse} from "@fortawesome/fontawesome-svg-core";
 
 const styling = makeStyles({
     container: {
@@ -25,16 +26,25 @@ const tempData = sampleRawData
 const Builder = ({auth, resume, setEditor, setResume}) => {
     const columns = styling();
 
-
-    const [rawDoc, updateDoc] = useState(tempData)
     const [mappedData, updateData] = useState(null);
     // Increment for tracking newly added object
     const [increment, setIncrement] = useState(null);
     // state to set active status of deleting an element
     const [isDelete, setDelete] = useState({
         active: false,
-        id: null,
+        id: null
     });
+    const style = {
+        fontSize: 0,
+        fontWeight: false,
+        fontStyle: false,
+        textDecorationLine: false
+    }
+    //state to set active status of a text element
+    const [isSelectText, setSelectText] = useState({
+        data_id: null,
+        style
+    })
     const [share, setShare] = useState(false);
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
@@ -49,7 +59,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
             //Checks if loading resume is a template.
             //If it is, then we create a new resume that is owned by user.
-            if(resume.split('-')[1] === 'template'){
+            if (resume.split('-')[1] === 'template') {
                 //This gets the number of resumes in entire database, not just the ones the user owns.
                 const resumeCount = await fetch('./backend/api/api.php/resume_count', {
                     method: 'POST',
@@ -65,12 +75,12 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 });
 
                 const resumeCountJSON = await resumeCount.json();
-                setResume((resumeCountJSON.count+1) + '-doc');
+                setResume((resumeCountJSON.count + 1) + '-doc');
                 // immediate save doesn't work, but there's possibility of error if
                 // separate users save at the same time
                 // encodeData(mappedData)
             }
-            
+
 
             const resumeData = await fetch('./backend/api/api.php/get_resume', {
                 method: 'POST',
@@ -87,25 +97,35 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
             const resumeDataJSON = await resumeData.json();
 
             console.log(resumeDataJSON)
-            for(let i = 0; i < resumeDataJSON.elements.length; i++){
-                var element = resumeDataJSON["elements"][i];
-                console.log(element);
-                if(element.type == "image"){
-                    element.content = 'data:image/png;base64,' + element.content;
-                }
-            }
-            updateDoc(resumeDataJSON); //updates rawDoc
-            //passing this instead of rawDoc because doesn't update immediately
-            renderData(resumeDataJSON);
+
+            const parsedData = resumeDataJSON.reduce((obj, el) => {
+                const id = obj['prev'] + 1;
+                return (
+                    {
+                        ...obj,
+                        prev: id,
+                        [id]: {
+                            ...el,
+                            'content': el['type'] === "image" ? 'data:image/png;base64,' + el['content'] : el['content']
+                        }
+                    }
+                )
+            }, {prev: 0})
+
+            setIncrement(parsedData['prev'] + 1);
+            updateData(parsedData); // updates mapped data
         }
 
-        loadingElements();
+        loadingElements()
+            .catch(console.error);
+
+        // renderData()
 
     }, []);
 
-    function renderData(rawData) {
+    function renderData() {
         // assume that we fetched the data successfully
-        const remapped = rawData["elements"].reduce(
+        const remapped = tempData["elements"].reduce(
             (obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
@@ -137,17 +157,17 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         // Upload filteredData to push it to the server
         const thumbnail = await capture();
-        for(let i = 0; i < filteredData.length; i++){
+        for (let i = 0; i < filteredData.length; i++) {
             var element = filteredData[i];
             console.log(element);
-            if(element.type == "image"){
+            if (element.type == "image") {
                 element.content = element.content.split(',')[1];
             }
         }
         saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
     }
 
-    async function saveElements (encodedData, thumbnail) {
+    async function saveElements(encodedData, thumbnail) {
         await fetch('./backend/api/api.php/resume', {
             method: 'POST',
             headers: {
@@ -164,10 +184,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 }
             })
         })
-        .then((result) => result.text())
-        .then((resultText) => {
-            console.log(resultText);
-        })
+            .then((result) => result.text())
+            .then((resultText) => {
+                console.log(resultText);
+            })
         // Not need since output isn't json and just confirms save.
         // .then((resultJson) => {
         //     console.log("Successfully saved resume.",resultJson);
@@ -238,48 +258,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         }
         img.src = base64
     }
-    function controlElement(e, id) {
-        setDelete({
-            active: !isDelete['active'],
-            id: isDelete['id'] ? null : id
-        });
-        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
-    }
-
-    function deleteElement(id) {
-        const updatedMap = {
-            ...mappedData
-        }
-
-        delete updatedMap[id]
-
-        setDelete({
-            active: false,
-            id: null
-        });
-        updateData(updatedMap);
-    }
-
-    function renderData(rawData) {
-        const remapped = rawData["elements"].reduce(
-            (obj, el) => {
-                const id = obj['prev'] + 1;
-                return (
-                    {
-                        ...obj,
-                        prev: id,
-                        [id]: {
-                            ...el
-                        }
-                    }
-                )
-            }
-            , {prev: 0}
-        )
-
-        setIncrement(remapped['prev'] + 1);
-        updateData(remapped);
-    }
 
     function convertBase64(file) {
         return new Promise((resolve, reject) => {
@@ -299,7 +277,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     // Add TEXT
 
     function addText() {
-        const currentPrev= increment
+        const currentPrev = increment
 
         const newData = {
             ...mappedData,
@@ -373,6 +351,27 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         updateData(updatedMap);
     }
 
+    function controlTextElement(data_id) {
+        setSelectText({
+            data_id: isSelectText['data_id'] ? null : data_id
+        });
+    }
+    // function updateTextElement(data_id,e) {
+    //     const updatedMap = {
+    //         ...mappedData
+    //     }
+    //     let styleList = []
+    //     const [data_id,value] = e.target;
+    //     // const [style]
+    //     setSelectText(
+    //         isSelectText => ({
+    //             ...isSelectText,
+    //             [data_id]: value,
+    //             // [style]: 
+    //         })
+    //     );
+    //     updateData(updatedProps);
+    // }
 
     const increaseFS = () => {
         setFontSize(fontSize + 1);
@@ -407,8 +406,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     }}
                     key={el[0]}
                     onClick={e => {
+                        console.log(this)
                         // if (el[1]['type'] === 'image') {
-                            controlElement(e, el[0])
+                        controlElement(e, el[0])
                         // } else if(el[1]['type'] === 'text') {
                         //
                         // }
@@ -453,6 +453,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         <input
                             type="text"
                             defaultValue={el[1]['content']}
+                            data-id={'data_id'}
                             style={{
                                 width: '100%',
                                 height: '100%',
@@ -461,8 +462,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 fontStyle: italfont ? 'italic' : 'normal',
                                 textDecorationLine: underfont ? 'underline' : 'none',
                                 border: 'none',
-                                textAlign: 'center',
-                                backgroundColor: 'grey'
+                                // textAlign: 'center',
                             }}
                             onChange={e => {
                                 const str = e.target.value;
@@ -476,6 +476,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 }
 
                                 updateData(updated);
+                                controlTextElement(e,el[0])
                             }}
                         /> :
                         <img src={el[1]['content']} alt={''} draggable={false}
@@ -490,12 +491,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         }
     );
-
-
-
-
-
-
 
 
     return (
@@ -526,6 +521,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             <input
                                 type="text"
                                 defaultValue={'Your Name'}
+                                data-id={"yourName"}
                                 style={{
                                     width: '100%',
                                     height: '100%',
@@ -535,7 +531,11 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     textDecorationLine: underfont ? 'underline' : 'none',
                                     border: 'none',
                                     textAlign: 'center'
+                                    
                                 }}
+                                // onChange={
+                                //     // updateElement()
+                                // }
                             />
                         </Rnd>
                         <Rnd
@@ -551,6 +551,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             <input
                                 type="text"
                                 defaultValue={'Education'}
+                                data-id={"education"}
                                 style={{
                                     width: '100%',
                                     height: '100%',
@@ -561,6 +562,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     border: 'none',
                                     textAlign: 'center'
                                 }}
+                                // onChange={
+                                //     // updateElement()
+                                // }
                             />
                         </Rnd>
                         <Rnd
@@ -576,6 +580,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             <input
                                 type="text"
                                 defaultValue={'Experience'}
+                                data-id={"experience"}
                                 style={{
                                     width: '100%',
                                     height: '100%',
@@ -586,6 +591,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     border: 'none',
                                     textAlign: 'center'
                                 }}
+                                // onChange={
+                                //     updateElement()
+                                // }
                             />
                         </Rnd>
                     </div>
