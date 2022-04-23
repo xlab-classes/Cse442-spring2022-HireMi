@@ -89,7 +89,7 @@ const Navbar = ({auth}) => {
                     <div className={styles['nav-contents']}>
                         <div className={styles['user-info']}>
                             <NavLink className={styles['nav-link']} to={ROUTE_SETTINGS}>
-                                <img src={(picCounter > 1) ? ((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic) : ((pic.length > 1000) ? URL.createObjectURL(b64toBlob(pic)) : pic)}/>
+                                <img src={(picCounter > 1) ? ((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic) : ((pic.length > 1000) ? URL.createObjectURL(b64toBlob(pic)) : pic)} alt={''} />
                             </NavLink>
                             <span>{(nameCounter > 1) ? auth?.username : username}</span>
                         </div>
