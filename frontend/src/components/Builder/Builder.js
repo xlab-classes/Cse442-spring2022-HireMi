@@ -39,6 +39,11 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     // const [fontSize_exp,setFontSize_exp] = useState(12);
     // const [fontSize_edu,setFontSize_edu] = useState(12);
 
+    const [isFont, setFont] = useState({
+        active: false,
+        id: null,
+    });
+
     useEffect(() => {
 
         const loadingElements = async () => {
@@ -282,6 +287,18 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 id: isDelete['id'] ? null : id
             });
         }
+
+        if(isFont['active'] && isFont['id'] !== id) {
+            setFont({
+                active: true,
+                id: id
+            });
+        } else{
+            setFont({
+                active: !isDelete['active'],
+                id: isFont['id'] ? null : id
+            })
+        }
     }
 
     function deleteElement(id) {
@@ -300,20 +317,51 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     }
 
 
-    const increaseFS = () => {
-        setFontSize(fontSize + 1);
+    const increaseFS = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+
+        updatedMap[id]["prop"]["font-size"] = updatedMap[id]["prop"]["font-size"] + 1;
+
+        updateData(updatedMap);
     };
-    const decreaseFS = () => {
-        setFontSize(fontSize - 1);
+    const decreaseFS = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+        if(updatedMap[id]["prop"]["font-size"] <= 1){
+            updatedMap[id]["prop"]["font-size"] = 1;
+        }
+        else{
+            updatedMap[id]["prop"]["font-size"] = updatedMap[id]["prop"]["font-size"] - 1;
+        }
+
+        updateData(updatedMap);
     };
-    const boldF = () => {
-        setBoldFont(!boldfont);
+    const boldF = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+        
+        updatedMap[id]["prop"]["bold"] = !updatedMap[id]["prop"]["bold"];
+        updateData(updatedMap);
     };
-    const italF = () => {
-        setItalFont(!italfont);
+    const italF = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+
+        updatedMap[id]["prop"]["italic"] = !updatedMap[id]["prop"]["italic"];
+        updateData(updatedMap);
     };
-    const underF = () => {
-        setUnderFont(!underfont);
+    const underF = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+        
+        updatedMap[id]["prop"]["underline"] = !updatedMap[id]["prop"]["underline"];
+        updateData(updatedMap);
     };
 
     const style_temp = {
@@ -404,10 +452,10 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                             style={{
                                 width: '100%',
                                 height: '100%',
-                                fontSize: fontSize,
-                                fontWeight: boldfont ? 'bold' : 'normal',
-                                fontStyle: italfont ? 'italic' : 'normal',
-                                textDecorationLine: underfont ? 'underline' : 'none',
+                                fontSize: el[1]['prop']['font-size'],
+                                fontWeight: el[1]['prop']['bold'] ? 'bold' : 'normal',
+                                fontStyle: el[1]['prop']['italic'] ? 'italic' : 'normal',
+                                textDecorationLine: el[1]['prop']['underline'] ? 'underline' : 'none',
                                 border: 'none',
                                 // textAlign: 'center',
                             }}
@@ -585,26 +633,36 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                                     defaultValue={fontSize}
                                     onChange={renderedData.entries[1]}
                                 />
-                                <button className={styles['increase']} onClick={() => {
-                                    increaseFS();
-                                }}>A+
-                                </button>
-                                <button className={styles['decrease']} onClick={() => {
-                                    decreaseFS();
-                                }}>A-
-                                </button>
-                                <button className={styles['bold']} onClick={() => {
-                                    boldF();
-                                }}>Bold
-                                </button>
-                                <button className={styles['italicized']} onClick={() => {
-                                    italF();
-                                }}>Italic
-                                </button>
-                                <button className={styles['underline']} onClick={() => {
-                                    underF();
-                                }}>U
-                                </button>
+                                {isFont['active'] ? <button className={styles['increase']} onClick={() => {
+                                    increaseFS(isFont['id']);
+                                }}>A+ (id: {isFont["id"]})
+                                </button> : <button disabled={true}>
+                                    A+ (id: {isFont["id"]})
+                                </button>}
+                                {isFont['active'] ? <button className={styles['decrease']} onClick={() => {
+                                    decreaseFS(isFont['id']);
+                                }}>A- (id: {isFont["id"]})
+                                </button> : <button disabled={true}>
+                                    A- (id: {isFont["id"]})
+                                </button>}
+                                {isFont['active'] ? <button className={styles['bold']} onClick={() => {
+                                    boldF(isFont['id']);
+                                }}>Bold (id: {isFont["id"]})
+                                </button> : <button disabled={true}>
+                                    Bold (id: {isFont["id"]})
+                                </button>}
+                                {isFont['active'] ? <button className={styles['italicized']} onClick={() => {
+                                    italF(isFont['id']);
+                                }}>Italic (id: {isFont["id"]})
+                                </button> : <button disabled={true}>
+                                    Italic (id: {isFont["id"]})
+                                </button>}
+                                {isFont['active'] ? <button className={styles['underline']} onClick={() => {
+                                    underF(isFont['id']);
+                                }}>U (id: {isFont["id"]})
+                                </button> : <button disabled={true}>
+                                    U (id: {isFont["id"]})
+                                </button>}
                             </Box>
                         </div>
                         <div className={styles['right_buttons_area']}>
