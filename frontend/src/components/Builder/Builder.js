@@ -104,10 +104,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
             updateData(parsedData); // updates mapped data
         }
 
-        // loadingElements()
-        //     .catch(console.error);
+        loadingElements()
+            .catch(console.error);
 
-        renderData()
+        // renderData()
 
     }, []);
 
