@@ -273,12 +273,17 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }
 
     function controlElement(e, id) {
-        setDelete({
-            active: !isDelete['active'],
-            id: isDelete['id'] ? null : id
-        });
-
-        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
+        if(isDelete['active'] && isDelete['id'] !== id) {
+            setDelete({
+                active: true,
+                id: id
+            });
+        }else {
+            setDelete({
+                active: !isDelete['active'],
+                id: isDelete['id'] ? null : id
+            });
+        }
     }
 
     function deleteElement(id) {
@@ -341,12 +346,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     }}
                     key={el[0]}
 
-                    onMouseDown={e => {
-                        if(isDragging) {
-                            return;
-                        }
-                        controlElement(e, el[0])
-                    }}
                     onDragStart={e => {
                         setDragging(true)
                     }}
@@ -378,6 +377,15 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
                         updateData(updated);
                     }}
+
+                    onMouseDown={e => {
+                        console.log('mouse down')
+                        if(isDragging) {
+                            return;
+                        }
+                        controlElement(e, el[0])
+                    }}
+
                 >
                     {el[1]['type'] === 'text' ?
                         <input
