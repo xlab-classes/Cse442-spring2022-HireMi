@@ -336,7 +336,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         display: 'flex',
                         justifyContent: 'center',
                         textAlign: 'center',
-                        border: isDelete['active'] && el[0] === isDelete['id'] ? '3px solid red' : 'none',
+                        border: !isDragging && isDelete['active'] && el[0] === isDelete['id'] ? '3px solid red' : 'none',
                     }}
                     default={{
                         x: el[1]['offset-x'],
@@ -348,6 +348,15 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
                     onDragStart={e => {
                         setDragging(true)
+                    }}
+                    onDrag={e => {
+                        if (!isDelete['active']) {
+                            return
+                        }
+                        setDelete({
+                            active: false,
+                            id: null
+                        })
                     }}
                     onDragStop={(e, data) => {
                         setDragging(false)
@@ -379,11 +388,14 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     }}
 
                     onMouseDown={e => {
-                        console.log('mouse down')
-                        if(isDragging) {
-                            return;
-                        }
-                        controlElement(e, el[0])
+                        // if(isDragging) return;
+
+                        // controlElement(e, el[0])
+
+                        setTimeout(()=>{
+                            if(isDragging) return;
+                            controlElement(e, el[0])
+                        },50);
                     }}
 
                 >
