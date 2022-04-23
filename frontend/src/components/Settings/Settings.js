@@ -51,19 +51,19 @@ const Settings = ({auth, setAuth}) => {
     function b64toBlob(b64Data, contentType='', sliceSize=512) {
         const byteCharacters = atob(b64Data);
         const byteArrays = [];
-      
+
         for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
           const slice = byteCharacters.slice(offset, offset + sliceSize);
-      
+
           const byteNumbers = new Array(slice.length);
           for (let i = 0; i < slice.length; i++) {
             byteNumbers[i] = slice.charCodeAt(i);
           }
-      
+
           const byteArray = new Uint8Array(byteNumbers);
           byteArrays.push(byteArray);
         }
-      
+
         const blob = new Blob(byteArrays, {type: contentType});
         return blob;
       }
@@ -102,11 +102,12 @@ const Settings = ({auth, setAuth}) => {
         }).then((result) => console.log(result));
 
         setAuth({
-            username: auth?.username,
-            id: auth?.id,
+            ...auth,
+            // username: auth?.username,
+            // id: auth?.id,
             pic: newPic, // Change the profile picture
-            email: auth?.email,
-            access_token: auth?.access_token,
+            // email: auth?.email,
+            // access_token: auth?.access_token,
         })
     }
 
@@ -133,11 +134,12 @@ const Settings = ({auth, setAuth}) => {
         }).then((result) => console.log(result));
 
         setAuth({
+            ...auth,
             username: newName, // Change the username
-            id: auth?.id,
-            pic: auth?.pic,
-            email: auth?.email,
-            access_token: auth?.access_token,
+            // id: auth?.id,
+            // pic: auth?.pic,
+            // email: auth?.email,
+            // access_token: auth?.access_token,
         })
     }
 

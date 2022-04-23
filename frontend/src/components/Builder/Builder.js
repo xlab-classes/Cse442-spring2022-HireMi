@@ -1,12 +1,12 @@
-import React, {useState, useEffect} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from "@material-ui/core/styles";
 // import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
-import {Rnd} from "react-rnd";
-import {sampleRawData} from "./hardCodedData.js";
+import { Rnd } from "react-rnd";
+import { sampleRawData } from "./hardCodedData.js";
 import html2canvas from 'html2canvas';
-import {parse} from "@fortawesome/fontawesome-svg-core";
+import { parse } from "@fortawesome/fontawesome-svg-core";
 
 const styling = makeStyles({
     container: {
@@ -23,7 +23,7 @@ const style = {
 
 const tempData = sampleRawData
 
-const Builder = ({auth, resume, setEditor, setResume}) => {
+const Builder = ({ auth, resume, setEditor, setResume }) => {
     const columns = styling();
 
     const [mappedData, updateData] = useState(null);
@@ -34,6 +34,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         active: false,
         id: null,
     });
+    const [isDragging, setDragging] = useState(false);
+
     const [share, setShare] = useState(false);
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
@@ -87,7 +89,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
             console.log(resumeDataJSON)
 
-            const parsedData = resumeDataJSON.reduce((obj, el) => {
+            const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
                     {
@@ -101,18 +103,19 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 )
             }, {prev: 0})
 
+            console.log(parsedData)
+
             setIncrement(parsedData['prev'] + 1);
             updateData(parsedData); // updates mapped data
         }
 
         loadingElements()
             .catch(console.error);
-
     }, []);
 
-    function renderData(rawData) {
+    function renderData() {
         // assume that we fetched the data successfully
-        const remapped = rawData["elements"].reduce(
+        const remapped = tempData["elements"].reduce(
             (obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
@@ -134,7 +137,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     // This function needs to be paired with the save using fetch API
     async function encodeData(formattedData) {
-        var filteredData = Object.values(formattedData).filter(el => {
+        const filteredData = Object.values(formattedData).filter(el => {
             if (typeof el === 'object') {
                 return el
             } else {
@@ -145,9 +148,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         // Upload filteredData to push it to the server
         const thumbnail = await capture();
         for (let i = 0; i < filteredData.length; i++) {
-            var element = filteredData[i];
+            const element = filteredData[i];
             console.log(element);
-            if (element.type == "image") {
+            if (element.type === "image") {
                 element.content = element.content.split(',')[1];
             }
         }
@@ -220,93 +223,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         });
     }
 
-    async function addImage(e) {
-        const currentPrev = increment;
-
-        const file = e.target.files[0];
-        const base64 = await convertBase64(file);
-
-        let img = new Image;
-        img.onload = () => {
-            const newData = {
-                ...mappedData,
-                [currentPrev]: {
-                    "type": "image",
-                    "offset-x": 0,
-                    "offset-y": 0,
-                    "width": img.width ? img.width : 100,
-                    "height": img.height ? img.height : 100,
-                    "z-index": 1,
-                    "content": base64,
-                    "prop": {}
-                },
-                prev: currentPrev
-            }
-
-            updateData(newData);
-            setIncrement(increment + 1);
-        }
-        img.src = base64
-    }
-
-    function controlElement(e, id) {
-        setDelete({
-            active: !isDelete['active'],
-            id: isDelete['id'] ? null : id
-        });
-        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
-    }
-
-    function deleteElement(id) {
-        const updatedMap = {
-            ...mappedData
-        }
-
-        delete updatedMap[id]
-
-        setDelete({
-            active: false,
-            id: null
-        });
-        updateData(updatedMap);
-    }
-
-    function renderData(rawData) {
-        const remapped = rawData["elements"].reduce(
-            (obj, el) => {
-                const id = obj['prev'] + 1;
-                return (
-                    {
-                        ...obj,
-                        prev: id,
-                        [id]: {
-                            ...el
-                        }
-                    }
-                )
-            }
-            , {prev: 0}
-        )
-
-        setIncrement(remapped['prev'] + 1);
-        updateData(remapped);
-    }
-
-    function convertBase64(file) {
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(file);
-
-            fileReader.onload = () => {
-                resolve(fileReader.result);
-            };
-
-            fileReader.onerror = error => {
-                reject(error);
-            }
-        });
-    }
-
     // Add TEXT
 
     function addText() {
@@ -362,6 +278,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }
 
     function controlElement(e, id) {
+        if(isDragging) {
+            return;
+        }
+
         setDelete({
             active: !isDelete['active'],
             id: isDelete['id'] ? null : id
@@ -371,6 +291,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }
 
     function deleteElement(id) {
+
         const updatedMap = {
             ...mappedData
         }
@@ -417,20 +338,15 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         height: el[1]['height']
                     }}
                     key={el[0]}
-                    onClick={e => {
-                        // if (el[1]['type'] === 'image') {
+                    onMouseDown={e => {
+
                         controlElement(e, el[0])
-                        // } else if(el[1]['type'] === 'text') {
-                        //
-                        // }
                     }}
-                    // onFocus={e => {
-                    //     if (el[1]['type'] === 'text') {
-                    //         controlElement(e, el[0])
-                    //     }
-                    // }}
+                    onDragStart={e => {
+                        setDragging(true)
+                    }}
                     onDragStop={(e, data) => {
-                        // console.log(data)
+                        setDragging(false)
 
                         const updated = {
                             ...mappedData,
@@ -472,8 +388,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 fontStyle: italfont ? 'italic' : 'normal',
                                 textDecorationLine: underfont ? 'underline' : 'none',
                                 border: 'none',
-                                textAlign: 'center',
-                                backgroundColor: 'grey'
+                                // textAlign: 'center',
                             }}
                             onChange={e => {
                                 const str = e.target.value;
@@ -593,8 +508,21 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 }}
                             />
                         </Rnd>
+                        <div className={styles['left_buttons_area']}>
+                            <button onClick={addText} className={styles['add_text_button']}>
+                                Add Text
+                            </button>
+                            <input type='file' className={styles['add_image_button']} accept="image/*" onChange={addImage} />
+                            {isDelete['active'] ? <button className={styles['delete_element_button']} onClick={() => deleteElement(isDelete['id'])}>
+                                delete element (id: {isDelete["id"]} )
+                            </button> : <button disabled={true}>
+                                delete element (id: {isDelete["id"]} )
+                            </button>}
+                        </div>
+
                     </div>
                     {/* </div> */}
+
                 </aside>
 
                 {/* </Grid>
@@ -658,26 +586,19 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 </button>
                             </Box>
                         </div>
-                        <button className={styles['closeButton']} onClick={() => {
-                            setResume(null)
-                            setEditor(false)
-                        }}>Close Editor
-                        </button>
-                        <button onClick={() => encodeData(mappedData)}>
-                            TEST button for encoding data to save to the server
-                        </button>
-                        <button onClick={addText}>Add Text (test)</button>
-                        <input type='file' accept="image/*" onChange={addImage}/>
-                        {isDelete['active'] ? <button onClick={() => deleteElement(isDelete['id'])}>
-                            delete element (id: {isDelete["id"]} )
-                        </button> : null}
-                        <button className={styles['saveButton']} onClick={() => encodeData(mappedData)}>
-                            Save Resume
-                        </button>
-                        <button classname={styles['closeButton']} onClick={() => {
-                            download()
-                        }}>Download Button
-                        </button>
+                        <div className={styles['right_buttons_area']}>
+                            <button className={styles['save_button']} onClick={() => encodeData(mappedData)}>
+                                Save Resume
+                            </button>
+                            <button className={styles['download_button']} onClick={() => { download() }}>
+                                Download PDF
+                            </button>
+                            <button className={styles['close_button']} onClick={() => {
+                                setResume(null)
+                                setEditor(false)
+                            }}> Close Editor
+                            </button>
+                        </div>
                     </div>
                     {/* </div> */}
                 </aside>
