@@ -15,11 +15,6 @@ const styling = makeStyles({
         textAlign: "center",
     }
 });
-const style = {
-    display: 'flex',
-    justifyContent: 'center',
-    textAlign: 'center'
-}
 
 const tempData = sampleRawData
 
@@ -232,8 +227,8 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 "content": "text element",
                 "offset-x": 0,
                 "offset-y": 0,
-                "width": 'auto',
-                "height": 'auto',
+                "width": 100,
+                "height": 30,
                 "z-index": 1,
                 "prop": {"font-type": "arial", "font-size": 12}
             },
@@ -275,16 +270,17 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     }
 
     function controlElement(e, id) {
-        if(isDragging) {
-            return;
+        if(isDelete['active'] && isDelete['id'] !== id) {
+            setDelete({
+                active: true,
+                id: id
+            });
+        }else {
+            setDelete({
+                active: !isDelete['active'],
+                id: isDelete['id'] ? null : id
+            });
         }
-
-        setDelete({
-            active: !isDelete['active'],
-            id: isDelete['id'] ? null : id
-        });
-
-        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
     }
 
     function deleteElement(id) {
@@ -319,6 +315,12 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         setUnderFont(!underfont);
     };
 
+    const style_temp = {
+        display: 'flex',
+        justifyContent: 'center',
+        textAlign: 'center',
+    }
+
 
     const renderedData = Object.entries(mappedData ? mappedData : {}).map(el => {
             if (el[0] === 'prev') {
@@ -327,7 +329,12 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
             return (
                 <Rnd
-                    style={style}
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        border: !isDragging && isDelete['active'] && el[0] === isDelete['id'] ? '3px solid red' : 'none',
+                    }}
                     default={{
                         x: el[1]['offset-x'],
                         y: el[1]['offset-y'],
@@ -335,12 +342,18 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         height: el[1]['height']
                     }}
                     key={el[0]}
-                    onMouseDown={e => {
 
-                        controlElement(e, el[0])
-                    }}
                     onDragStart={e => {
                         setDragging(true)
+                    }}
+                    onDrag={e => {
+                        if (!isDelete['active']) {
+                            return
+                        }
+                        setDelete({
+                            active: false,
+                            id: null
+                        })
                     }}
                     onDragStop={(e, data) => {
                         setDragging(false)
@@ -357,8 +370,6 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         updateData(updated);
                     }}
                     onResizeStop={(e, dir, ref, delta, position) => {
-                        // console.log(position)
-
                         const updated = {
                             ...mappedData,
                             [el[0]]: {
@@ -372,6 +383,18 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
                         updateData(updated);
                     }}
+
+                    onMouseDown={e => {
+                        // if(isDragging) return;
+
+                        // controlElement(e, el[0])
+
+                        setTimeout(()=>{
+                            if(isDragging) return;
+                            controlElement(e, el[0])
+                        },50);
+                    }}
+
                 >
                     {el[1]['type'] === 'text' ?
                         <input
@@ -432,7 +455,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         <h1 className={styles['dnd_h1']}>Drag and Drop</h1>
                         <Rnd
                             // className={styles['rnd_drag']}
-                            style={style}
+                            style={style_temp}
                             default={{
                                 x: 50,
                                 y: 85,
@@ -457,7 +480,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         </Rnd>
                         <Rnd
                             // className={styles['rnd_drag']}
-                            style={style}
+                            style={style_temp}
                             default={{
                                 x: 50,
                                 y: 140,
@@ -482,7 +505,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         </Rnd>
                         <Rnd
                             // className={styles['rnd_drag']}
-                            style={style}
+                            style={style_temp}
                             default={{
                                 x: 50,
                                 y: 191,
