@@ -34,6 +34,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         active: false,
         id: null,
     });
+    const [isDragging, setDragging] = useState(false);
+
     const [share, setShare] = useState(false);
     const [fontSize, setFontSize] = useState(14);
     const [boldfont, setBoldFont] = useState(false);
@@ -87,7 +89,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
             console.log(resumeDataJSON)
 
-            const parsedData = resumeDataJSON.reduce((obj, el) => {
+            const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
                     {
@@ -149,7 +151,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         for (let i = 0; i < filteredData.length; i++) {
             var element = filteredData[i];
             console.log(element);
-            if (element.type == "image") {
+            if (element.type === "image") {
                 element.content = element.content.split(',')[1];
             }
         }
@@ -318,6 +320,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }
 
     function controlElement(e, id) {
+        if(isDragging) {
+            return;
+        }
+
         setDelete({
             active: !isDelete['active'],
             id: isDelete['id'] ? null : id
@@ -327,6 +333,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }
 
     function deleteElement(id) {
+
         const updatedMap = {
             ...mappedData
         }
@@ -373,21 +380,15 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         height: el[1]['height']
                     }}
                     key={el[0]}
-                    onClick={e => {
-                        console.log(this)
-                        // if (el[1]['type'] === 'image') {
+                    onMouseDown={e => {
+
                         controlElement(e, el[0])
-                        // } else if(el[1]['type'] === 'text') {
-                        //
-                        // }
                     }}
-                    // onFocus={e => {
-                    //     if (el[1]['type'] === 'text') {
-                    //         controlElement(e, el[0])
-                    //     }
-                    // }}
+                    onDragStart={e => {
+                        setDragging(true)
+                    }}
                     onDragStop={(e, data) => {
-                        // console.log(data)
+                        setDragging(false)
 
                         const updated = {
                             ...mappedData,
@@ -630,7 +631,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         <button className={styles['saveButton']} onClick={() => encodeData(mappedData)}>
                             Save Resume
                         </button>
-                        <button classname={styles['closeButton']} onClick={() => {
+                        <button className={styles['closeButton']} onClick={() => {
                             download()
                         }}>Download Button
                         </button>
