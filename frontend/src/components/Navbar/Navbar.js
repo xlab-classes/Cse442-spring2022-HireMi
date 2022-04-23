@@ -30,7 +30,7 @@ const Navbar = ({auth}) => {
             body: string_body
         }).then((result) => result.json())
         .then((resultJson) => {
-            console.log(resultJson);
+            // console.log(resultJson);
 
             setName(resultJson.profile_name);
 
@@ -53,7 +53,7 @@ const Navbar = ({auth}) => {
             body: string_body
         }).then((result) => result.json())
         .then((resultJson) => {
-            console.log(resultJson);
+            // console.log(resultJson);
 
             setPic(resultJson.profile_picture);
 

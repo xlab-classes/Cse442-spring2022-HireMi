@@ -103,6 +103,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 )
             }, {prev: 0})
 
+            console.log(parsedData)
+
             setIncrement(parsedData['prev'] + 1);
             updateData(parsedData); // updates mapped data
         }
@@ -138,7 +140,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     // This function needs to be paired with the save using fetch API
     async function encodeData(formattedData) {
-        var filteredData = Object.values(formattedData).filter(el => {
+        const filteredData = Object.values(formattedData).filter(el => {
             if (typeof el === 'object') {
                 return el
             } else {
@@ -149,7 +151,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         // Upload filteredData to push it to the server
         const thumbnail = await capture();
         for (let i = 0; i < filteredData.length; i++) {
-            var element = filteredData[i];
+            const element = filteredData[i];
             console.log(element);
             if (element.type === "image") {
                 element.content = element.content.split(',')[1];
@@ -204,50 +206,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
-    }
-
-    function convertBase64(file) {
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(file);
-
-            fileReader.onload = () => {
-                resolve(fileReader.result);
-            };
-
-            fileReader.onerror = error => {
-                reject(error);
-            }
-        });
-    }
-
-    async function addImage(e) {
-        const currentPrev = increment;
-
-        const file = e.target.files[0];
-        const base64 = await convertBase64(file);
-
-        let img = new Image;
-        img.onload = () => {
-            const newData = {
-                ...mappedData,
-                [currentPrev]: {
-                    "type": "image",
-                    "offset-x": 0,
-                    "offset-y": 0,
-                    "width": img.width ? img.width : 100,
-                    "height": img.height ? img.height : 100,
-                    "z-index": 1,
-                    "content": base64,
-                    "prop": {}
-                },
-                prev: currentPrev
-            }
-
-            updateData(newData);
-            setIncrement(increment + 1);
-        }
-        img.src = base64
     }
 
     function convertBase64(file) {
