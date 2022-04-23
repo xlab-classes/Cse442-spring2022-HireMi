@@ -108,11 +108,13 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         loadingElements()
             .catch(console.error);
 
+        // renderData()
+
     }, []);
 
-    function renderData(rawData) {
+    function renderData() {
         // assume that we fetched the data successfully
-        const remapped = rawData["elements"].reduce(
+        const remapped = tempData["elements"].reduce(
             (obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
@@ -246,49 +248,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         img.src = base64
     }
 
-    function controlElement(e, id) {
-        setDelete({
-            active: !isDelete['active'],
-            id: isDelete['id'] ? null : id
-        });
-        // !isDelete['active'] ? e.target.style.border = '3px solid red' : e.target.style.border = 'none'
-    }
-
-    function deleteElement(id) {
-        const updatedMap = {
-            ...mappedData
-        }
-
-        delete updatedMap[id]
-
-        setDelete({
-            active: false,
-            id: null
-        });
-        updateData(updatedMap);
-    }
-
-    function renderData(rawData) {
-        const remapped = rawData["elements"].reduce(
-            (obj, el) => {
-                const id = obj['prev'] + 1;
-                return (
-                    {
-                        ...obj,
-                        prev: id,
-                        [id]: {
-                            ...el
-                        }
-                    }
-                )
-            }
-            , {prev: 0}
-        )
-
-        setIncrement(remapped['prev'] + 1);
-        updateData(remapped);
-    }
-
     function convertBase64(file) {
         return new Promise((resolve, reject) => {
             const fileReader = new FileReader();
@@ -415,6 +374,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     }}
                     key={el[0]}
                     onClick={e => {
+                        console.log(this)
                         // if (el[1]['type'] === 'image') {
                         controlElement(e, el[0])
                         // } else if(el[1]['type'] === 'text') {
@@ -469,8 +429,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 fontStyle: italfont ? 'italic' : 'normal',
                                 textDecorationLine: underfont ? 'underline' : 'none',
                                 border: 'none',
-                                textAlign: 'center',
-                                backgroundColor: 'grey'
+                                // textAlign: 'center',
                             }}
                             onChange={e => {
                                 const str = e.target.value;
