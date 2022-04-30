@@ -62,14 +62,14 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 setResume((resumeCountJSON.count + 1) + '-doc');
             }
             else {
-                console.log('resume_id', resume_id);
+                // console.log('resume_id', resume_id);
                 if (resumeCountJSON.count === resume_id - 1) {
-                    console.log('saving new doc', resume_id);
-                    encodeData([]);
+                    // console.log('saving new doc', resume_id);
+                    await encodeData([]);
                     return;
                 }
             }
-            console.log('loading elements', resume_id);
+            // console.log('loading elements', resume_id);
             const resumeData = await fetch('./backend/api/api.php/get_resume', {
                 method: 'POST',
                 headers: {
@@ -84,7 +84,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
             const resumeDataJSON = await resumeData.json();
 
-            console.log('resumeDataJSON', resumeDataJSON);
+            // console.log('resumeDataJSON', resumeDataJSON);
 
 
             const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
@@ -101,16 +101,14 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 )
             }, {prev: 0})
 
-            console.log('parsedData', parsedData);
-
             setIncrement(parsedData['prev'] + 1);
             updateData(parsedData); // updates mapped data
 
             if(resume.split('-')[1] === 'template') {
-                encodeData(parsedData, resumeCountJSON.count+1);
+                await encodeData(parsedData, resumeCountJSON.count+1);
             }
             else{
-                encodeData(parsedData);
+                await encodeData(parsedData);
             }
         }
 
@@ -142,7 +140,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
     // This function needs to be paired with the save using fetch API
     async function encodeData(formattedData, resumeID = -1) {
-        console.log('encodeData');
         if(resumeID === -1){
             resumeID = parseInt(resume.split('-')[0]);
         }
@@ -156,14 +153,14 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         // Upload filteredData to push it to the server
         const thumbnail = await capture();
-        for (let i = 0; i < filteredData.length; i++) {
-            const element = filteredData[i];
-            console.log(element);
-            if (element.type === "image") {
-                element.content = element.content.split(',')[1];
-            }
-        }
-        return saveElements(filteredData, thumbnail.split(',')[1], resumeID); //pass only data, no prefix
+        const processed = filteredData.map((el) => {
+
+            let result = {...el};
+            result.content = el['type'] === "image" ? el['content'].split(',')[1] : el['content'];
+            return result;
+        })
+
+        return saveElements(processed, thumbnail.split(',')[1], resumeID); //pass only data, no prefix
     }
 
     async function saveElements(encodedData, thumbnail, resumeID) {
