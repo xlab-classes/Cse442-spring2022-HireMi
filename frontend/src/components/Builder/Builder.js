@@ -7,7 +7,8 @@ import { Rnd } from "react-rnd";
 import { sampleRawData } from "./hardCodedData.js";
 import html2canvas from 'html2canvas';
 import { parse } from "@fortawesome/fontawesome-svg-core";
-
+import Button from '@material-ui/core/Button';
+import { useRef } from 'react/cjs/react.production.min';
 const styling = makeStyles({
     container: {
         height: "50%",
@@ -274,7 +275,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         }
         img.src = base64
     }
-
+    const addImgRef = useRef();
     function controlElement(e, id) {
         if(isDelete['active'] && isDelete['id'] !== id) {
             setDelete({
@@ -382,7 +383,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         display: 'flex',
                         justifyContent: 'center',
                         textAlign: 'center',
-                        border: !isDragging && isDelete['active'] && el[0] === isDelete['id'] ? '3px solid red' : 'none',
+                        border: !isDragging && isDelete['active'] && el[0] === isDelete['id'] ? '3px solid #d9ceeb' : 'none',
                     }}
                     default={{
                         x: el[1]['offset-x'],
@@ -502,90 +503,16 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                     <div className={styles['dnd']}>
                         {/* <div className={columns.container}> */}
                         <h1 className={styles['dnd_h1']}>Drag and Drop</h1>
-                        <Rnd
-                            // className={styles['rnd_drag']}
-                            style={style_temp}
-                            default={{
-                                x: 50,
-                                y: 85,
-                                width: 213,
-                                height: 43
-                            }}
-                        >
-                            <input
-                                type="text"
-                                defaultValue={'Your Name'}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    fontSize: fontSize,
-                                    fontWeight: boldfont ? 'bold' : 'normal',
-                                    fontStyle: italfont ? 'italic' : 'normal',
-                                    textDecorationLine: underfont ? 'underline' : 'none',
-                                    border: 'none',
-                                    textAlign: 'center'
-                                }}
-                            />
-                        </Rnd>
-                        <Rnd
-                            // className={styles['rnd_drag']}
-                            style={style_temp}
-                            default={{
-                                x: 50,
-                                y: 140,
-                                width: 213,
-                                height: 43
-                            }}
-                        >
-                            <input
-                                type="text"
-                                defaultValue={'Education'}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    fontSize: fontSize,
-                                    fontWeight: boldfont ? 'bold' : 'normal',
-                                    fontStyle: italfont ? 'italic' : 'normal',
-                                    textDecorationLine: underfont ? 'underline' : 'none',
-                                    border: 'none',
-                                    textAlign: 'center'
-                                }}
-                            />
-                        </Rnd>
-                        <Rnd
-                            // className={styles['rnd_drag']}
-                            style={style_temp}
-                            default={{
-                                x: 50,
-                                y: 191,
-                                width: 213,
-                                height: 43
-                            }}
-                        >
-                            <input
-                                type="text"
-                                defaultValue={'Experience'}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    fontSize: fontSize,
-                                    fontWeight: boldfont ? 'bold' : 'normal',
-                                    fontStyle: italfont ? 'italic' : 'normal',
-                                    textDecorationLine: underfont ? 'underline' : 'none',
-                                    border: 'none',
-                                    textAlign: 'center'
-                                }}
-                            />
-                        </Rnd>
                         <div className={styles['left_buttons_area']}>
                             <button onClick={addText} className={styles['add_text_button']}>
                                 Add Text
                             </button>
-                            <input type='file' className={styles['add_image_button']} accept="image/*" onChange={addImage} />
+                            <button className={styles['add_image_button']} onClick={() => addImgRef.current.click()}>Upload Image</button>
+                            <input type='file' id={styles['add_image_button']} accept="image/*" onChange={addImage} ref={addImgRef} multiple={false} hidden/>
                             {isDelete['active'] ? <button className={styles['delete_element_button']} onClick={() => deleteElement(isDelete['id'])}>
-                                delete element (id: {isDelete["id"]} )
-                            </button> : <button disabled={true}>
-                                delete element (id: {isDelete["id"]} )
+                                Delete element 
+                            </button> : <button className={styles['delete_disabled']} disabled={true}>
+                                Delete element 
                             </button>}
                         </div>
 
@@ -628,41 +555,58 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                                 margin: '0 auto'
                             }}>
                                 <h3 className={styles['txt_h3']}>Text</h3>
-                                <input
-                                    className={styles["fontSize_input"]}
-                                    defaultValue={fontSize}
-                                    onChange={renderedData.entries[1]}
-                                />
+                                <Box className={styles['fontSize_box']} sx={{
+                                    display: "flex",
+                                    width: "5vh",
+                                    height: "5vh"
+                                }}>
                                 {isFont['active'] ? <button className={styles['increase']} onClick={() => {
                                     increaseFS(isFont['id']);
-                                }}>A+ (id: {isFont["id"]})
-                                </button> : <button disabled={true}>
-                                    A+ (id: {isFont["id"]})
+                                }}>A+ 
+                                </button> : <button className={styles['increase_disabled']} disabled={true}>
+                                    A+ 
                                 </button>}
+                                <input
+                                    className={styles["fontSize_input"]}
+                                    value={fontSize}
+                                    onChange={renderedData.entries[1]}
+                                />
                                 {isFont['active'] ? <button className={styles['decrease']} onClick={() => {
                                     decreaseFS(isFont['id']);
-                                }}>A- (id: {isFont["id"]})
-                                </button> : <button disabled={true}>
-                                    A- (id: {isFont["id"]})
+                                }}>A- 
+                                </button> : <button className={styles['decrease_disabled']} disabled={true}>
+                                    A- 
                                 </button>}
+                                </Box>
+                                <Box className={styles['apply_box']} sx={{
+                                    display: "flex",
+                                    justifyContent:'center',
+                                }}>
+                                <button className={styles['apply']}>Apply</button>
+                                </Box>
+                                <Box className={styles['text_buttons']} sx={{
+                                    display: "flex",
+                                    justifyContent:'center'
+                                }}>
                                 {isFont['active'] ? <button className={styles['bold']} onClick={() => {
                                     boldF(isFont['id']);
-                                }}>Bold (id: {isFont["id"]})
-                                </button> : <button disabled={true}>
-                                    Bold (id: {isFont["id"]})
+                                }}>Bold 
+                                </button> : <button className={styles['bold_disabled']} disabled={true}>
+                                    Bold 
                                 </button>}
                                 {isFont['active'] ? <button className={styles['italicized']} onClick={() => {
                                     italF(isFont['id']);
-                                }}>Italic (id: {isFont["id"]})
-                                </button> : <button disabled={true}>
-                                    Italic (id: {isFont["id"]})
+                                }}>Italic 
+                                </button> : <button className={styles['italicized_disabled']} disabled={true}>
+                                    Italic 
                                 </button>}
                                 {isFont['active'] ? <button className={styles['underline']} onClick={() => {
                                     underF(isFont['id']);
-                                }}>U (id: {isFont["id"]})
-                                </button> : <button disabled={true}>
-                                    U (id: {isFont["id"]})
+                                }}>U 
+                                </button> : <button className={styles['underline_disabled']} disabled={true}>
+                                    U 
                                 </button>}
+                                </Box>
                             </Box>
                         </div>
                         <div className={styles['right_buttons_area']}>

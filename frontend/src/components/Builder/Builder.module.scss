@@ -112,7 +112,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 6px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -130,7 +130,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 6px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -148,7 +148,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 10px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -166,7 +166,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 10px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -184,7 +184,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 10px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -199,6 +199,115 @@
 }
 
 /**************************************/
+/*buttons for font_disabled*/
+/**************************************/
+.increase_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 6px 18px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.increase_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+
+.decrease_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 6px 18.5px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.decrease_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+
+.bold_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 10px 18px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.bold_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+
+.italicized_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 10px 18px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.italicized_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+
+.underline_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 10px 18px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.underline_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+.apply {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 10px 27px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.apply:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+/**************************************/
 /*right buttons area*/
 /**************************************/
 
@@ -211,6 +320,15 @@
     height: 35vh;
 }
 
+.fontSize_input {
+    text-align: center;
+    width: 10vh;
+    padding: 6px 6.5px;
+    margin: 4px 2px;
+}
+.txt_h3 {
+    text-align: center;
+}
 /**************************************/
 /*button for close*/
 /**************************************/
@@ -220,8 +338,9 @@
     color: white;
     padding: 6px 6.5px;
     text-align: center;
-    font-size: 12px;
-    margin: 4px 2px;
+    font-size: 16px;
+    margin: 10px 50px;
+    // padding: 10px 50px;
     transition: 0.3s;
     border-radius: 4px;
     box-shadow: 1px 2px #A4938F;
@@ -241,8 +360,9 @@
     color: black;
     padding: 6px 6.5px;
     text-align: center;
-    font-size: 12px;
-    margin: 4px 2px;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 50px;
     transition: 0.3s;
     border-radius: 4px;
     box-shadow: 1px 2px #A4938F;
@@ -261,10 +381,11 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    // padding: 6px 6.5px;
     text-align: center;
-    font-size: 12px;
-    margin: 4px 2px;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 50px;
     transition: 0.3s;
     border-radius: 4px;
     box-shadow: 1px 2px #A4938F;
@@ -283,10 +404,10 @@
 .left_buttons_area {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    // justify-content: space-around;
     align-items: center;
     width: 320px;
-    height: 55vh;
+    height: 85vh;
     position: absolute;
     bottom: 0px;
 }
@@ -297,8 +418,9 @@
     color: black;
     padding: 6px 6.5px;
     text-align: center;
-    font-size: 12px;
-    margin: 4px 2px;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 50px;
     transition: 0.3s;
     border-radius: 4px;
     box-shadow: 1px 2px #A4938F;
@@ -317,11 +439,38 @@
     color: black;
     padding: 6px 6.5px;
     text-align: center;
-    font-size: 12px;
-    margin: 4px 2px;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 30px;
     transition: 0.3s;
     border-radius: 4px;
     box-shadow: 1px 2px #A4938F;
+}
+
+.delete_element_button:hover {
+    background-color: #d0d0d0;
+    color: black;
+    cursor: pointer
+}
+
+.delete_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 6px 6.5px;
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 30px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.delete_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+    cursor: pointer
 }
 
 .add_image_button {
@@ -330,8 +479,9 @@
     color: black;
     padding: 6px 6.5px;
     text-align: center;
-    font-size: 12px;
-    margin: 4px 2px;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 30px;
     transition: 0.3s;
     border-radius: 4px;
     box-shadow: 1px 2px #A4938F;
