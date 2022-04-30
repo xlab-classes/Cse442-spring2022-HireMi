@@ -39,31 +39,37 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         const loadingElements = async () => {
 
+            const resume_id = parseInt(resume.split('-')[0]);
+            //This gets the number of resumes in entire database, not just the ones the user owns.
+            const resumeCount = await fetch('./backend/api/api.php/resume_count', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + auth?.access_token
+                },
+                body: JSON.stringify({
+                    'id': auth?.id
+                })
+            }).catch(err => {
+                console.error(err)
+            });
+
+            const resumeCountJSON = await resumeCount.json();
+
             //Checks if loading resume is a template.
             //If it is, then we create a new resume that is owned by user.
             if (resume.split('-')[1] === 'template') {
-                //This gets the number of resumes in entire database, not just the ones the user owns.
-                const resumeCount = await fetch('./backend/api/api.php/resume_count', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + auth?.access_token
-                    },
-                    body: JSON.stringify({
-                        'id': auth?.id
-                    })
-                }).catch(err => {
-                    console.error(err)
-                });
-
-                const resumeCountJSON = await resumeCount.json();
                 setResume((resumeCountJSON.count + 1) + '-doc');
-                // immediate save doesn't work, but there's possibility of error if
-                // separate users save at the same time
-                // encodeData(mappedData)
             }
-
-
+            else {
+                console.log('resume_id', resume_id);
+                if (resumeCountJSON.count === resume_id - 1) {
+                    console.log('saving new doc', resume_id);
+                    encodeData([]);
+                    return;
+                }
+            }
+            console.log('loading elements', resume_id);
             const resumeData = await fetch('./backend/api/api.php/get_resume', {
                 method: 'POST',
                 headers: {
@@ -72,13 +78,14 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 },
                 body: JSON.stringify({
                     'id': auth?.id,
-                    'resume_id': parseInt(resume.split('-')[0])
+                    'resume_id': resume_id
                 })
-            })
+            }).catch(err => console.log(err));
 
             const resumeDataJSON = await resumeData.json();
 
-            console.log(resumeDataJSON)
+            console.log('resumeDataJSON', resumeDataJSON);
+
 
             const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
                 const id = obj['prev'] + 1;
@@ -94,10 +101,17 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 )
             }, {prev: 0})
 
-            console.log(parsedData)
+            console.log('parsedData', parsedData);
 
             setIncrement(parsedData['prev'] + 1);
             updateData(parsedData); // updates mapped data
+
+            if(resume.split('-')[1] === 'template') {
+                encodeData(parsedData, resumeCountJSON.count+1);
+            }
+            else{
+                encodeData(parsedData);
+            }
         }
 
         loadingElements()
@@ -119,7 +133,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     }
                 )
             }
-            , {prev: 0}
+            , { prev: 0 }
         )
 
         setIncrement(remapped['prev'] + 1);
@@ -127,7 +141,11 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }
 
     // This function needs to be paired with the save using fetch API
-    async function encodeData(formattedData) {
+    async function encodeData(formattedData, resumeID = -1) {
+        console.log('encodeData');
+        if(resumeID === -1){
+            resumeID = parseInt(resume.split('-')[0]);
+        }
         const filteredData = Object.values(formattedData).filter(el => {
             if (typeof el === 'object') {
                 return el
@@ -145,10 +163,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 element.content = element.content.split(',')[1];
             }
         }
-        return saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
+        return saveElements(filteredData, thumbnail.split(',')[1], resumeID); //pass only data, no prefix
     }
 
-    async function saveElements(encodedData, thumbnail) {
+    async function saveElements(encodedData, thumbnail, resumeID) {
         const result = await fetch('./backend/api/api.php/resume', {
             method: 'POST',
             headers: {
@@ -159,7 +177,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 'id': auth?.id,
                 'thumbnail': thumbnail,
                 'data': {
-                    'resume_id': parseInt(resume.split('-')[0]),
+                    'resume_id': resumeID,
                     'share': 1,
                     'elements': encodedData
                 }
@@ -227,7 +245,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 "width": 100,
                 "height": 30,
                 "z-index": 1,
-                "prop": {"font-type": "arial", "font-size": 12}
+                "prop": { "font-type": "arial", "font-size": 12 }
             },
             prev: currentPrev
         }
@@ -352,9 +370,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
 
     const renderedData = Object.entries(mappedData ? mappedData : {}).map(el => {
-            if (el[0] === 'prev') {
-                return null;
-            }
+        if (el[0] === 'prev') {
+            return null;
+        }
 
             return (
                 <Rnd
@@ -387,36 +405,36 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     onDragStop={(e, data) => {
                         setDragging(false)
 
-                        const updated = {
-                            ...mappedData,
-                            [el[0]]: {
-                                ...mappedData[el[0]],
-                                'offset-x': data['x'],
-                                'offset-y': data['y'],
-                            }
+                    const updated = {
+                        ...mappedData,
+                        [el[0]]: {
+                            ...mappedData[el[0]],
+                            'offset-x': data['x'],
+                            'offset-y': data['y'],
                         }
+                    }
 
-                        updateData(updated);
-                    }}
-                    onResizeStop={(e, dir, ref, delta, position) => {
-                        const updated = {
-                            ...mappedData,
-                            [el[0]]: {
-                                ...mappedData[el[0]],
-                                width: mappedData[el[0]]['width'] + delta['width'],
-                                height: mappedData[el[0]]['height'] + delta['height'],
-                                'offset-x': position['x'],
-                                'offset-y': position['y'],
-                            }
+                    updateData(updated);
+                }}
+                onResizeStop={(e, dir, ref, delta, position) => {
+                    const updated = {
+                        ...mappedData,
+                        [el[0]]: {
+                            ...mappedData[el[0]],
+                            width: mappedData[el[0]]['width'] + delta['width'],
+                            height: mappedData[el[0]]['height'] + delta['height'],
+                            'offset-x': position['x'],
+                            'offset-y': position['y'],
                         }
+                    }
 
-                        updateData(updated);
-                    }}
+                    updateData(updated);
+                }}
 
-                    onMouseDown={e => {
-                        // if(isDragging) return;
+                onMouseDown={e => {
+                    // if(isDragging) return;
 
-                        // controlElement(e, el[0])
+                    // controlElement(e, el[0])
 
                         setTimeout(() => {
                             if (isDragging) return;
@@ -442,42 +460,39 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             onChange={e => {
                                 const str = e.target.value;
 
-                                const updated = {
-                                    ...mappedData,
-                                    [el[0]]: {
-                                        ...mappedData[el[0]],
-                                        content: str
-                                    }
+                            const updated = {
+                                ...mappedData,
+                                [el[0]]: {
+                                    ...mappedData[el[0]],
+                                    content: str
                                 }
+                            }
 
-                                updateData(updated);
-                            }}
-                        /> :
-                        <img src={el[1]['content']} alt={''} draggable={false}
-                             style={{
-                                 width: '100%',
-                                 height: '100%',
-                             }}
-                        />
-                    }
-                </Rnd>
-            )
+                            updateData(updated);
+                        }}
+                    /> :
+                    <img src={el[1]['content']} alt={''} draggable={false}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                        }}
+                    />
+                }
+            </Rnd>
+        )
 
-        }
+    }
     );
 
 
     return (
         <div className={styles['page-root']}>
-            {/* <Grid container direction="row" spacing={1}>
-                <Grid item xs> */}
             <div
                 style={{
                     display: 'grid',
                     gridTemplateColumns: '320px 629px 320px',
                     justifyContent: 'space-around'
                 }}>
-
                 <aside>
                     <div className={styles['dnd']}>
                         {/* <div className={columns.container}> */}
@@ -500,12 +515,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         </div>
 
                     </div>
-                    {/* </div> */}
-
                 </aside>
-
-                {/* </Grid>
-                <Grid item xs={5}> */}
                 <section>
                     <div className={styles['middle']}>
                         <div className={columns.container}>
@@ -531,12 +541,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         </div>
                     </div>
                 </section>
-
-                {/* </Grid>
-                <Grid item xs> */}
                 <aside>
                     <div className={styles['cus']}>
-                        {/* <div className={columns.container}> */}
                         <h2 className={styles['cus_h2']}>Customize!</h2>
                         <div className={styles['textEdit']}>
                             <Box sx={{
@@ -579,7 +585,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                             if (mappedData[isSelect['id']]['type'] !== 'text') {
                                                 return
                                             }
-                                            // console.log(e.target.value)
                                             const updatedMap = {
                                                 ...mappedData,
                                             }
@@ -667,13 +672,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             </button>
                         </div>
                     </div>
-                    {/* </div> */}
                 </aside>
             </div>
-
-
-            {/* </Grid>
-            </Grid> */}
         </div>
     );
 
