@@ -43,31 +43,37 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
         const loadingElements = async () => {
 
+            const resume_id = parseInt(resume.split('-')[0]);
+            //This gets the number of resumes in entire database, not just the ones the user owns.
+            const resumeCount = await fetch('./backend/api/api.php/resume_count', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + auth?.access_token
+                },
+                body: JSON.stringify({
+                    'id': auth?.id
+                })
+            }).catch(err => {
+                console.error(err)
+            });
+
+            const resumeCountJSON = await resumeCount.json();
+
             //Checks if loading resume is a template.
             //If it is, then we create a new resume that is owned by user.
             if (resume.split('-')[1] === 'template') {
-                //This gets the number of resumes in entire database, not just the ones the user owns.
-                const resumeCount = await fetch('./backend/api/api.php/resume_count', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + auth?.access_token
-                    },
-                    body: JSON.stringify({
-                        'id': auth?.id
-                    })
-                }).catch(err => {
-                    console.error(err)
-                });
-
-                const resumeCountJSON = await resumeCount.json();
                 setResume((resumeCountJSON.count + 1) + '-doc');
-                // immediate save doesn't work, but there's possibility of error if
-                // separate users save at the same time
-                // encodeData(mappedData)
             }
-
-
+            else {
+                console.log('resume_id', resume_id);
+                if (resumeCountJSON.count === resume_id - 1) {
+                    console.log('saving new doc', resume_id);
+                    encodeData([]);
+                    return;
+                }
+            }
+            console.log('loading elements', resume_id);
             const resumeData = await fetch('./backend/api/api.php/get_resume', {
                 method: 'POST',
                 headers: {
@@ -76,32 +82,49 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 },
                 body: JSON.stringify({
                     'id': auth?.id,
-                    'resume_id': parseInt(resume.split('-')[0])
+                    'resume_id': resume_id
                 })
-            })
+            }).catch(err => console.log(err));
 
             const resumeDataJSON = await resumeData.json();
 
-            console.log(resumeDataJSON)
+            console.log('resumeDataJSON', resumeDataJSON);
+
 
             const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
                 const id = obj['prev'] + 1;
-                return (
-                    {
-                        ...obj,
-                        prev: id,
-                        [id]: {
-                            ...el,
-                            'content': el['type'] === "image" ? 'data:image/png;base64,' + el['content'] : el['content']
-                        }
-                    }
-                )
-            }, {prev: 0})
+                console.log("el['type']", el['type']);
+                let desired = '';
+                if(el['type'] === "image"){
+                    desired = 'data:image/png;base64,' + el['content'];
+                    console.log('desired1',desired);
+                }
+                else{
+                    desired = el['content'];
+                    console.log('desired2',desired);
+                }
+                console.log('el', el);
+                const result = {...obj, prev: id, [id]: { ...el, 'content': desired}};
+                console.log('id', id);
+                console.log('result[id]',result[id]);
+                console.log('result[id].content',result[id].content);
+                console.log('result[id][\'content\']',result[id]['content']);
+                console.log('result', result);
+                // result[id].content = desired;
+                return result
+            }, { prev: 0 })
 
-            console.log(parsedData)
+            console.log('parsedData', parsedData);
 
             setIncrement(parsedData['prev'] + 1);
             updateData(parsedData); // updates mapped data
+
+            if(resume.split('-')[1] === 'template') {
+                encodeData(parsedData, resumeCountJSON.count+1);
+            }
+            else{
+                encodeData(parsedData);
+            }
         }
 
         loadingElements()
@@ -123,7 +146,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                     }
                 )
             }
-            , {prev: 0}
+            , { prev: 0 }
         )
 
         setIncrement(remapped['prev'] + 1);
@@ -131,7 +154,11 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     }
 
     // This function needs to be paired with the save using fetch API
-    async function encodeData(formattedData) {
+    async function encodeData(formattedData, resumeID = -1) {
+        console.log('encodeData');
+        if(resumeID === -1){
+            resumeID = parseInt(resume.split('-')[0]);
+        }
         const filteredData = Object.values(formattedData).filter(el => {
             if (typeof el === 'object') {
                 return el
@@ -149,10 +176,10 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 element.content = element.content.split(',')[1];
             }
         }
-        return saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
+        return saveElements(filteredData, thumbnail.split(',')[1], resumeID); //pass only data, no prefix
     }
 
-    async function saveElements(encodedData, thumbnail) {
+    async function saveElements(encodedData, thumbnail, resumeID) {
         const result = await fetch('./backend/api/api.php/resume', {
             method: 'POST',
             headers: {
@@ -163,7 +190,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 'id': auth?.id,
                 'thumbnail': thumbnail,
                 'data': {
-                    'resume_id': parseInt(resume.split('-')[0]),
+                    'resume_id': resumeID,
                     'share': 1,
                     'elements': encodedData
                 }
@@ -188,7 +215,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         const response = await encodeData(mappedData); //should save before download
         const responseText = await response.text();
         console.log(responseText);
-        
+
         //resume.split('-')[0] returns a string of an int, which is okay in this case
         const url = './backend/api/' + resume.split('-')[0] + '.pdf';
 
@@ -231,7 +258,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                 "width": 100,
                 "height": 30,
                 "z-index": 1,
-                "prop": {"font-type": "arial", "font-size": 12}
+                "prop": { "font-type": "arial", "font-size": 12 }
             },
             prev: currentPrev
         }
@@ -271,12 +298,12 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     }
 
     function controlElement(e, id) {
-        if(isDelete['active'] && isDelete['id'] !== id) {
+        if (isDelete['active'] && isDelete['id'] !== id) {
             setDelete({
                 active: true,
                 id: id
             });
-        }else {
+        } else {
             setDelete({
                 active: !isDelete['active'],
                 id: isDelete['id'] ? null : id
@@ -324,118 +351,118 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
 
     const renderedData = Object.entries(mappedData ? mappedData : {}).map(el => {
-            if (el[0] === 'prev') {
-                return null;
-            }
-
-            return (
-                <Rnd
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        border: !isDragging && isDelete['active'] && el[0] === isDelete['id'] ? '3px solid red' : 'none',
-                    }}
-                    default={{
-                        x: el[1]['offset-x'],
-                        y: el[1]['offset-y'],
-                        width: el[1]['width'],
-                        height: el[1]['height']
-                    }}
-                    key={el[0]}
-
-                    onDragStart={e => {
-                        setDragging(true)
-                    }}
-                    onDrag={e => {
-                        if (!isDelete['active']) {
-                            return
-                        }
-                        setDelete({
-                            active: false,
-                            id: null
-                        })
-                    }}
-                    onDragStop={(e, data) => {
-                        setDragging(false)
-
-                        const updated = {
-                            ...mappedData,
-                            [el[0]]: {
-                                ...mappedData[el[0]],
-                                'offset-x': data['x'],
-                                'offset-y': data['y'],
-                            }
-                        }
-
-                        updateData(updated);
-                    }}
-                    onResizeStop={(e, dir, ref, delta, position) => {
-                        const updated = {
-                            ...mappedData,
-                            [el[0]]: {
-                                ...mappedData[el[0]],
-                                width: mappedData[el[0]]['width'] + delta['width'],
-                                height: mappedData[el[0]]['height'] + delta['height'],
-                                'offset-x': position['x'],
-                                'offset-y': position['y'],
-                            }
-                        }
-
-                        updateData(updated);
-                    }}
-
-                    onMouseDown={e => {
-                        // if(isDragging) return;
-
-                        // controlElement(e, el[0])
-
-                        setTimeout(()=>{
-                            if(isDragging) return;
-                            controlElement(e, el[0])
-                        },50);
-                    }}
-
-                >
-                    {el[1]['type'] === 'text' ?
-                        <input
-                            type="text"
-                            defaultValue={el[1]['content']}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                fontSize: fontSize,
-                                fontWeight: boldfont ? 'bold' : 'normal',
-                                fontStyle: italfont ? 'italic' : 'normal',
-                                textDecorationLine: underfont ? 'underline' : 'none',
-                                border: 'none',
-                                // textAlign: 'center',
-                            }}
-                            onChange={e => {
-                                const str = e.target.value;
-
-                                const updated = {
-                                    ...mappedData,
-                                    [el[0]]: {
-                                        ...mappedData[el[0]],
-                                        content: str
-                                    }
-                                }
-
-                                updateData(updated);
-                            }}
-                        /> :
-                        <img src={el[1]['content']} alt={''} draggable={false}
-                             style={{
-                                 width: '100%',
-                                 height: '100%',
-                             }}
-                        />
-                    }
-                </Rnd>
-            )
-
+        if (el[0] === 'prev') {
+            return null;
         }
+
+        return (
+            <Rnd
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    border: !isDragging && isDelete['active'] && el[0] === isDelete['id'] ? '3px solid red' : 'none',
+                }}
+                default={{
+                    x: el[1]['offset-x'],
+                    y: el[1]['offset-y'],
+                    width: el[1]['width'],
+                    height: el[1]['height']
+                }}
+                key={el[0]}
+
+                onDragStart={e => {
+                    setDragging(true)
+                }}
+                onDrag={e => {
+                    if (!isDelete['active']) {
+                        return
+                    }
+                    setDelete({
+                        active: false,
+                        id: null
+                    })
+                }}
+                onDragStop={(e, data) => {
+                    setDragging(false)
+
+                    const updated = {
+                        ...mappedData,
+                        [el[0]]: {
+                            ...mappedData[el[0]],
+                            'offset-x': data['x'],
+                            'offset-y': data['y'],
+                        }
+                    }
+
+                    updateData(updated);
+                }}
+                onResizeStop={(e, dir, ref, delta, position) => {
+                    const updated = {
+                        ...mappedData,
+                        [el[0]]: {
+                            ...mappedData[el[0]],
+                            width: mappedData[el[0]]['width'] + delta['width'],
+                            height: mappedData[el[0]]['height'] + delta['height'],
+                            'offset-x': position['x'],
+                            'offset-y': position['y'],
+                        }
+                    }
+
+                    updateData(updated);
+                }}
+
+                onMouseDown={e => {
+                    // if(isDragging) return;
+
+                    // controlElement(e, el[0])
+
+                    setTimeout(() => {
+                        if (isDragging) return;
+                        controlElement(e, el[0])
+                    }, 50);
+                }}
+
+            >
+                {el[1]['type'] === 'text' ?
+                    <input
+                        type="text"
+                        defaultValue={el[1]['content']}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            fontSize: fontSize,
+                            fontWeight: boldfont ? 'bold' : 'normal',
+                            fontStyle: italfont ? 'italic' : 'normal',
+                            textDecorationLine: underfont ? 'underline' : 'none',
+                            border: 'none',
+                            // textAlign: 'center',
+                        }}
+                        onChange={e => {
+                            const str = e.target.value;
+
+                            const updated = {
+                                ...mappedData,
+                                [el[0]]: {
+                                    ...mappedData[el[0]],
+                                    content: str
+                                }
+                            }
+
+                            updateData(updated);
+                        }}
+                    /> :
+                    <img src={el[1]['content']} alt={''} draggable={false}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                        }}
+                    />
+                }
+            </Rnd>
+        )
+
+    }
     );
 
 
