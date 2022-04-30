@@ -90,40 +90,29 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
             console.log('resumeDataJSON', resumeDataJSON);
 
-
             const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
                 const id = obj['prev'] + 1;
-                console.log("el['type']", el['type']);
-                let desired = '';
-                if(el['type'] === "image"){
-                    desired = 'data:image/png;base64,' + el['content'];
-                    console.log('desired1',desired);
-                }
-                else{
-                    desired = el['content'];
-                    console.log('desired2',desired);
-                }
-                console.log('el', el);
-                const result = {...obj, prev: id, [id]: { ...el, 'content': desired}};
-                console.log('id', id);
-                console.log('result[id]',result[id]);
-                console.log('result[id].content',result[id].content);
-                console.log('result[id][\'content\']',result[id]['content']);
-                console.log('result', result);
-                // result[id].content = desired;
-                return result
-            }, { prev: 0 })
+                return (
+                    {
+                        ...obj,
+                        prev: id,
+                        [id]: {
+                            ...el,
+                            'content': el['type'] === "image" ? 'data:image/png;base64,' + el['content'] : el['content']
+                        }
+                    }
+                )
+            }, {prev: 0})
 
-            console.log('parsedData', parsedData);
 
             setIncrement(parsedData['prev'] + 1);
             updateData(parsedData); // updates mapped data
 
             if(resume.split('-')[1] === 'template') {
-                encodeData(parsedData, resumeCountJSON.count+1);
+                await encodeData(parsedData, resumeCountJSON.count+1);
             }
             else{
-                encodeData(parsedData);
+                await encodeData(parsedData);
             }
         }
 
@@ -156,6 +145,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
     // This function needs to be paired with the save using fetch API
     async function encodeData(formattedData, resumeID = -1) {
         console.log('encodeData');
+        console.log('formattedData',formattedData);
         if(resumeID === -1){
             resumeID = parseInt(resume.split('-')[0]);
         }
@@ -169,14 +159,19 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
         // Upload filteredData to push it to the server
         const thumbnail = await capture();
-        for (let i = 0; i < filteredData.length; i++) {
-            const element = filteredData[i];
-            console.log(element);
-            if (element.type === "image") {
-                element.content = element.content.split(',')[1];
-            }
-        }
-        return saveElements(filteredData, thumbnail.split(',')[1], resumeID); //pass only data, no prefix
+
+        // const processed = [...filteredData];
+
+        const processed = filteredData.map((el) => {
+
+            let result = {...el};
+            result.content = el['type'] === "image" ? el['content'].split(',')[1] : el['content'];
+            return result;
+        })
+
+        console.log(processed);
+
+        return saveElements(processed, thumbnail.split(',')[1], resumeID); //pass only data, no prefix
     }
 
     async function saveElements(encodedData, thumbnail, resumeID) {
