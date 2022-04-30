@@ -185,10 +185,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         });
 
         return result;
-        // Not need since output isn't json and just confirms save.
-        // .then((resultJson) => {
-        //     console.log("Successfully saved resume.",resultJson);
-        // })
     }
 
     const capture = async () => {
