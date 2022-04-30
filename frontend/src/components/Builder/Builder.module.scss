@@ -3,13 +3,15 @@
 // Builder
 .page-root {
     @include theme.app-body;
+    padding-top: 0;
 }
 
 /**************************************/
 /* column text for dnd and cus */
 /**************************************/
 /*change the header name to class names*/
-.dnd_h1, .cus_h2 {
+.dnd_h1,
+.cus_h2 {
     font-family: 'Lato', sans-serif;
     // margin: 30px auto;
     width: 100%;
@@ -110,7 +112,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 6px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -128,7 +130,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 6px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -146,7 +148,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 10px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -164,7 +166,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 10px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -182,7 +184,7 @@
     background: #d9ceeb;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 10px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -197,13 +199,13 @@
 }
 
 /**************************************/
-/*button for close*/
+/*buttons for font_disabled*/
 /**************************************/
-.closeButton {
-    background: #d9ceeb;
+.increase_disabled {
+    background: #DBDBDB;
     border: none;
     color: black;
-    padding: 6px 6.5px;
+    padding: 6px 18px;
     text-align: center;
     font-size: 12px;
     margin: 4px 2px;
@@ -212,7 +214,281 @@
     box-shadow: 1px 2px #A4938F;
 }
 
-.closeButton:hover {
+.increase_disabled:hover {
     background-color: #d0d0d0;
     color: black;
+}
+
+.decrease_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 6px 18.5px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.decrease_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+
+.bold_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 10px 18px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.bold_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+
+.italicized_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 10px 18px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.italicized_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+
+.underline_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 10px 18px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.underline_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+.apply {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 10px 27px;
+    text-align: center;
+    font-size: 12px;
+    margin: 4px 2px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.apply:hover {
+    background-color: #d0d0d0;
+    color: black;
+}
+/**************************************/
+/*right buttons area*/
+/**************************************/
+
+.right_buttons_area {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 35vh;
+}
+
+.fontSize_input {
+    text-align: center;
+    width: 10vh;
+    padding: 6px 6.5px;
+    margin: 4px 2px;
+}
+.txt_h3 {
+    text-align: center;
+}
+/**************************************/
+/*button for close*/
+/**************************************/
+.close_button {
+    background: #ea1537;
+    border: none;
+    color: white;
+    padding: 6px 6.5px;
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 50px;
+    // padding: 10px 50px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.close_button:hover {
+    filter: drop-shadow(16px 16px 20px red) invert(75%);
+    cursor: pointer;
+}
+
+/**************************************/
+/*button for save*/
+/**************************************/
+.save_button {
+    background: #d9ceeb;
+    border: none;
+    color: black;
+    padding: 6px 6.5px;
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 50px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.save_button:hover {
+    background-color: #d0d0d0;
+    color: black;
+    cursor: pointer;
+}
+
+/**************************************/
+/*button for download*/
+/**************************************/
+.download_button {
+    background: #d9ceeb;
+    border: none;
+    color: black;
+    // padding: 6px 6.5px;
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 50px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.download_button:hover {
+    background-color: #d0d0d0;
+    color: black;
+    cursor: pointer;
+}
+
+/**************************************/
+/*left buttons area*/
+/**************************************/
+
+.left_buttons_area {
+    display: flex;
+    flex-direction: column;
+    // justify-content: space-around;
+    align-items: center;
+    width: 320px;
+    height: 85vh;
+    position: absolute;
+    bottom: 0px;
+}
+
+.add_text_button {
+    background: #d9ceeb;
+    border: none;
+    color: black;
+    padding: 6px 6.5px;
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 50px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.add_text_button:hover {
+    background-color: #d0d0d0;
+    color: black;
+    cursor: pointer;
+}
+
+
+.delete_element_button {
+    background: #d9ceeb;
+    border: none;
+    color: black;
+    padding: 6px 6.5px;
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 30px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.delete_element_button:hover {
+    background-color: #d0d0d0;
+    color: black;
+    cursor: pointer
+}
+
+.delete_disabled {
+    background: #DBDBDB;
+    border: none;
+    color: black;
+    padding: 6px 6.5px;
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 30px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.delete_disabled:hover {
+    background-color: #d0d0d0;
+    color: black;
+    cursor: pointer
+}
+
+.add_image_button {
+    background: #d9ceeb;
+    border: none;
+    color: black;
+    padding: 6px 6.5px;
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 50px;
+    padding: 10px 30px;
+    transition: 0.3s;
+    border-radius: 4px;
+    box-shadow: 1px 2px #A4938F;
+}
+
+.add_image_button:hover {
+    background-color: #d0d0d0;
+    color: black;
+    cursor: pointer
 }

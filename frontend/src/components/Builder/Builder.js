@@ -1,13 +1,14 @@
-import React, {useState, useEffect} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from "@material-ui/core/styles";
 // import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
-import {Rnd} from "react-rnd";
-import {sampleRawData} from "./hardCodedData.js";
+import { Rnd } from "react-rnd";
+import { sampleRawData } from "./hardCodedData.js";
 import html2canvas from 'html2canvas';
-import {parse} from "@fortawesome/fontawesome-svg-core";
-
+import { parse } from "@fortawesome/fontawesome-svg-core";
+import Button from '@material-ui/core/Button';
+import { useRef } from 'react/cjs/react.production.min';
 const styling = makeStyles({
     container: {
         height: "50%",
@@ -18,7 +19,7 @@ const styling = makeStyles({
 
 const tempData = sampleRawData
 
-const Builder = ({auth, resume, setEditor, setResume}) => {
+const Builder = ({ auth, resume, setEditor, setResume }) => {
     const columns = styling();
 
     const [mappedData, updateData] = useState(null);
@@ -38,6 +39,11 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     const [underfont, setUnderFont] = useState(false);
     // const [fontSize_exp,setFontSize_exp] = useState(12);
     // const [fontSize_edu,setFontSize_edu] = useState(12);
+
+    const [isFont, setFont] = useState({
+        active: false,
+        id: null,
+    });
 
     useEffect(() => {
 
@@ -106,9 +112,6 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
         loadingElements()
             .catch(console.error);
-
-        // renderData()
-
     }, []);
 
     function renderData() {
@@ -152,11 +155,11 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 element.content = element.content.split(',')[1];
             }
         }
-        saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
+        return saveElements(filteredData, thumbnail.split(',')[1]); //pass only data, no prefix
     }
 
     async function saveElements(encodedData, thumbnail) {
-        await fetch('./backend/api/api.php/resume', {
+        const result = await fetch('./backend/api/api.php/resume', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -171,11 +174,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     'elements': encodedData
                 }
             })
-        })
-            .then((result) => result.text())
-            .then((resultText) => {
-                console.log(resultText);
-            })
+        });
+
+        return result;
         // Not need since output isn't json and just confirms save.
         // .then((resultJson) => {
         //     console.log("Successfully saved resume.",resultJson);
@@ -189,8 +190,11 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         return link;
     }
 
-    function download() {
-        encodeData(mappedData); //should save before download
+    async function download() {
+        const response = await encodeData(mappedData); //should save before download
+        const responseText = await response.text();
+        console.log(responseText);
+        
         //resume.split('-')[0] returns a string of an int, which is okay in this case
         const url = './backend/api/' + resume.split('-')[0] + '.pdf';
 
@@ -271,7 +275,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         }
         img.src = base64
     }
-
+    const addImgRef = useRef();
     function controlElement(e, id) {
         if(isDelete['active'] && isDelete['id'] !== id) {
             setDelete({
@@ -283,6 +287,18 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 active: !isDelete['active'],
                 id: isDelete['id'] ? null : id
             });
+        }
+
+        if(isFont['active'] && isFont['id'] !== id) {
+            setFont({
+                active: true,
+                id: id
+            });
+        } else{
+            setFont({
+                active: !isDelete['active'],
+                id: isFont['id'] ? null : id
+            })
         }
     }
 
@@ -302,20 +318,51 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     }
 
 
-    const increaseFS = () => {
-        setFontSize(fontSize + 1);
+    const increaseFS = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+
+        updatedMap[id]["prop"]["font-size"] = updatedMap[id]["prop"]["font-size"] + 1;
+
+        updateData(updatedMap);
     };
-    const decreaseFS = () => {
-        setFontSize(fontSize - 1);
+    const decreaseFS = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+        if(updatedMap[id]["prop"]["font-size"] <= 1){
+            updatedMap[id]["prop"]["font-size"] = 1;
+        }
+        else{
+            updatedMap[id]["prop"]["font-size"] = updatedMap[id]["prop"]["font-size"] - 1;
+        }
+
+        updateData(updatedMap);
     };
-    const boldF = () => {
-        setBoldFont(!boldfont);
+    const boldF = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+        
+        updatedMap[id]["prop"]["bold"] = !updatedMap[id]["prop"]["bold"];
+        updateData(updatedMap);
     };
-    const italF = () => {
-        setItalFont(!italfont);
+    const italF = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+
+        updatedMap[id]["prop"]["italic"] = !updatedMap[id]["prop"]["italic"];
+        updateData(updatedMap);
     };
-    const underF = () => {
-        setUnderFont(!underfont);
+    const underF = (id) => {
+        const updatedMap = {
+            ...mappedData
+        }
+        
+        updatedMap[id]["prop"]["underline"] = !updatedMap[id]["prop"]["underline"];
+        updateData(updatedMap);
     };
 
     const style_temp = {
@@ -336,7 +383,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         display: 'flex',
                         justifyContent: 'center',
                         textAlign: 'center',
-                        border: !isDragging && isDelete['active'] && el[0] === isDelete['id'] ? '3px solid red' : 'none',
+                        border: !isDragging && isDelete['active'] && el[0] === isDelete['id'] ? '3px solid #d9ceeb' : 'none',
                     }}
                     default={{
                         x: el[1]['offset-x'],
@@ -406,10 +453,10 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             style={{
                                 width: '100%',
                                 height: '100%',
-                                fontSize: fontSize,
-                                fontWeight: boldfont ? 'bold' : 'normal',
-                                fontStyle: italfont ? 'italic' : 'normal',
-                                textDecorationLine: underfont ? 'underline' : 'none',
+                                fontSize: el[1]['prop']['font-size'],
+                                fontWeight: el[1]['prop']['bold'] ? 'bold' : 'normal',
+                                fontStyle: el[1]['prop']['italic'] ? 'italic' : 'normal',
+                                textDecorationLine: el[1]['prop']['underline'] ? 'underline' : 'none',
                                 border: 'none',
                                 // textAlign: 'center',
                             }}
@@ -456,83 +503,22 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                     <div className={styles['dnd']}>
                         {/* <div className={columns.container}> */}
                         <h1 className={styles['dnd_h1']}>Drag and Drop</h1>
-                        <Rnd
-                            // className={styles['rnd_drag']}
-                            style={style_temp}
-                            default={{
-                                x: 50,
-                                y: 85,
-                                width: 213,
-                                height: 43
-                            }}
-                        >
-                            <input
-                                type="text"
-                                defaultValue={'Your Name'}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    fontSize: fontSize,
-                                    fontWeight: boldfont ? 'bold' : 'normal',
-                                    fontStyle: italfont ? 'italic' : 'normal',
-                                    textDecorationLine: underfont ? 'underline' : 'none',
-                                    border: 'none',
-                                    textAlign: 'center'
-                                }}
-                            />
-                        </Rnd>
-                        <Rnd
-                            // className={styles['rnd_drag']}
-                            style={style_temp}
-                            default={{
-                                x: 50,
-                                y: 140,
-                                width: 213,
-                                height: 43
-                            }}
-                        >
-                            <input
-                                type="text"
-                                defaultValue={'Education'}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    fontSize: fontSize,
-                                    fontWeight: boldfont ? 'bold' : 'normal',
-                                    fontStyle: italfont ? 'italic' : 'normal',
-                                    textDecorationLine: underfont ? 'underline' : 'none',
-                                    border: 'none',
-                                    textAlign: 'center'
-                                }}
-                            />
-                        </Rnd>
-                        <Rnd
-                            // className={styles['rnd_drag']}
-                            style={style_temp}
-                            default={{
-                                x: 50,
-                                y: 191,
-                                width: 213,
-                                height: 43
-                            }}
-                        >
-                            <input
-                                type="text"
-                                defaultValue={'Experience'}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    fontSize: fontSize,
-                                    fontWeight: boldfont ? 'bold' : 'normal',
-                                    fontStyle: italfont ? 'italic' : 'normal',
-                                    textDecorationLine: underfont ? 'underline' : 'none',
-                                    border: 'none',
-                                    textAlign: 'center'
-                                }}
-                            />
-                        </Rnd>
+                        <div className={styles['left_buttons_area']}>
+                            <button onClick={addText} className={styles['add_text_button']}>
+                                Add Text
+                            </button>
+                            <button className={styles['add_image_button']} onClick={() => addImgRef.current.click()}>Upload Image</button>
+                            <input type='file' id={styles['add_image_button']} accept="image/*" onChange={addImage} ref={addImgRef} multiple={false} hidden/>
+                            {isDelete['active'] ? <button className={styles['delete_element_button']} onClick={() => deleteElement(isDelete['id'])}>
+                                Delete element 
+                            </button> : <button className={styles['delete_disabled']} disabled={true}>
+                                Delete element 
+                            </button>}
+                        </div>
+
                     </div>
                     {/* </div> */}
+
                 </aside>
 
                 {/* </Grid>
@@ -577,53 +563,73 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 margin: '0 auto'
                             }}>
                                 <h3 className={styles['txt_h3']}>Text</h3>
+                                <Box className={styles['fontSize_box']} sx={{
+                                    display: "flex",
+                                    width: "5vh",
+                                    height: "5vh"
+                                }}>
+                                {isFont['active'] ? <button className={styles['increase']} onClick={() => {
+                                    increaseFS(isFont['id']);
+                                }}>A+ 
+                                </button> : <button className={styles['increase_disabled']} disabled={true}>
+                                    A+ 
+                                </button>}
                                 <input
                                     className={styles["fontSize_input"]}
-                                    defaultValue={fontSize}
+                                    value={fontSize}
                                     onChange={renderedData.entries[1]}
                                 />
-                                <button className={styles['increase']} onClick={() => {
-                                    increaseFS();
-                                }}>A+
-                                </button>
-                                <button className={styles['decrease']} onClick={() => {
-                                    decreaseFS();
-                                }}>A-
-                                </button>
-                                <button className={styles['bold']} onClick={() => {
-                                    boldF();
-                                }}>Bold
-                                </button>
-                                <button className={styles['italicized']} onClick={() => {
-                                    italF();
-                                }}>Italic
-                                </button>
-                                <button className={styles['underline']} onClick={() => {
-                                    underF();
-                                }}>U
-                                </button>
+                                {isFont['active'] ? <button className={styles['decrease']} onClick={() => {
+                                    decreaseFS(isFont['id']);
+                                }}>A- 
+                                </button> : <button className={styles['decrease_disabled']} disabled={true}>
+                                    A- 
+                                </button>}
+                                </Box>
+                                <Box className={styles['apply_box']} sx={{
+                                    display: "flex",
+                                    justifyContent:'center',
+                                }}>
+                                <button className={styles['apply']}>Apply</button>
+                                </Box>
+                                <Box className={styles['text_buttons']} sx={{
+                                    display: "flex",
+                                    justifyContent:'center'
+                                }}>
+                                {isFont['active'] ? <button className={styles['bold']} onClick={() => {
+                                    boldF(isFont['id']);
+                                }}>Bold 
+                                </button> : <button className={styles['bold_disabled']} disabled={true}>
+                                    Bold 
+                                </button>}
+                                {isFont['active'] ? <button className={styles['italicized']} onClick={() => {
+                                    italF(isFont['id']);
+                                }}>Italic 
+                                </button> : <button className={styles['italicized_disabled']} disabled={true}>
+                                    Italic 
+                                </button>}
+                                {isFont['active'] ? <button className={styles['underline']} onClick={() => {
+                                    underF(isFont['id']);
+                                }}>U 
+                                </button> : <button className={styles['underline_disabled']} disabled={true}>
+                                    U 
+                                </button>}
+                                </Box>
                             </Box>
                         </div>
-                        <button className={styles['closeButton']} onClick={() => {
-                            setResume(null)
-                            setEditor(false)
-                        }}>Close Editor
-                        </button>
-                        <button onClick={() => encodeData(mappedData)}>
-                            TEST button for encoding data to save to the server
-                        </button>
-                        <button onClick={addText}>Add Text (test)</button>
-                        <input type='file' accept="image/*" onChange={addImage}/>
-                        {isDelete['active'] ? <button onClick={() => deleteElement(isDelete['id'])}>
-                            delete element (id: {isDelete["id"]} )
-                        </button> : null}
-                        <button className={styles['saveButton']} onClick={() => encodeData(mappedData)}>
-                            Save Resume
-                        </button>
-                        <button className={styles['closeButton']} onClick={() => {
-                            download()
-                        }}>Download Button
-                        </button>
+                        <div className={styles['right_buttons_area']}>
+                            <button className={styles['save_button']} onClick={() => encodeData(mappedData)}>
+                                Save Resume
+                            </button>
+                            <button className={styles['download_button']} onClick={() => { download() }}>
+                                Download PDF
+                            </button>
+                            <button className={styles['close_button']} onClick={() => {
+                                setResume(null)
+                                setEditor(false)
+                            }}> Close Editor
+                            </button>
+                        </div>
                     </div>
                     {/* </div> */}
                 </aside>
