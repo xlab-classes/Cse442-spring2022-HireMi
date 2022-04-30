@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from "@material-ui/core/styles";
+import React, {useState, useEffect} from 'react';
+import {makeStyles} from "@material-ui/core/styles";
 // import Grid from "@material-ui/core/Grid";
 import Box from "@mui/material/Box";
 import styles from './Builder.module.scss';
-import { Rnd } from "react-rnd";
-import { sampleRawData } from "./hardCodedData.js";
+import {Rnd} from "react-rnd";
+import {sampleRawData} from "./hardCodedData.js";
 import html2canvas from 'html2canvas';
-import { parse } from "@fortawesome/fontawesome-svg-core";
+import {parse} from "@fortawesome/fontawesome-svg-core";
 import Button from '@material-ui/core/Button';
-import { useRef } from 'react/cjs/react.production.min';
+import {useRef} from 'react/cjs/react.production.min';
+
 const styling = makeStyles({
     container: {
         height: "50%",
@@ -19,26 +20,20 @@ const styling = makeStyles({
 
 const tempData = sampleRawData
 
-const Builder = ({ auth, resume, setEditor, setResume }) => {
+const Builder = ({auth, resume, setEditor, setResume}) => {
     const columns = styling();
 
     const [mappedData, updateData] = useState(null);
     // Increment for tracking newly added object
     const [increment, setIncrement] = useState(null);
     // state to set active status of deleting an element
-    const [isDelete, setDelete] = useState({
+    const [isSelect, setSelect] = useState({
         active: false,
         id: null,
     });
     const [isDragging, setDragging] = useState(false);
 
     const [share, setShare] = useState(false);
-    const [fontSize, setFontSize] = useState(14);
-
-    const [isFont, setFont] = useState({
-        active: false,
-        id: null,
-    });
 
     useEffect(() => {
 
@@ -270,30 +265,20 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         }
         img.src = base64
     }
-    const addImgRef = useRef();
-    function controlElement(e, id) {
-        if(isDelete['active'] && isDelete['id'] !== id) {
-            setDelete({
-                active: true,
-                id: id
-            });
-        }else {
-            setDelete({
-                active: !isDelete['active'],
-                id: isDelete['id'] ? null : id
-            });
-        }
 
-        if(isFont['active'] && isFont['id'] !== id) {
-            setFont({
+    const addImgRef = useRef();
+
+    function controlElement(e, id) {
+        if (isSelect['active'] && isSelect['id'] !== id) {
+            setSelect({
                 active: true,
                 id: id
             });
-        } else{
-            setFont({
-                active: !isDelete['active'],
-                id: isFont['id'] ? null : id
-            })
+        } else {
+            setSelect({
+                active: !isSelect['active'],
+                id: isSelect['id'] ? null : id
+            });
         }
     }
 
@@ -305,7 +290,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
         delete updatedMap[id]
 
-        setDelete({
+        setSelect({
             active: false,
             id: null
         });
@@ -326,10 +311,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         const updatedMap = {
             ...mappedData
         }
-        if(updatedMap[id]["prop"]["font-size"] <= 1){
+        if (updatedMap[id]["prop"]["font-size"] <= 1) {
             updatedMap[id]["prop"]["font-size"] = 1;
-        }
-        else{
+        } else {
             updatedMap[id]["prop"]["font-size"] = updatedMap[id]["prop"]["font-size"] - 1;
         }
 
@@ -378,7 +362,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         display: 'flex',
                         justifyContent: 'center',
                         textAlign: 'center',
-                        border: !isDragging && isDelete['active'] && el[0] === isDelete['id'] ? '3px solid #d9ceeb' : 'none',
+                        border: !isDragging && isSelect['active'] && el[0] === isSelect['id'] ? '3px solid #d9ceeb' : 'none',
                     }}
                     default={{
                         x: el[1]['offset-x'],
@@ -392,10 +376,10 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                         setDragging(true)
                     }}
                     onDrag={e => {
-                        if (!isDelete['active']) {
+                        if (!isSelect['active']) {
                             return
                         }
-                        setDelete({
+                        setSelect({
                             active: false,
                             id: null
                         })
@@ -434,10 +418,10 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
                         // controlElement(e, el[0])
 
-                        setTimeout(()=>{
-                            if(isDragging) return;
+                        setTimeout(() => {
+                            if (isDragging) return;
                             controlElement(e, el[0])
-                        },50);
+                        }, 50);
                     }}
 
                 >
@@ -502,9 +486,13 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                             <button onClick={addText} className={styles['add_text_button']}>
                                 Add Text
                             </button>
-                            <button className={styles['add_image_button']} onClick={() => addImgRef.current.click()}>Upload Image</button>
-                            <input type='file' id={styles['add_image_button']} accept="image/*" onChange={addImage} ref={addImgRef} multiple={false} hidden/>
-                            {isDelete['active'] ? <button className={styles['delete_element_button']} onClick={() => deleteElement(isDelete['id'])}>
+                            <button className={styles['add_image_button']}
+                                    onClick={() => addImgRef.current.click()}>Upload Image
+                            </button>
+                            <input type='file' id={styles['add_image_button']} accept="image/*" onChange={addImage}
+                                   ref={addImgRef} multiple={false} hidden/>
+                            {isSelect['active'] ? <button className={styles['delete_element_button']}
+                                                          onClick={() => deleteElement(isSelect['id'])}>
                                 Delete element
                             </button> : <button className={styles['delete_disabled']} disabled={true}>
                                 Delete element
@@ -529,8 +517,8 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                                     background: "white"
                                 }}
                                      onMouseDown={e => {
-                                         if(isDelete['active']) {
-                                             setDelete({
+                                         if (isSelect['active']) {
+                                             setSelect({
                                                  active: false,
                                                  id: null
                                              });
@@ -563,52 +551,103 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                                     width: "5vh",
                                     height: "5vh"
                                 }}>
-                                {isFont['active'] ? <button className={styles['increase']} onClick={() => {
-                                    increaseFS(isFont['id']);
-                                }}>A+
-                                </button> : <button className={styles['increase_disabled']} disabled={true}>
-                                    A+
-                                </button>}
-                                <input
-                                    className={styles["fontSize_input"]}
-                                    value={fontSize}
-                                    onChange={renderedData.entries[1]}
-                                />
-                                {isFont['active'] ? <button className={styles['decrease']} onClick={() => {
-                                    decreaseFS(isFont['id']);
-                                }}>A-
-                                </button> : <button className={styles['decrease_disabled']} disabled={true}>
-                                    A-
-                                </button>}
-                                </Box>
-                                <Box className={styles['apply_box']} sx={{
-                                    display: "flex",
-                                    justifyContent:'center',
-                                }}>
-                                <button className={styles['apply']}>Apply</button>
+                                    <button
+                                        className={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' ? styles['increase_disabled'] : styles['increase'] : styles['increase_disabled']}
+                                        disabled={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' : true}
+                                        onClick={() => {
+                                            if (!isSelect['active']) {
+                                                return
+                                            }
+                                            if (mappedData[isSelect['id']]['type'] !== 'text') {
+                                                return
+                                            }
+                                            decreaseFS(isSelect['id']);
+                                        }}
+                                    >A-
+                                    </button>
+                                    <input
+                                        // type={'number'}
+                                        className={styles["fontSize_input"]}
+                                        disabled={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' : true}
+                                        value={isSelect['active'] ? mappedData[isSelect['id']]['prop']['font-size'] : ''}
+                                        onChange={e => {
+                                            const val = e.target.value === '' ? 0 : e.target.value;
+
+                                            if (!isSelect['active']) {
+                                                return
+                                            }
+                                            if (mappedData[isSelect['id']]['type'] !== 'text') {
+                                                return
+                                            }
+                                            // console.log(e.target.value)
+                                            const updatedMap = {
+                                                ...mappedData,
+                                            }
+
+                                            updatedMap[isSelect['id']]['prop']['font-size'] = parseInt(val);
+
+                                            updateData(updatedMap);
+
+                                        }}
+                                    />
+                                    <button
+                                        className={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' ? styles['increase_disabled'] : styles['increase'] : styles['increase_disabled']}
+                                        disabled={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' : true}
+                                        onClick={() => {
+                                            if (!isSelect['active']) {
+                                                return
+                                            }
+                                            if (mappedData[isSelect['id']]['type'] !== 'text') {
+                                                return
+                                            }
+                                            increaseFS(isSelect['id']);
+                                        }}
+                                    >A+
+                                    </button>
                                 </Box>
                                 <Box className={styles['text_buttons']} sx={{
                                     display: "flex",
-                                    justifyContent:'center'
+                                    justifyContent: 'center'
                                 }}>
-                                {isFont['active'] ? <button className={styles['bold']} onClick={() => {
-                                    boldF(isFont['id']);
-                                }}>Bold
-                                </button> : <button className={styles['bold_disabled']} disabled={true}>
-                                    Bold
-                                </button>}
-                                {isFont['active'] ? <button className={styles['italicized']} onClick={() => {
-                                    italF(isFont['id']);
-                                }}>Italic
-                                </button> : <button className={styles['italicized_disabled']} disabled={true}>
-                                    Italic
-                                </button>}
-                                {isFont['active'] ? <button className={styles['underline']} onClick={() => {
-                                    underF(isFont['id']);
-                                }}>U
-                                </button> : <button className={styles['underline_disabled']} disabled={true}>
-                                    U
-                                </button>}
+                                    <button
+                                        className={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' ? styles['bold_disabled'] : styles['bold'] : styles['bold_disabled']}
+                                        disabled={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' : true}
+                                        onClick={() => {
+                                            if (!isSelect['active']) {
+                                                return
+                                            }
+                                            if (mappedData[isSelect['id']]['type'] !== 'text') {
+                                                return
+                                            }
+                                            boldF(isSelect['id']);
+                                        }}>Bold
+                                    </button>
+                                    <button
+                                        className={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' ? styles['italicized_disabled'] : styles['italicized'] : styles['italicized_disabled']}
+                                        disabled={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' : true}
+                                        onClick={() => {
+                                        if (!isSelect['active']) {
+                                            return
+                                        }
+                                        if (mappedData[isSelect['id']]['type'] !== 'text') {
+                                            return
+                                        }
+                                        italF(isSelect['id']);
+                                    }}>Italic
+                                    </button>
+                                    <button
+                                        className={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' ? styles['underline_disabled'] : styles['underline'] : styles['underline_disabled']}
+                                        disabled={isSelect['active'] ? mappedData[isSelect['id']]['type'] !== 'text' : true}
+                                        onClick={() => {
+                                        if (!isSelect['active']) {
+                                            return
+                                        }
+                                        if (mappedData[isSelect['id']]['type'] !== 'text') {
+                                            return
+                                        }
+                                        underF(isSelect['id']);
+                                    }}>U
+                                    </button>
                                 </Box>
                             </Box>
                         </div>
@@ -616,7 +655,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                             <button className={styles['save_button']} onClick={() => encodeData(mappedData)}>
                                 Save Resume
                             </button>
-                            <button className={styles['download_button']} onClick={() => { download() }}>
+                            <button className={styles['download_button']} onClick={() => {
+                                download()
+                            }}>
                                 Download PDF
                             </button>
                             <button className={styles['close_button']} onClick={() => {
