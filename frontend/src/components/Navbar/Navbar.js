@@ -4,6 +4,8 @@ import {useState, useEffect} from "react";
 import {NavLink, useLocation} from "react-router-dom";
 import {ROUTE_BUILDER, ROUTE_DASHBOARD, ROUTE_LOGIN, ROUTE_SETTINGS} from "../../constants/routes";
 
+import Backdrop from "../BackDrop/Backdrop";
+
 import styles from './Navbar.module.scss'
 
 
@@ -93,17 +95,20 @@ const Navbar = ({auth}) => {
                             </NavLink>
                             <span>{(nameCounter > 1) ? auth?.username : username}</span>
                         </div>
-                        <button className={styles['toggle-btn']} onClick={() => setActive(prevState => !prevState)}>
+                        <button className={isActive ? `${styles['toggle-btn']} ${styles['active']}`: styles['toggle-btn']} onClick={() => setActive(prevState => !prevState)}>
                             <span />
                             <span />
                             <span />
                         </button>
                         {isActive ?
+                            <>
+                            <Backdrop click={() => {setActive(false)}} />
                             <ul className={styles['nav-drop']}>
                                 {pathname === ROUTE_DASHBOARD ? <NavLink onClick={() => setActive(false)} to={ROUTE_SETTINGS}>Settings</NavLink> : null}
                                 {pathname === ROUTE_SETTINGS ? <NavLink onClick={() => setActive(false)} to={ROUTE_DASHBOARD}>Dashboard</NavLink> : null}
                                 {/*<NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>*/}
                             </ul>
+                            </>
                             :
                             null
                         }

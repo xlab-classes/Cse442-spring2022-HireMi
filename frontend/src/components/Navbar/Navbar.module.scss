@@ -80,6 +80,32 @@
     height: .2rem;
     background-color: #000;
   }
+
+  &.active {
+    span:nth-child(1) {
+      -webkit-transition: -webkit-transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s;
+      transition: -webkit-transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s;
+      transition: transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s, -webkit-transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s;
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      top: 32%;
+      position: relative;
+    }
+
+    span:nth-child(2) {
+      opacity: 0;
+    }
+
+    span:nth-child(3) {
+      -webkit-transition: -webkit-transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s;
+      transition: -webkit-transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s;
+      transition: transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s, -webkit-transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s;
+      -webkit-transform: rotate(-45deg);
+      transform: rotate(-45deg);
+      top: -32%;
+      position: relative;
+    }
+  }
 }
 
 .nav-drop {
@@ -93,6 +119,7 @@
   list-style: none;
   margin: 0;
   padding: 1rem;
+  z-index: 100;
 
   & > a {
     text-align: center;

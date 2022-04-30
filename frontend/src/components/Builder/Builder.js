@@ -547,6 +547,14 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                     border: ".5px solid black",
                                     background: "white"
                                 }}
+                                     onMouseDown={e => {
+                                         if(isDelete['active']) {
+                                             setDelete({
+                                                 active: false,
+                                                 id: null
+                                             });
+                                         }
+                                     }}
                                 >
                                     {renderedData}
                                 </Box>

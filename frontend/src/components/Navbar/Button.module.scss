@@ -46,11 +46,7 @@
 }
 
 .dd-header.--dd-header-active .dd-header-btn-lip.top {
-    -webkit-transition: -webkit-transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s;
-    transition: -webkit-transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s;
-    transition: transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s, -webkit-transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) .1008s;
-    -webkit-transform: rotate(45deg);
-    transform: rotate(45deg);
+
 }
 
 .dd-header-btn-lip.middle {
