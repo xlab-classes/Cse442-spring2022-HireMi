@@ -1,6 +1,6 @@
 import React from 'react';
 
-import styles from './HeaderButton.scss';
+import './HeaderButton.scss';
 
 const HeaderButton = props => {
     return (

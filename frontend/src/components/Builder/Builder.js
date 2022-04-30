@@ -93,7 +93,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                         [id]: {
                             ...el,
                             'content': el['type'] === "image" ? 'data:image/png;base64,' + el['content'] : el['content']
-                        }
+                        },
                     }
                 )
             }, {prev: 0})
