@@ -5,6 +5,7 @@ import {NavLink, useLocation} from "react-router-dom";
 import {ROUTE_BUILDER, ROUTE_DASHBOARD, ROUTE_LOGIN, ROUTE_SETTINGS} from "../../constants/routes";
 
 import Backdrop from "../BackDrop/Backdrop";
+import HeaderButton from "./HeaderButton";
 
 import styles from './Navbar.module.scss'
 
@@ -95,11 +96,14 @@ const Navbar = ({auth}) => {
                             </NavLink>
                             <span>{(nameCounter > 1) ? auth?.username : username}</span>
                         </div>
-                        <button className={isActive ? `${styles['toggle-btn']} ${styles['active']}`: styles['toggle-btn']} onClick={() => setActive(prevState => !prevState)}>
-                            <span />
-                            <span />
-                            <span />
-                        </button>
+                        {/*<button className={isActive ? `${styles['toggle-btn']} ${styles['active']}`: styles['toggle-btn']} onClick={() => setActive(prevState => !prevState)}>*/}
+                        {/*    <span />*/}
+                        {/*    <span />*/}
+                        {/*    <span />*/}
+                        {/*</button>*/}
+                        <div className={isActive ? '--dd-header-active' : null}>
+                            <HeaderButton onClick={() => setActive(prevState => !prevState)} />
+                        </div>
                         {isActive ?
                             <>
                             <Backdrop click={() => {setActive(false)}} />
