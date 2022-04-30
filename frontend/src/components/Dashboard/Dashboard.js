@@ -54,8 +54,47 @@ const Dashboard = ({auth}) => {
         const resumeCountJSON = await resumeCount.json();
         setResumeTotal(resumeCountJSON.count);
 
+        // Get the IDs of resumes that have been shared
+        const shared = await fetch('./backend/api/api.php/get_shared', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + auth?.access_token
+            },
+            body: JSON.stringify({
+                'id': auth?.id
+            })
+        }).catch(err => {
+            console.error(err);
+        });
+
+        const sharedJSON = await shared.json();
+        const shared_IDs = sharedJSON.shared_IDs;
+
+        console.log(shared_IDs);
+
+        // Maximum number of resumes to display in templates
+        let num_resumes = 0;
+        if (shared_IDs.length >= 4) {
+            num_resumes = 4;
+        } else {
+            num_resumes = shared_IDs.length;
+        }
+
         let templateArray = [];
-        for (let i = 0; i < 4; i++) {
+        let selected_IDs = new Set(); // Needed to ensure same template isn't loaded twice
+        for (let i = 0; i < num_resumes; i++) {
+            let shareID = 1;
+            if (num_resumes === 4) {
+                shareID = shared_IDs[Math.floor(Math.random() * shared_IDs.length)];
+                // Find a unique ID
+                while (selected_IDs.has(shareID)) {
+                    shareID = shared_IDs[Math.floor(Math.random() * shared_IDs.length)];
+                }
+                selected_IDs.add(shareID);
+            } else {
+                shareID = shared_IDs[i];
+            }
             fetch('./backend/api/api.php/get_template', {
                 method: 'POST',
                 headers: {
@@ -64,7 +103,7 @@ const Dashboard = ({auth}) => {
                 },
                 body: JSON.stringify({
                     'id': auth?.id,
-                    'n': Math.floor(Math.random() * resumeCountJSON.count) //This range is int [0, resumeTotal)
+                    'n': shareID - 1 //This range is int [0, numSharedResumes)
                 })
             }).then((result) => result.json())
                 .then((resultJson) => {

@@ -263,6 +263,44 @@ function getMyThumbnail($id, $n){
     return $data;
 }
 
+function getShareableResumes($id) {
+    $servername = "oceanus.cse.buffalo.edu";
+    $username = "msmu";
+    $password = "50266948";
+    $database = "cse442_2022_spring_team_r_db";
+    $port = 3306;
+
+    $conn = new mysqli($servername, $username, $password, $database, $port);
+    if (mysqli_connect_error()) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $stmt1 = $conn->prepare("SELECT ResumeID FROM Resumes WHERE Share = 1");
+    $stmt1->execute();
+  
+    $result = $stmt1->get_result();
+    $data = array();
+
+    // There is at least one shareable resume
+    if ($result->num_rows > 0){
+        $sharedIDs = array();
+        while ($row = $result->fetch_assoc()){
+            $sharedIDs[] = $row["ResumeID"];
+        }
+        $data = array(
+            "shared_IDs" => $sharedIDs
+        );
+      }
+    else {
+        echo "No shareable resumes in the database";
+    }
+
+    $stmt1->close();
+    $conn->close();
+    
+    return $data;
+}
+
 function changeName($id, $new_name) {
     $servername = "oceanus.cse.buffalo.edu";
     $username = "msmu";
@@ -819,6 +857,49 @@ if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD']) && is
             $n = $json_body["n"];
     
             $data = getOtherThumbnail($id, $n);
+    
+            header("HTTP/1.1 200 OK");
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode($data);
+            return;
+        } catch (Exception $e) {
+            header("HTTP/1.1 400 Malformed Request");
+            echo $e;
+            echo "Something in the request was not formatted as expected.";
+            return;
+        }
+    }
+
+    /**
+     * Used to get the IDs of shareable resumes.
+     * 
+     * Expected query example:
+     * 
+     * verb: POST
+     * url: https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/backend/api/api.php/get_shared/
+     * headers: {
+     * "Authorization": "Bearer 4FR039z4c9MzOQ=="
+     * }
+     * body: {
+     * "id": "113776533273259442553"
+     * }
+     */
+    if($verb === 'POST' && $info === '/get_shared'){
+        try{
+            $headers = (array)apache_request_headers();
+            $authorization = $headers["Authorization"];
+            $token = explode(" ",$authorization)[1];
+    
+            $json_body = (array)json_decode($body);
+            $id = $json_body["id"];
+    
+            if(!authenticate($token, $id)){
+                header("HTTP/1.1 401 Unauthorized");
+                echo "Invalid or expired bearer token. Please log in again.";
+                return;
+            }
+    
+            $data = getShareableResumes($id);
     
             header("HTTP/1.1 200 OK");
             header("Content-Type: application/json; charset=utf-8");
