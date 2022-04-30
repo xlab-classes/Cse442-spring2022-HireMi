@@ -34,11 +34,6 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
 
     const [share, setShare] = useState(false);
     const [fontSize, setFontSize] = useState(14);
-    const [boldfont, setBoldFont] = useState(false);
-    const [italfont, setItalFont] = useState(false);
-    const [underfont, setUnderFont] = useState(false);
-    // const [fontSize_exp,setFontSize_exp] = useState(12);
-    // const [fontSize_edu,setFontSize_edu] = useState(12);
 
     const [isFont, setFont] = useState({
         active: false,
@@ -194,7 +189,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         const response = await encodeData(mappedData); //should save before download
         const responseText = await response.text();
         console.log(responseText);
-        
+
         //resume.split('-')[0] returns a string of an int, which is okay in this case
         const url = './backend/api/' + resume.split('-')[0] + '.pdf';
 
@@ -344,7 +339,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         const updatedMap = {
             ...mappedData
         }
-        
+
         updatedMap[id]["prop"]["bold"] = !updatedMap[id]["prop"]["bold"];
         updateData(updatedMap);
     };
@@ -360,7 +355,7 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
         const updatedMap = {
             ...mappedData
         }
-        
+
         updatedMap[id]["prop"]["underline"] = !updatedMap[id]["prop"]["underline"];
         updateData(updatedMap);
     };
@@ -510,9 +505,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                             <button className={styles['add_image_button']} onClick={() => addImgRef.current.click()}>Upload Image</button>
                             <input type='file' id={styles['add_image_button']} accept="image/*" onChange={addImage} ref={addImgRef} multiple={false} hidden/>
                             {isDelete['active'] ? <button className={styles['delete_element_button']} onClick={() => deleteElement(isDelete['id'])}>
-                                Delete element 
+                                Delete element
                             </button> : <button className={styles['delete_disabled']} disabled={true}>
-                                Delete element 
+                                Delete element
                             </button>}
                         </div>
 
@@ -570,9 +565,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                                 }}>
                                 {isFont['active'] ? <button className={styles['increase']} onClick={() => {
                                     increaseFS(isFont['id']);
-                                }}>A+ 
+                                }}>A+
                                 </button> : <button className={styles['increase_disabled']} disabled={true}>
-                                    A+ 
+                                    A+
                                 </button>}
                                 <input
                                     className={styles["fontSize_input"]}
@@ -581,9 +576,9 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                                 />
                                 {isFont['active'] ? <button className={styles['decrease']} onClick={() => {
                                     decreaseFS(isFont['id']);
-                                }}>A- 
+                                }}>A-
                                 </button> : <button className={styles['decrease_disabled']} disabled={true}>
-                                    A- 
+                                    A-
                                 </button>}
                                 </Box>
                                 <Box className={styles['apply_box']} sx={{
@@ -598,21 +593,21 @@ const Builder = ({ auth, resume, setEditor, setResume }) => {
                                 }}>
                                 {isFont['active'] ? <button className={styles['bold']} onClick={() => {
                                     boldF(isFont['id']);
-                                }}>Bold 
+                                }}>Bold
                                 </button> : <button className={styles['bold_disabled']} disabled={true}>
-                                    Bold 
+                                    Bold
                                 </button>}
                                 {isFont['active'] ? <button className={styles['italicized']} onClick={() => {
                                     italF(isFont['id']);
-                                }}>Italic 
+                                }}>Italic
                                 </button> : <button className={styles['italicized_disabled']} disabled={true}>
-                                    Italic 
+                                    Italic
                                 </button>}
                                 {isFont['active'] ? <button className={styles['underline']} onClick={() => {
                                     underF(isFont['id']);
-                                }}>U 
+                                }}>U
                                 </button> : <button className={styles['underline_disabled']} disabled={true}>
-                                    U 
+                                    U
                                 </button>}
                                 </Box>
                             </Box>
