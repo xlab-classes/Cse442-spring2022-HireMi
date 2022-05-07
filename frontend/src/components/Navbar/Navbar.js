@@ -4,6 +4,9 @@ import {useState, useEffect} from "react";
 import {NavLink, useLocation} from "react-router-dom";
 import {ROUTE_BUILDER, ROUTE_DASHBOARD, ROUTE_LOGIN, ROUTE_SETTINGS} from "../../constants/routes";
 
+import Backdrop from "../BackDrop/Backdrop";
+import HeaderButton from "./HeaderButton";
+
 import styles from './Navbar.module.scss'
 
 
@@ -30,7 +33,7 @@ const Navbar = ({auth}) => {
             body: string_body
         }).then((result) => result.json())
         .then((resultJson) => {
-            console.log(resultJson);
+            // console.log(resultJson);
 
             setName(resultJson.profile_name);
 
@@ -53,7 +56,7 @@ const Navbar = ({auth}) => {
             body: string_body
         }).then((result) => result.json())
         .then((resultJson) => {
-            console.log(resultJson);
+            // console.log(resultJson);
 
             setPic(resultJson.profile_picture);
 
@@ -65,19 +68,19 @@ const Navbar = ({auth}) => {
     function b64toBlob(b64Data, contentType='', sliceSize=512) {
         const byteCharacters = atob(b64Data);
         const byteArrays = [];
-      
+
         for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
           const slice = byteCharacters.slice(offset, offset + sliceSize);
-      
+
           const byteNumbers = new Array(slice.length);
           for (let i = 0; i < slice.length; i++) {
             byteNumbers[i] = slice.charCodeAt(i);
           }
-      
+
           const byteArray = new Uint8Array(byteNumbers);
           byteArrays.push(byteArray);
         }
-      
+
         const blob = new Blob(byteArrays, {type: contentType});
         return blob;
       }
@@ -89,21 +92,27 @@ const Navbar = ({auth}) => {
                     <div className={styles['nav-contents']}>
                         <div className={styles['user-info']}>
                             <NavLink className={styles['nav-link']} to={ROUTE_SETTINGS}>
-                                <img src={(picCounter > 1) ? ((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic) : ((pic.length > 1000) ? URL.createObjectURL(b64toBlob(pic)) : pic)}/>
+                                <img src={(picCounter > 1) ? ((auth?.pic.length > 1000) ? URL.createObjectURL(b64toBlob(auth?.pic)) : auth?.pic) : ((pic.length > 1000) ? URL.createObjectURL(b64toBlob(pic)) : pic)} alt={''} />
                             </NavLink>
                             <span>{(nameCounter > 1) ? auth?.username : username}</span>
                         </div>
-                        <button className={styles['toggle-btn']} onClick={() => setActive(prevState => !prevState)}>
-                            <span />
-                            <span />
-                            <span />
-                        </button>
+                        {/*<button className={isActive ? `${styles['toggle-btn']} ${styles['active']}`: styles['toggle-btn']} onClick={() => setActive(prevState => !prevState)}>*/}
+                        {/*    <span />*/}
+                        {/*    <span />*/}
+                        {/*    <span />*/}
+                        {/*</button>*/}
+                        <div className={isActive ? '--dd-header-active' : null}>
+                            <HeaderButton onClick={() => setActive(prevState => !prevState)} />
+                        </div>
                         {isActive ?
+                            <>
+                            <Backdrop click={() => {setActive(false)}} />
                             <ul className={styles['nav-drop']}>
-                                {pathname === ROUTE_DASHBOARD ? <NavLink to={ROUTE_SETTINGS}>Settings</NavLink> : null}
-                                {pathname === ROUTE_SETTINGS ? <NavLink to={ROUTE_DASHBOARD}>Dashboard</NavLink> : null}
+                                {pathname === ROUTE_DASHBOARD ? <NavLink onClick={() => setActive(false)} to={ROUTE_SETTINGS}>Settings</NavLink> : null}
+                                {pathname === ROUTE_SETTINGS ? <NavLink onClick={() => setActive(false)} to={ROUTE_DASHBOARD}>Dashboard</NavLink> : null}
                                 {/*<NavLink to={ROUTE_BUILDER}>Resume Builder</NavLink>*/}
                             </ul>
+                            </>
                             :
                             null
                         }

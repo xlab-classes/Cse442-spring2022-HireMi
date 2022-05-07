@@ -71,13 +71,28 @@ function generatePDF($resume_id, $elements){
             $fontType = $prop["font-type"];
             $fontSize = $prop["font-size"];
 
+            $isBold = $prop["bold"];
+            $isItalic = $prop["italic"];
+            $isUnder = $prop["underline"];
+
+            $styleString = "";
+            if($isBold == true){
+                $styleString = $styleString . "B";
+            }
+            if($isItalic == true){
+                $styleString = $styleString . "I";
+            }
+            if($isUnder == true){
+                $styleString = $styleString . "U";
+            }
+
             // https://tcpdf.org/docs/srcdoc/TCPDF/classes-TCPDF/#method_setFont
             // Not a lot of options for font right now. If we really want to, we can add some.
             if(in_array($fontType, FONTS)){
-                $pdf->SetFont($fontType, '', $fontSize);
+                $pdf->SetFont($fontType, $styleString, $fontSize);
             }
             else{
-                $pdf->SetFont('times', '', $fontSize);
+                $pdf->SetFont('times', $styleString, $fontSize);
             }
             //SetXY accepts floats in mm
             //TODO: Discuss best approach with frontend encoding.
@@ -120,6 +135,7 @@ function generatePDF($resume_id, $elements){
     ob_clean(); //flushes buffer
     $file = __DIR__ . '/' . $resumeID . '.pdf';
     $pdf->Output($file, 'F'); //actual code
+    chmod($file, 0777);
     // $pdf->Output($file, 'I'); //for debugging
 
     // echo '/CSE442-542/2022-Spring/cse-442r/backend/api/' . $resumeID . '.pdf';         

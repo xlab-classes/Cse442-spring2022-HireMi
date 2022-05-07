@@ -1,4 +1,1 @@
-Options -MultiViews
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^ index.html [QSA,L]
+ErrorDocument 404 https://www-student.cse.buffalo.edu/CSE442-542/2022-Spring/cse-442r/

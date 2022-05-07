@@ -16,12 +16,12 @@
   width: 11em;
   height: 11em;
   border-radius: 50%;
-  background: rgb(0,122,255);
-  background: -moz-linear-gradient(left, #007aff 10%, rgba(0,122,255, 0) 42%);
-  background: -webkit-linear-gradient(left, #007aff 10%, rgba(0,122,255, 0) 42%);
-  background: -o-linear-gradient(left, #007aff 10%, rgba(0,122,255, 0) 42%);
-  background: -ms-linear-gradient(left, #007aff 10%, rgba(0,122,255, 0) 42%);
-  background: linear-gradient(to right, #007aff 10%, rgba(0,122,255, 0) 42%);
+  background: #D5D6EA;
+  background: -moz-linear-gradient(left, #D5D6EA 70%, rgba(246,236,245, 0) 42%);
+  background: -webkit-linear-gradient(left, #D5D6EA 70%, rgba(246,236,245, 0) 42%);
+  background: -o-linear-gradient(left, #D5D6EA 70%, rgba(246,236,245, 0) 42%);
+  background: -ms-linear-gradient(left, #D5D6EA 70%, rgba(246,236,245, 0) 42%);
+  background: linear-gradient(to left, #D5D6EA 70%, rgba(246,236,245, 0) 42%);
   position: relative;
   -webkit-animation: load3 1.4s infinite linear;
   animation: load3 1.4s infinite linear;
@@ -32,7 +32,7 @@
 .loader:before {
   width: 50%;
   height: 50%;
-  background: rgb(0,122,255);
+  background: #D5D6EA;
   border-radius: 100% 0 0 0;
   position: absolute;
   top: 0;
