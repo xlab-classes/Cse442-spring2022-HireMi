@@ -33,7 +33,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
     });
     const [isDragging, setDragging] = useState(false);
 
-    const [share, setShare] = useState(false);
+    const [share, setShare] = useState(true);
 
     useEffect(() => {
 
@@ -86,7 +86,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
             // console.log('resumeDataJSON', resumeDataJSON);
 
-
+            setShare(resumeDataJSON['share'] == 1);
+            console.log(resumeDataJSON);
             const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
                 const id = obj['prev'] + 1;
                 return (
@@ -175,7 +176,7 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                 'thumbnail': thumbnail,
                 'data': {
                     'resume_id': resumeID,
-                    'share': 1,
+                    'share': share,
                     'elements': encodedData
                 }
             })
@@ -354,9 +355,23 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         updatedMap[id]["prop"]["underline"] = !updatedMap[id]["prop"]["underline"];
         updateData(updatedMap);
     };
-    const shareResume = () => {
+    const shareResume = async () => {
+        await encodeData(mappedData);
+        const result = await fetch('./backend/api/api.php/set_shared', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + auth?.access_token
+            },
+            body: JSON.stringify({
+                'id': auth?.id,
+                'resume_id': parseInt(resume.split('-')[0]),
+                'shared': !share
+            }),
+        })
         setShare(!share);
     }
+
     const style_temp = {
         display: 'flex',
         justifyContent: 'center',
@@ -668,7 +683,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                             <label className={styles['customPublicLabel']}>
                                 <input 
                                 type="checkbox"
-                                defaultChecked={share}
+                                // defaultChecked={share}
+                                checked={share}
                                 onChange={shareResume}
                                 className={styles['customCheckBox']}
                                 />
