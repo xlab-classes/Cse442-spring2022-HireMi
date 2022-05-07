@@ -354,7 +354,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         updatedMap[id]["prop"]["underline"] = !updatedMap[id]["prop"]["underline"];
         updateData(updatedMap);
     };
-
+    const shareResume = () => {
+        setShare(!share);
+    }
     const style_temp = {
         display: 'flex',
         justifyContent: 'center',
@@ -663,6 +665,16 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
                                 setEditor(false)
                             }}> Close Editor
                             </button>
+                            <label className={styles['customPublicLabel']}>
+                                <input 
+                                type="checkbox"
+                                defaultChecked={share}
+                                onChange={shareResume}
+                                className={styles['customCheckBox']}
+                                />
+                                <span className={styles['customCheck']}></span>
+                                Make Public
+                            </label>
                         </div>
                     </div>
                 </aside>
