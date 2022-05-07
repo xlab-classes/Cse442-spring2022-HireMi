@@ -86,7 +86,8 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
             // console.log('resumeDataJSON', resumeDataJSON);
 
-            setShare(resumeDataJSON['share'] == 1);
+            let loadedShare = (resumeDataJSON['share'] == 1);
+            setShare(loadedShare);
             console.log(resumeDataJSON);
             const parsedData = resumeDataJSON['elements'].reduce((obj, el) => {
                 const id = obj['prev'] + 1;
@@ -107,10 +108,35 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
 
             if(resume.split('-')[1] === 'template') {
                 await encodeData(parsedData, resumeCountJSON.count+1);
+                await fetch('./backend/api/api.php/set_shared',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + auth?.access_token
+                    },
+                    body: JSON.stringify({
+                        'id': auth?.id,
+                        'resume_id': resumeCountJSON.count+1,
+                        'shared': loadedShare
+                    }),
+                });
             }
             else{
                 await encodeData(parsedData);
+                await fetch('./backend/api/api.php/set_shared',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + auth?.access_token
+                    },
+                    body: JSON.stringify({
+                        'id': auth?.id,
+                        'resume_id': parseInt(resume.split('-')[0]),
+                        'shared': loadedShare
+                    }),
+                });
             }
+
         }
 
         loadingElements()
