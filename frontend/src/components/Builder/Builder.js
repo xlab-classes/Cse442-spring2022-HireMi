@@ -356,8 +356,9 @@ const Builder = ({auth, resume, setEditor, setResume}) => {
         updateData(updatedMap);
     };
     const shareResume = async () => {
-        await encodeData(mappedData);
-        const result = await fetch('./backend/api/api.php/set_shared', {
+        // await encodeData(mappedData);
+        // const result = await fetch('./backend/api/api.php/set_shared', {
+        fetch('./backend/api/api.php/set_shared',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
