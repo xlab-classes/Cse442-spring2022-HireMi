@@ -9,7 +9,7 @@ const NotFound = props => {
             <h1>OOPS!</h1>
             <h2>We can't seem to find the page you are looking for</h2>
             <p>error code: 404</p>
-            <NavLink to={ROUTE_DASHBOARD}>Back to dashaboard</NavLink>
+            <NavLink to={ROUTE_DASHBOARD}>Back to dashboard</NavLink>
         </div>
 
     )
