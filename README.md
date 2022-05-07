@@ -129,16 +129,36 @@ Node Package Manager: [npm](https://docs.npmjs.com/downloading-and-installing-no
 
 * Start the frontend app
 
+1. To install app dependenices
    ```sh
-   npm start 
+   npm install
    ```
+2. To build a compiled app
+   ```sh
+   npm run build
+   ```
+3. copy the build folder files to the local server folder
 
 ### Backend
 
-* Start the frontend app
+* Start the backend apache server
+
+1. copy the backend folder to the local server folder
+
+2. grant permission
+   ```sh
+   chmod -R 777 backend/
+   ```
+4. Start httpd localhost server
 
    ```sh
-   (will be updated)
+   brew services start httpd
+   ```
+
+3. Stop httpd localhost server
+
+   ```sh
+   brew services stop httpd
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
